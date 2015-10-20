@@ -11,7 +11,7 @@ messagesController = new MessagesController
 PORT  = process.env.PORT ? 80
 
 app = express()
-app.use morgan('dev', immediate: true)
+app.use morgan('dev', immediate: false)
 app.use bodyParser()
 app.use errorHandler()
 app.use meshbluHealthcheck()
