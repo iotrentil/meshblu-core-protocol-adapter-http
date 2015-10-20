@@ -3,15 +3,16 @@ bodyParser         = require 'body-parser'
 errorHandler       = require 'errorhandler'
 meshbluHealthcheck = require 'express-meshblu-healthcheck'
 debug              = require('debug')('nanocyte-engine-simple:server')
+morgan             = require 'morgan'
 MessagesController = require './src/controllers/messages-controller'
+
 messagesController = new MessagesController
 
 PORT  = process.env.PORT ? 80
-meshbluConfig = new MeshbluConfig
-debug 'meshbluConfig', meshbluConfig.toJSON()
 
 app = express()
 app.use morgan('dev', immediate: true)
+app.use bodyParser()
 app.use errorHandler()
 app.use meshbluHealthcheck()
 
