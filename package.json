@@ -21,7 +21,8 @@
     "express": "^4.13.3",
     "express-meshblu-healthcheck": "^1.0.1",
     "morgan": "^1.6.1",
-    "redis": "^2.2.5"
+    "redis": "^2.2.5",
+    "uuid": "^2.0.1"
   },
   "devDependencies": {
     "chai": "^3.4.0",
@@ -29,6 +30,7 @@
     "istanbul": "^0.4.0",
     "mocha": "^2.3.3",
     "mocha-istanbul": "^0.2.0",
+    "node-mocks-http": "^1.4.4",
     "semver": "^5.0.3",
     "sinon": "^1.17.2",
     "sinon-chai": "^2.8.0"
