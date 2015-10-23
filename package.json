@@ -2,6 +2,10 @@
   "name": "meshblu-http-server",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "engineStrict": true,
   "main": "index.js",
   "scripts": {
     "test": "istanbul cover _mocha -- -R spec"
@@ -25,6 +29,7 @@
     "istanbul": "^0.4.0",
     "mocha": "^2.3.3",
     "mocha-istanbul": "^0.2.0",
+    "semver": "^5.0.3",
     "sinon": "^1.17.2",
     "sinon-chai": "^2.8.0"
   }
