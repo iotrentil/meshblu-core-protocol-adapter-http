@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "istanbul cover _mocha -- -R spec"
   },
   "keywords": [],
   "author": "",
@@ -18,5 +18,14 @@
     "express-meshblu-healthcheck": "^1.0.1",
     "morgan": "^1.6.1",
     "redis": "^2.2.5"
+  },
+  "devDependencies": {
+    "chai": "^3.4.0",
+    "coffee-coverage": "^0.6.3",
+    "istanbul": "^0.4.0",
+    "mocha": "^2.3.3",
+    "mocha-istanbul": "^0.2.0",
+    "sinon": "^1.17.2",
+    "sinon-chai": "^2.8.0"
   }
 }
