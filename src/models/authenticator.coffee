@@ -21,12 +21,11 @@ class Authenticator
       token: token
       responseUuid: @uuid.v1()
 
+    client.lpush "#{@namespace}:request:queue", JSON.stringify job
     @listenForResponse client, job.responseUuid, callback
 
-    client.lpush "#{@namespace}:authenticate:queue", JSON.stringify job
-
   listenForResponse: (client, responseUuid, callback) =>
-    client.brpop "#{@namespace}:authenticate:#{responseUuid}", @timeoutSeconds, (error, result) =>
+    client.brpop "#{@namespace}:response:#{responseUuid}", @timeoutSeconds, (error, result) =>
       return callback error if error?
       return callback new Error('No response from authenticate worker') unless result?
 

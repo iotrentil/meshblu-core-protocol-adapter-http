@@ -8,7 +8,6 @@ describe 'Authenticator', ->
       host: process.env.REDIS_HOST
       port: process.env.REDIS_PORT
 
-
   beforeEach ->
     @uuid = v1: sinon.stub()
     @sut = new Authenticator {namespace: 'test', timeoutSeconds: 1}, uuid: @uuid
@@ -16,16 +15,16 @@ describe 'Authenticator', ->
   describe '->authenticate', ->
     beforeEach (done) ->
       async.parallel [
-        (callback) => @redis.del 'test:authenticate:some-uuid', callback
-        (callback) => @redis.del 'test:authenticate:some-other-uuid', callback
-        (callback) => @redis.del 'test:authenticate:queue', callback
+        (callback) => @redis.del 'test:response:some-uuid', callback
+        (callback) => @redis.del 'test:response:some-other-uuid', callback
+        (callback) => @redis.del 'test:request:queue', callback
       ], done
 
     describe 'when redis replies with true', ->
       beforeEach (done) ->
         @uuid.v1.returns 'some-uuid'
         @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
-        @redis.lpush 'test:authenticate:some-uuid', JSON.stringify([null, authenticated: true])
+        @redis.lpush 'test:response:some-uuid', JSON.stringify([null, authenticated: true])
 
       it 'should no error', ->
         expect(@error).not.to.exist
@@ -34,7 +33,7 @@ describe 'Authenticator', ->
         expect(@isAuthenticated).to.be.true
 
       it 'should have added a job to the authenticate queue', (done) ->
-        @redis.lindex 'test:authenticate:queue', 0, (error, result) =>
+        @redis.lindex 'test:request:queue', 0, (error, result) =>
           return done error if error?
           job = JSON.parse(result)
 
@@ -48,7 +47,7 @@ describe 'Authenticator', ->
       beforeEach (done) ->
         @uuid.v1.returns 'some-other-uuid'
         @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
-        @redis.lpush 'test:authenticate:some-other-uuid', JSON.stringify([null, authenticated: false])
+        @redis.lpush 'test:response:some-other-uuid', JSON.stringify([null, authenticated: false])
 
       it 'should no error', ->
         expect(@error).not.to.exist
@@ -57,7 +56,7 @@ describe 'Authenticator', ->
         expect(@isAuthenticated).to.be.false
 
       it 'should have added a job to the authenticate queue', (done) ->
-        @redis.lindex 'test:authenticate:queue', 0, (error, result) =>
+        @redis.lindex 'test:request:queue', 0, (error, result) =>
           return done error if error?
           job = JSON.parse(result)
 
@@ -71,7 +70,7 @@ describe 'Authenticator', ->
       beforeEach (done) ->
         @uuid.v1.returns 'some-uuid'
         @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
-        @redis.lpush 'test:authenticate:some-uuid', JSON.stringify([message: 'uh oh'])
+        @redis.lpush 'test:response:some-uuid', JSON.stringify([message: 'uh oh'])
 
       it 'should error', ->
         expect(=> throw @error).to.throw 'uh oh'
