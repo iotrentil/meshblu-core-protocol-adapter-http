@@ -1,6 +1,11 @@
 uuid = require 'uuid'
 redis = require 'redis'
 
+class AuthenticatorError extends Error
+  name: 'AuthenticatorError'
+  constructor: (@code, @status) ->
+    @message = "#{@code}: #{@status}"
+
 class Authenticator
   constructor: (options={}, dependencies={}) ->
     {@namespace,@timeoutSeconds} = options
@@ -16,23 +21,27 @@ class Authenticator
       host: process.env.REDIS_HOST
       port: process.env.REDIS_PORT
 
-    job =
+    metadata =
       uuid:  id
       token: token
-      responseUuid: @uuid.v1()
+      jobType: 'authenticate'
+      responseId: @uuid.v1()
 
-    client.lpush "#{@namespace}:request:queue", JSON.stringify job
-    @listenForResponse client, job.responseUuid, callback
+    requestStr = JSON.stringify [metadata]
 
-  listenForResponse: (client, responseUuid, callback) =>
-    client.brpop "#{@namespace}:response:#{responseUuid}", @timeoutSeconds, (error, result) =>
+    client.lpush "#{@namespace}:request:queue", requestStr, (error) =>
+      return callback error if error?
+      @listenForResponse client, metadata.responseId, callback
+
+  listenForResponse: (client, responseId, callback) =>
+    client.brpop "#{@namespace}:response:#{responseId}", @timeoutSeconds, (error, result) =>
       return callback error if error?
       return callback new Error('No response from authenticate worker') unless result?
 
       [queueName,meshbluResult] = result
-      [errorObj,response] = JSON.parse meshbluResult
+      [metadata,response] = JSON.parse meshbluResult
 
-      return callback new Error(errorObj.message) if errorObj?
+      return callback new AuthenticatorError(metadata.code, metadata.status) if metadata.code > 299
       callback null, response.authenticated
 
 module.exports = Authenticator
