@@ -15,7 +15,7 @@ class Authenticator
     @client = _.bindAll client
     @timeoutSeconds ?= 30
     @timeoutSeconds = 1 if @timeoutSeconds < 1
-    @redisJob = new JobManager
+    @jobManager = new JobManager
       namespace: @namespace
       client: @client
       timeoutSeconds: @timeoutSeconds
@@ -36,13 +36,13 @@ class Authenticator
       responseId: responseId
       metadata: metadata
 
-    @redisJob.createRequest options, (error) =>
+    @jobManager.createRequest options, (error) =>
       return callback error if error?
 
       @listenForResponse metadata.responseId, callback
 
   listenForResponse: (responseId, callback) =>
-    @redisJob.getResponse responseId, (error, response) =>
+    @jobManager.getResponse responseId, (error, response) =>
       return callback error if error?
       return callback new Error('No response from authenticate worker') unless response?
 

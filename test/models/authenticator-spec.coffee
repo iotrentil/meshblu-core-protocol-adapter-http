@@ -13,7 +13,7 @@ describe 'Authenticator', ->
   beforeEach ->
     @uuid = v1: sinon.stub()
     @sut = new Authenticator {namespace: 'test', timeoutSeconds: 1, client: @redis}, uuid: @uuid
-    @redisJob = new JobManager namespace: 'test', client: @redis
+    @jobManager = new JobManager namespace: 'test', client: @redis
 
   describe '->authenticate', ->
     describe 'when redis replies with true', ->
@@ -26,7 +26,7 @@ describe 'Authenticator', ->
         data =
           authenticated: true
 
-        @redisJob.createResponse responseId: 'some-uuid', metadata: metadata, data: data, done
+        @jobManager.createResponse responseId: 'some-uuid', metadata: metadata, data: data, done
 
       beforeEach (done) ->
         @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
@@ -68,7 +68,7 @@ describe 'Authenticator', ->
         data =
           authenticated: false
 
-        @redisJob.createResponse responseId: 'some-other-uuid', metadata: metadata, data: data, done
+        @jobManager.createResponse responseId: 'some-other-uuid', metadata: metadata, data: data, done
 
       beforeEach (done) ->
         @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
@@ -107,7 +107,7 @@ describe 'Authenticator', ->
           code: 500
           status: 'uh oh'
 
-        @redisJob.createResponse responseId: 'some-uuid', metadata: metadata, done
+        @jobManager.createResponse responseId: 'some-uuid', metadata: metadata, done
 
       beforeEach (done) ->
         @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
