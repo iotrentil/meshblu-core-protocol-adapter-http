@@ -1,6 +1,7 @@
 _ = require 'lodash'
 uuid = require 'uuid'
 async = require 'async'
+RedisJob = require './redis-job'
 
 class AuthenticatorError extends Error
   name: 'AuthenticatorError'
@@ -10,10 +11,11 @@ class AuthenticatorError extends Error
 class Authenticator
   constructor: (options={}, dependencies={}) ->
     {client,@namespace,@timeoutSeconds} = options
-    @client = _.bindAll client
     @namespace ?= 'meshblu'
+    @client = _.bindAll client
     @timeoutSeconds ?= 30
     @timeoutSeconds = 1 if @timeoutSeconds < 1
+    @redisJob = new RedisJob namespace: @namespace, client: @client
 
     {@uuid} = dependencies
     @uuid ?= uuid
@@ -27,12 +29,7 @@ class Authenticator
       jobType: 'authenticate'
       responseId: responseId
 
-    metadataStr = JSON.stringify metadata
-
-    async.series [
-      async.apply @client.hset, "#{@namespace}:#{responseId}", 'request:metadata', metadataStr
-      async.apply @client.lpush, "#{@namespace}:request:queue", "#{@namespace}:#{responseId}"
-    ], (error) =>
+    @redisJob.createRequest responseId: responseId, metadata: metadata, (error) =>
       return callback error if error?
       @listenForResponse metadata.responseId, callback
 

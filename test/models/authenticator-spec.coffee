@@ -1,4 +1,5 @@
 Authenticator = require '../../src/models/authenticator'
+RedisJob = require '../../src/models/redis-job'
 async = require 'async'
 redis = require 'fakeredis'
 _ = require 'lodash'
@@ -7,30 +8,25 @@ uuid = require 'uuid'
 describe 'Authenticator', ->
   beforeEach ->
     @redis = redis.createClient uuid.v1()
-
     @redis = _.bindAll @redis
 
   beforeEach ->
     @uuid = v1: sinon.stub()
     @sut = new Authenticator {namespace: 'test', timeoutSeconds: 1, client: @redis}, uuid: @uuid
+    @redisJob = new RedisJob namespace: 'test', client: @redis
 
   describe '->authenticate', ->
-    beforeEach (done) ->
-      async.parallel [
-        async.apply @redis.del, 'test:response:some-uuid'
-        async.apply @redis.del, 'test:response:some-other-uuid'
-        async.apply @redis.del, 'test:request:queue'
-      ], done
-
     describe 'when redis replies with true', ->
       beforeEach (done) ->
         @uuid.v1.returns 'some-uuid'
 
-        async.series [
-          async.apply @redis.hset, 'test:some-uuid', 'response:metadata', '{"status": 200}'
-          async.apply @redis.hset, 'test:some-uuid', 'response:data', '{"authenticated": true}'
-          async.apply @redis.lpush, 'test:response:some-uuid', 'test:some-uuid'
-        ], done
+        metadata =
+          status: 200
+
+        data =
+          authenticated: true
+
+        @redisJob.createResponse responseId: 'some-uuid', metadata: metadata, data: data, done
 
       beforeEach (done) ->
         @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
