@@ -1,7 +1,7 @@
 _ = require 'lodash'
 uuid = require 'uuid'
 async = require 'async'
-RedisJob = require './redis-job'
+JobManager = require 'meshblu-core-job-manager'
 
 class AuthenticatorError extends Error
   name: 'AuthenticatorError'
@@ -15,7 +15,7 @@ class Authenticator
     @client = _.bindAll client
     @timeoutSeconds ?= 30
     @timeoutSeconds = 1 if @timeoutSeconds < 1
-    @redisJob = new RedisJob
+    @redisJob = new JobManager
       namespace: @namespace
       client: @client
       timeoutSeconds: @timeoutSeconds

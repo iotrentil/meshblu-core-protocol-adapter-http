@@ -1,5 +1,5 @@
 Authenticator = require '../../src/models/authenticator'
-RedisJob = require '../../src/models/redis-job'
+JobManager = require 'meshblu-core-job-manager'
 async = require 'async'
 redis = require 'fakeredis'
 _ = require 'lodash'
@@ -13,7 +13,7 @@ describe 'Authenticator', ->
   beforeEach ->
     @uuid = v1: sinon.stub()
     @sut = new Authenticator {namespace: 'test', timeoutSeconds: 1, client: @redis}, uuid: @uuid
-    @redisJob = new RedisJob namespace: 'test', client: @redis
+    @redisJob = new JobManager namespace: 'test', client: @redis
 
   describe '->authenticate', ->
     describe 'when redis replies with true', ->

@@ -21,6 +21,7 @@
     "express": "^4.13.3",
     "express-meshblu-healthcheck": "^1.0.1",
     "lodash": "^3.10.1",
+    "meshblu-core-job-manager": "^1.0.0",
     "morgan": "^1.6.1",
     "redis": "^2.2.5",
     "uuid": "^2.0.1"
