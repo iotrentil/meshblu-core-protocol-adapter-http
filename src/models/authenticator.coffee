@@ -42,7 +42,7 @@ class Authenticator
       @listenForResponse metadata.responseId, callback
 
   listenForResponse: (responseId, callback) =>
-    @redisJob.getResponse "#{@namespace}:response:#{responseId}", (error, response) =>
+    @redisJob.getResponse responseId, (error, response) =>
       return callback error if error?
       return callback new Error('No response from authenticate worker') unless response?
 
