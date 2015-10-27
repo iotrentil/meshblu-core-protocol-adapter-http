@@ -4,6 +4,9 @@ debug = require('debug')('meshblu-http-server:redis-job')
 class RedisJob
   constructor: (options={}) ->
     {@namespace,@client,@timeoutSeconds} = options
+    {@requestQueue,@responseQueue} = options
+    @requestQueue ?= 'request'
+    @responseQueue ?= 'response'
 
   getResponse: (key, callback) =>
     @client.brpop key, @timeoutSeconds, (error, result) =>
@@ -33,7 +36,7 @@ class RedisJob
     async.series [
       async.apply @client.hset, "#{@namespace}:#{responseId}", 'request:metadata', metadataStr
       async.apply @client.hset, "#{@namespace}:#{responseId}", 'request:data', rawData
-      async.apply @client.lpush, "#{@namespace}:request:queue", "#{@namespace}:#{responseId}"
+      async.apply @client.lpush, "#{@namespace}:#{@requestQueue}:queue", "#{@namespace}:#{responseId}"
     ], callback
 
   createResponse: (options, callback)=>
@@ -47,7 +50,7 @@ class RedisJob
     async.series [
       async.apply @client.hset, "#{@namespace}:#{responseId}", 'response:metadata', metadataStr
       async.apply @client.hset, "#{@namespace}:#{responseId}", 'response:data', rawData
-      async.apply @client.lpush, "#{@namespace}:response:#{responseId}", "#{@namespace}:#{responseId}"
+      async.apply @client.lpush, "#{@namespace}:#{@responseQueue}:#{responseId}", "#{@namespace}:#{responseId}"
     ], callback
 
 module.exports = RedisJob
