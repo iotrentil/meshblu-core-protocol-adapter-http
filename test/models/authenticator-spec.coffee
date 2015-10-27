@@ -1,30 +1,39 @@
 Authenticator = require '../../src/models/authenticator'
 async = require 'async'
-redis = require 'redis'
+redis = require 'fakeredis'
+_ = require 'lodash'
+uuid = require 'uuid'
 
 describe 'Authenticator', ->
   beforeEach ->
-    @redis = redis.createClient
-      host: process.env.REDIS_HOST
-      port: process.env.REDIS_PORT
+    @redis = redis.createClient uuid.v1()
+
+    @redis = _.bindAll @redis
 
   beforeEach ->
     @uuid = v1: sinon.stub()
-    @sut = new Authenticator {namespace: 'test', timeoutSeconds: 1}, uuid: @uuid
+    @sut = new Authenticator {namespace: 'test', timeoutSeconds: 1, client: @redis}, uuid: @uuid
 
   describe '->authenticate', ->
     beforeEach (done) ->
       async.parallel [
-        (callback) => @redis.del 'test:response:some-uuid', callback
-        (callback) => @redis.del 'test:response:some-other-uuid', callback
-        (callback) => @redis.del 'test:request:queue', callback
+        async.apply @redis.del, 'test:response:some-uuid'
+        async.apply @redis.del, 'test:response:some-other-uuid'
+        async.apply @redis.del, 'test:request:queue'
       ], done
 
     describe 'when redis replies with true', ->
       beforeEach (done) ->
         @uuid.v1.returns 'some-uuid'
+
+        async.series [
+          async.apply @redis.hset, 'test:some-uuid', 'response:metadata', '{"status": 200}'
+          async.apply @redis.hset, 'test:some-uuid', 'response:data', '{"authenticated": true}'
+          async.apply @redis.lpush, 'test:response:some-uuid', 'test:some-uuid'
+        ], done
+
+      beforeEach (done) ->
         @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
-        @redis.lpush 'test:response:some-uuid', JSON.stringify([{status: 200}, authenticated: true])
 
       it 'should no error', ->
         expect(@error).not.to.exist
@@ -32,24 +41,39 @@ describe 'Authenticator', ->
       it 'should yield true', ->
         expect(@isAuthenticated).to.be.true
 
-      it 'should have added a job to the request queue', (done) ->
+      it 'should have added a request reference to the request queue', (done) ->
         @redis.lindex 'test:request:queue', 0, (error, result) =>
           return done error if error?
-          job = JSON.parse(result)
 
-          expect(job).to.deep.equal [
-            uuid: 'uuid'
-            token: 'token'
-            jobType: 'authenticate'
-            responseId: 'some-uuid'
-          ]
+          expect(result).to.deep.equal 'test:some-uuid'
+          done()
+
+      it 'should have added a request metadata to the request hash set', (done) ->
+        @redis.hget 'test:some-uuid', 'request:metadata', (error, metadataStr) =>
+          return done error if error?
+
+          metadata = JSON.parse metadataStr
+
+          expect(metadata).to.deep.equal
+            uuid: "uuid"
+            token: "token"
+            responseId: "some-uuid"
+            jobType: "authenticate"
+
           done()
 
     describe 'when the auth worker replies with false', ->
       beforeEach (done) ->
         @uuid.v1.returns 'some-other-uuid'
+
+        async.series [
+          async.apply @redis.hset, 'test:some-other-uuid', 'response:metadata', '{"status": 200}'
+          async.apply @redis.hset, 'test:some-other-uuid', 'response:data', '{"authenticated": false}'
+          async.apply @redis.lpush, 'test:response:some-other-uuid', 'test:some-other-uuid'
+        ], done
+
+      beforeEach (done) ->
         @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
-        @redis.lpush 'test:response:some-other-uuid', JSON.stringify([{code: 200}, authenticated: false])
 
       it 'should no error', ->
         expect(@error).not.to.exist
@@ -58,23 +82,36 @@ describe 'Authenticator', ->
         expect(@isAuthenticated).to.be.false
 
       it 'should have added a job to the request queue', (done) ->
-        @redis.lindex 'test:request:queue', 0, (error, result) =>
+        @redis.lindex 'test:request:queue', 0, (error, requestKey) =>
           return done error if error?
-          job = JSON.parse(result)
+          expect(requestKey).to.deep.equal 'test:some-other-uuid'
+          done()
 
-          expect(job).to.deep.equal [
-            uuid: 'uuid'
-            token: 'token'
-            responseId: 'some-other-uuid'
-            jobType: 'authenticate'
-          ]
+      it 'should have added a request metadata to the request hash set', (done) ->
+        @redis.hget 'test:some-other-uuid', 'request:metadata', (error, metadataStr) =>
+          return done error if error?
+
+          metadata = JSON.parse metadataStr
+
+          expect(metadata).to.deep.equal
+            uuid: "uuid"
+            token: "token"
+            responseId: "some-other-uuid"
+            jobType: "authenticate"
+
           done()
 
     describe 'when the auth worker replies with an error', ->
       beforeEach (done) ->
         @uuid.v1.returns 'some-uuid'
+
+        async.series [
+          async.apply @redis.hset, 'test:some-uuid', 'response:metadata', '{"code": 500, "status": "uh oh"}'
+          async.apply @redis.lpush, 'test:response:some-uuid', 'test:some-uuid'
+        ], done
+
+      beforeEach (done) ->
         @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
-        @redis.lpush 'test:response:some-uuid', JSON.stringify([code: 500, status: 'uh oh'])
 
       it 'should error', ->
         expect(@error.code).to.equal 500

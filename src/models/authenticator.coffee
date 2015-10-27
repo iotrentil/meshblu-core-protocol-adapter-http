@@ -1,5 +1,6 @@
+_ = require 'lodash'
 uuid = require 'uuid'
-redis = require 'redis'
+async = require 'async'
 
 class AuthenticatorError extends Error
   name: 'AuthenticatorError'
@@ -8,7 +9,8 @@ class AuthenticatorError extends Error
 
 class Authenticator
   constructor: (options={}, dependencies={}) ->
-    {@namespace,@timeoutSeconds} = options
+    {client,@namespace,@timeoutSeconds} = options
+    @client = _.bindAll client
     @namespace ?= 'meshblu'
     @timeoutSeconds ?= 30
     @timeoutSeconds = 1 if @timeoutSeconds < 1
@@ -17,31 +19,38 @@ class Authenticator
     @uuid ?= uuid
 
   authenticate: (id, token, callback) ->
-    client = redis.createClient
-      host: process.env.REDIS_HOST
-      port: process.env.REDIS_PORT
+    responseId = @uuid.v1()
 
     metadata =
       uuid:  id
       token: token
       jobType: 'authenticate'
-      responseId: @uuid.v1()
+      responseId: responseId
 
-    requestStr = JSON.stringify [metadata]
+    metadataStr = JSON.stringify metadata
 
-    client.lpush "#{@namespace}:request:queue", requestStr, (error) =>
+    async.series [
+      async.apply @client.hset, "#{@namespace}:#{responseId}", 'request:metadata', metadataStr
+      async.apply @client.lpush, "#{@namespace}:request:queue", "#{@namespace}:#{responseId}"
+    ], (error) =>
       return callback error if error?
-      @listenForResponse client, metadata.responseId, callback
+      @listenForResponse metadata.responseId, callback
 
-  listenForResponse: (client, responseId, callback) =>
-    client.brpop "#{@namespace}:response:#{responseId}", @timeoutSeconds, (error, result) =>
+  listenForResponse: (responseId, callback) =>
+    @client.brpop "#{@namespace}:response:#{responseId}", @timeoutSeconds, (error, result) =>
       return callback error if error?
       return callback new Error('No response from authenticate worker') unless result?
 
-      [queueName,meshbluResult] = result
-      [metadata,response] = JSON.parse meshbluResult
+      [channel,key] = result
 
-      return callback new AuthenticatorError(metadata.code, metadata.status) if metadata.code > 299
-      callback null, response.authenticated
+      async.parallel
+        metadata: async.apply @client.hget, key, 'response:metadata'
+        data: async.apply @client.hget, key, 'response:data'
+      , (error, result) =>
+        metadata = JSON.parse result.metadata
+        data     = JSON.parse result.data
+
+        return callback new AuthenticatorError(metadata.code, metadata.status) if metadata.code > 299
+        callback null, data.authenticated
 
 module.exports = Authenticator
