@@ -3,7 +3,24 @@ debug = require('debug')('meshblu-http-server:redis-job')
 
 class RedisJob
   constructor: (options={}) ->
-    {@namespace,@client} = options
+    {@namespace,@client,@timeoutSeconds} = options
+
+  getResponse: (key, callback) =>
+    @client.brpop key, @timeoutSeconds, (error, result) =>
+      return callback error if error?
+      return callback null, null unless result?
+
+      [channel,key] = result
+
+      async.parallel
+        metadata: async.apply @client.hget, key, 'response:metadata'
+        data: async.apply @client.hget, key, 'response:data'
+      , (error, result) =>
+        return callback error if error?
+
+        callback null,
+          metadata: JSON.parse result.metadata
+          rawData: result.data
 
   createRequest: (options, callback)=>
     {metadata,data,responseId,rawData} = options

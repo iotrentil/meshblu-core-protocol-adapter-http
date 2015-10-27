@@ -8,6 +8,7 @@ class AuthenticateController
 
     @authenticator ?= new Authenticator
       client: redis.createClient process.env.REDIS_URI
+
     @authParser = new MeshbluAuthParser
 
   authenticate: (request, response) =>
@@ -19,6 +20,5 @@ class AuthenticateController
       return response.status(502).end() if error?
       return response.status(403).end() unless isAuthenticated
       response.status(204).end()
-
 
 module.exports = AuthenticateController

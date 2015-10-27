@@ -15,7 +15,10 @@ class Authenticator
     @client = _.bindAll client
     @timeoutSeconds ?= 30
     @timeoutSeconds = 1 if @timeoutSeconds < 1
-    @redisJob = new RedisJob namespace: @namespace, client: @client
+    @redisJob = new RedisJob
+      namespace: @namespace
+      client: @client
+      timeoutSeconds: @timeoutSeconds
 
     {@uuid} = dependencies
     @uuid ?= uuid
@@ -29,25 +32,25 @@ class Authenticator
       jobType: 'authenticate'
       responseId: responseId
 
-    @redisJob.createRequest responseId: responseId, metadata: metadata, (error) =>
+    options =
+      responseId: responseId
+      metadata: metadata
+
+    @redisJob.createRequest options, (error) =>
       return callback error if error?
+
       @listenForResponse metadata.responseId, callback
 
   listenForResponse: (responseId, callback) =>
-    @client.brpop "#{@namespace}:response:#{responseId}", @timeoutSeconds, (error, result) =>
+    @redisJob.getResponse "#{@namespace}:response:#{responseId}", (error, response) =>
       return callback error if error?
-      return callback new Error('No response from authenticate worker') unless result?
+      return callback new Error('No response from authenticate worker') unless response?
 
-      [channel,key] = result
+      {metadata,rawData} = response
+      data = JSON.parse rawData
 
-      async.parallel
-        metadata: async.apply @client.hget, key, 'response:metadata'
-        data: async.apply @client.hget, key, 'response:data'
-      , (error, result) =>
-        metadata = JSON.parse result.metadata
-        data     = JSON.parse result.data
+      return callback new AuthenticatorError(metadata.code, metadata.status) if metadata.code > 299
 
-        return callback new AuthenticatorError(metadata.code, metadata.status) if metadata.code > 299
-        callback null, data.authenticated
+      callback null, data.authenticated
 
 module.exports = Authenticator

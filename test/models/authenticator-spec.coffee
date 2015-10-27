@@ -21,7 +21,7 @@ describe 'Authenticator', ->
         @uuid.v1.returns 'some-uuid'
 
         metadata =
-          status: 200
+          code: 200
 
         data =
           authenticated: true
@@ -62,11 +62,13 @@ describe 'Authenticator', ->
       beforeEach (done) ->
         @uuid.v1.returns 'some-other-uuid'
 
-        async.series [
-          async.apply @redis.hset, 'test:some-other-uuid', 'response:metadata', '{"status": 200}'
-          async.apply @redis.hset, 'test:some-other-uuid', 'response:data', '{"authenticated": false}'
-          async.apply @redis.lpush, 'test:response:some-other-uuid', 'test:some-other-uuid'
-        ], done
+        metadata =
+          code: 200
+
+        data =
+          authenticated: false
+
+        @redisJob.createResponse responseId: 'some-other-uuid', metadata: metadata, data: data, done
 
       beforeEach (done) ->
         @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
@@ -101,10 +103,11 @@ describe 'Authenticator', ->
       beforeEach (done) ->
         @uuid.v1.returns 'some-uuid'
 
-        async.series [
-          async.apply @redis.hset, 'test:some-uuid', 'response:metadata', '{"code": 500, "status": "uh oh"}'
-          async.apply @redis.lpush, 'test:response:some-uuid', 'test:some-uuid'
-        ], done
+        metadata =
+          code: 500
+          status: 'uh oh'
+
+        @redisJob.createResponse responseId: 'some-uuid', metadata: metadata, done
 
       beforeEach (done) ->
         @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
