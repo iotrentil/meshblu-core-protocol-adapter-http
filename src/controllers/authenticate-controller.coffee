@@ -1,11 +1,13 @@
+redis             = require 'redis'
 Authenticator     = require '../models/authenticator'
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
 
 class AuthenticateController
   constructor: (options={}, dependencies={}) ->
     {@authenticator} = dependencies
-    
+
     @authenticator ?= new Authenticator
+      client: redis.createClient process.env.REDIS_URI
     @authParser = new MeshbluAuthParser
 
   authenticate: (request, response) =>
