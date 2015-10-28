@@ -27,8 +27,9 @@ class Authenticator
     responseId = @uuid.v1()
 
     metadata =
-      uuid:  id
-      token: token
+      auth:
+        uuid:  id
+        token: token
       jobType: 'authenticate'
       responseId: responseId
 

@@ -51,8 +51,9 @@ describe 'Authenticator', ->
           metadata = JSON.parse metadataStr
 
           expect(metadata).to.deep.equal
-            uuid: "uuid"
-            token: "token"
+            auth:
+              uuid: "uuid"
+              token: "token"
             responseId: "some-uuid"
             jobType: "authenticate"
 
@@ -92,8 +93,9 @@ describe 'Authenticator', ->
           metadata = JSON.parse metadataStr
 
           expect(metadata).to.deep.equal
-            uuid: "uuid"
-            token: "token"
+            auth:
+              uuid: "uuid"
+              token: "token"
             responseId: "some-other-uuid"
             jobType: "authenticate"
 
