@@ -1,6 +1,7 @@
 redis             = require 'redis'
 Authenticator     = require '../models/authenticator'
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
+debug = require('debug')('meshblu-http-server:authenticate-controller')
 
 class AuthenticateController
   constructor: (options={}, dependencies={}) ->
@@ -17,6 +18,7 @@ class AuthenticateController
     return response.status(401).end() unless uuid?
 
     @authenticator.authenticate uuid, token, (error, isAuthenticated) =>
+      debug '@authenticator.authenticate', error
       return response.status(502).end() if error?
       return response.status(403).end() unless isAuthenticated
       response.status(204).end()
