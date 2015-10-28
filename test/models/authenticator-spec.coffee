@@ -16,26 +16,28 @@ describe 'Authenticator', ->
     @jobManager = new JobManager namespace: 'test', client: @redis
 
   describe '->authenticate', ->
-    describe 'when redis replies with true', ->
+    describe 'when redis replies with a 204', ->
       beforeEach (done) ->
         @uuid.v1.returns 'some-uuid'
 
         metadata =
-          code: 200
+          responseId: 'some-uuid'
+          code: 204
+          status: 'No Content'
 
-        data =
-          authenticated: true
-
-        @jobManager.createResponse responseId: 'some-uuid', metadata: metadata, data: data, done
+        @jobManager.createResponse responseId: 'some-uuid', metadata: metadata, done
 
       beforeEach (done) ->
-        @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
+        @sut.authenticate 'uuid', 'token', (@error, @response) => done()
 
       it 'should no error', ->
         expect(@error).not.to.exist
 
-      it 'should yield true', ->
-        expect(@isAuthenticated).to.be.true
+      it 'should yield the response', ->
+        expect(@response).to.deep.equal
+          metadata:
+            code: 204
+            status: 'No Content'
 
       it 'should have added a request reference to the request queue', (done) ->
         @redis.lindex 'test:request:queue', 0, (error, result) =>
@@ -59,26 +61,28 @@ describe 'Authenticator', ->
 
           done()
 
-    describe 'when the auth worker replies with false', ->
+    describe 'when the auth worker replies with a 403', ->
       beforeEach (done) ->
         @uuid.v1.returns 'some-other-uuid'
 
         metadata =
-          code: 200
+          responseId: 'some-other-uuid'
+          code: 403
+          status: 'Forbidden'
 
-        data =
-          authenticated: false
-
-        @jobManager.createResponse responseId: 'some-other-uuid', metadata: metadata, data: data, done
+        @jobManager.createResponse responseId: 'some-other-uuid', metadata: metadata, done
 
       beforeEach (done) ->
-        @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
+        @sut.authenticate 'uuid', 'token', (@error, @response) => done()
 
       it 'should no error', ->
         expect(@error).not.to.exist
 
-      it 'should yield false', ->
-        expect(@isAuthenticated).to.be.false
+      it 'should yield the response', ->
+        expect(@response).to.deep.equal
+          metadata:
+            code: 403
+            status: 'Forbidden'
 
       it 'should have added a job to the request queue', (done) ->
         @redis.lindex 'test:request:queue', 0, (error, requestKey) =>
@@ -100,24 +104,6 @@ describe 'Authenticator', ->
             jobType: "authenticate"
 
           done()
-
-    describe 'when the auth worker replies with an error', ->
-      beforeEach (done) ->
-        @uuid.v1.returns 'some-uuid'
-
-        metadata =
-          code: 500
-          status: 'uh oh'
-
-        @jobManager.createResponse responseId: 'some-uuid', metadata: metadata, done
-
-      beforeEach (done) ->
-        @sut.authenticate 'uuid', 'token', (@error, @isAuthenticated) => done()
-
-      it 'should error', ->
-        expect(@error.code).to.equal 500
-        expect(@error.status).to.equal 'uh oh'
-        expect(=> throw @error).to.throw '500: uh oh'
 
     describe 'when the auth worker never replies', ->
       beforeEach (done) ->

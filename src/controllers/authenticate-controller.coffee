@@ -15,12 +15,8 @@ class AuthenticateController
   authenticate: (request, response) =>
     {uuid,token} = @authParser.parse request
 
-    return response.status(401).end() unless uuid?
-
-    @authenticator.authenticate uuid, token, (error, isAuthenticated) =>
-      debug '@authenticator.authenticate', error
+    @authenticator.authenticate uuid, token, (error, authResponse) =>
       return response.status(502).end() if error?
-      return response.status(403).end() unless isAuthenticated
-      response.status(204).end()
+      response.status(authResponse.metadata.code).end()
 
 module.exports = AuthenticateController

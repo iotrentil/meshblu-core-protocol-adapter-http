@@ -47,11 +47,8 @@ class Authenticator
       return callback error if error?
       return callback new Error('No response from authenticate worker') unless response?
 
-      {metadata,rawData} = response
-      data = JSON.parse rawData
+      {metadata} = response
 
-      return callback new AuthenticatorError(metadata.code, metadata.status) if metadata.code > 299
-
-      callback null, data.authenticated
+      callback null, metadata: _.pick(metadata, 'code', 'status')
 
 module.exports = Authenticator
