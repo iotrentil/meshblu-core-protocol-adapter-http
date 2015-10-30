@@ -1,19 +1,20 @@
 Authenticator = require '../../src/models/authenticator'
 JobManager = require 'meshblu-core-job-manager'
-async = require 'async'
-redis = require 'fakeredis'
-_ = require 'lodash'
-uuid = require 'uuid'
+async      = require 'async'
+redis      = require 'fakeredis'
+RedisNS    = require '@octoblu/redis-ns'
+_          = require 'lodash'
+uuid       = require 'uuid'
 
 describe 'Authenticator', ->
   beforeEach ->
-    @redis = redis.createClient uuid.v1()
+    @redis = new RedisNS 'some-ns', redis.createClient()
     @redis = _.bindAll @redis
 
   beforeEach ->
     @uuid = v1: sinon.stub()
-    @sut = new Authenticator {namespace: 'test', timeoutSeconds: 1, client: @redis}, uuid: @uuid
-    @jobManager = new JobManager namespace: 'test', client: @redis
+    @sut = new Authenticator {timeoutSeconds: 1, client: @redis}, uuid: @uuid
+    @jobManager = new JobManager client: @redis
 
   describe '->authenticate', ->
     describe 'when redis replies with a 204', ->
@@ -25,7 +26,7 @@ describe 'Authenticator', ->
           code: 204
           status: 'No Content'
 
-        @jobManager.createResponse responseId: 'some-uuid', metadata: metadata, done
+        @jobManager.createResponse 'response', responseId: 'some-uuid', metadata: metadata, done
 
       beforeEach (done) ->
         @sut.authenticate 'uuid', 'token', (@error, @response) => done()
@@ -40,14 +41,14 @@ describe 'Authenticator', ->
             status: 'No Content'
 
       it 'should have added a request reference to the request queue', (done) ->
-        @redis.lindex 'test:request:queue', 0, (error, result) =>
+        @redis.lindex 'request:queue', 0, (error, result) =>
           return done error if error?
 
-          expect(result).to.deep.equal 'test:some-uuid'
+          expect(result).to.deep.equal 'some-uuid'
           done()
 
       it 'should have added a request metadata to the request hash set', (done) ->
-        @redis.hget 'test:some-uuid', 'request:metadata', (error, metadataStr) =>
+        @redis.hget 'some-uuid', 'request:metadata', (error, metadataStr) =>
           return done error if error?
 
           metadata = JSON.parse metadataStr
@@ -57,7 +58,7 @@ describe 'Authenticator', ->
               uuid: "uuid"
               token: "token"
             responseId: "some-uuid"
-            jobType: "authenticate"
+            jobType: "Authenticate"
 
           done()
 
@@ -70,7 +71,7 @@ describe 'Authenticator', ->
           code: 403
           status: 'Forbidden'
 
-        @jobManager.createResponse responseId: 'some-other-uuid', metadata: metadata, done
+        @jobManager.createResponse 'response', responseId: 'some-other-uuid', metadata: metadata, done
 
       beforeEach (done) ->
         @sut.authenticate 'uuid', 'token', (@error, @response) => done()
@@ -85,13 +86,13 @@ describe 'Authenticator', ->
             status: 'Forbidden'
 
       it 'should have added a job to the request queue', (done) ->
-        @redis.lindex 'test:request:queue', 0, (error, requestKey) =>
+        @redis.lindex 'request:queue', 0, (error, requestKey) =>
           return done error if error?
-          expect(requestKey).to.deep.equal 'test:some-other-uuid'
+          expect(requestKey).to.deep.equal 'some-other-uuid'
           done()
 
       it 'should have added a request metadata to the request hash set', (done) ->
-        @redis.hget 'test:some-other-uuid', 'request:metadata', (error, metadataStr) =>
+        @redis.hget 'some-other-uuid', 'request:metadata', (error, metadataStr) =>
           return done error if error?
 
           metadata = JSON.parse metadataStr
@@ -101,7 +102,7 @@ describe 'Authenticator', ->
               uuid: "uuid"
               token: "token"
             responseId: "some-other-uuid"
-            jobType: "authenticate"
+            jobType: "Authenticate"
 
           done()
 
