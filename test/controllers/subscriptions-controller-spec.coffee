@@ -10,7 +10,9 @@ describe 'SubscriptionsController', ->
 
     describe 'when subscriptions.getSubscriptions yields 403 for a request', ->
       beforeEach ->
-        response = metadata: {code: 403, status: 'Forbidden'}
+        response =
+          code: 403
+          status: 'Forbidden'
         request =
           auth: {uuid: 'wrong', token: 'person'}
           toUuid: 'hang-glider'
@@ -44,7 +46,8 @@ describe 'SubscriptionsController', ->
           fromUuid: 'dodgy-pub'
 
         response =
-          metadata: {code: 200, status: 'OK'}
+          code: 200
+          status: 'OK'
           data: []
 
         @subscriber.getSubscriptions.withArgs(request).yields null, response

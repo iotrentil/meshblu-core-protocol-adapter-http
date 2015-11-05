@@ -18,7 +18,7 @@ class SubscriptionsController
 
     @subscriber.getSubscriptions internalRequest, (error, subscribeResponse) =>
       return response.status(502).end() if error?
-      {code} = subscribeResponse.metadata
-      response.status(code).json subscribeResponse.data
+      {code,data} = subscribeResponse
+      response.status(code).json data
 
 module.exports = SubscriptionsController
