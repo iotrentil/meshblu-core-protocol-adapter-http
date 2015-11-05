@@ -37,6 +37,7 @@ describe 'Subscriber', ->
             auth: {uuid: 'sucked-out-of', token: 'skyscraper-window'}
             fromUuid: 'winter'
             toUuid: 'rust'
+            jobType: 'SubscriptionList'
             responseId: 'overly-affectionate-octopus'
 
       describe 'when the response is a 200 with an owl of data', ->
@@ -110,4 +111,5 @@ describe 'Subscriber', ->
             auth: {uuid: 'what-a-week', token: 'shopping-frenzy'}
             fromUuid: 'what-a-week'
             toUuid: 'rust'
+            jobType: 'SubscriptionList'
             responseId: 'shark'

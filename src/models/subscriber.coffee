@@ -18,6 +18,7 @@ class Subscriber
         auth: options.auth
         fromUuid: options.fromUuid ? options.auth.uuid
         toUuid: options.toUuid
+        jobType: 'SubscriptionList'
         responseId: responseId
 
     @jobManager.createRequest 'request', request, (error) =>
