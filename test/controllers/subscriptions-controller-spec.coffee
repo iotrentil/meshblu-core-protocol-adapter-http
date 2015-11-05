@@ -5,17 +5,16 @@ SubscriptionsController = require '../../src/controllers/subscriptions-controlle
 describe 'SubscriptionsController', ->
   describe 'authenticate', ->
     beforeEach ->
-      @subscriber = getSubscriptions: sinon.stub()
+      @subscriber = getSubscriptions: sinon.mock()
       @sut = new SubscriptionsController {}, subscriber:@subscriber
 
     describe 'when subscriptions.getSubscriptions yields 403 for a request', ->
       beforeEach ->
         response = metadata: {code: 403, status: 'Forbidden'}
         request =
-          metadata:
-            auth: {uuid: 'wrong', token: 'person'}
-            toUuid: 'hang-glider'
-            fromUuid: 'wrong'
+          auth: {uuid: 'wrong', token: 'person'}
+          toUuid: 'hang-glider'
+          fromUuid: undefined
 
         @subscriber.getSubscriptions.withArgs(request).yields null, response
 
@@ -40,10 +39,9 @@ describe 'SubscriptionsController', ->
     describe 'when subscriber.getSubscriptions yields subscriptions', ->
       beforeEach ->
         request =
-          metadata:
-            auth: {uuid: 'right', token: 'person'}
-            toUuid: 'serial-killer'
-            fromUuid: 'dodgy-pub'
+          auth: {uuid: 'right', token: 'person'}
+          toUuid: 'serial-killer'
+          fromUuid: 'dodgy-pub'
 
         response =
           metadata: {code: 200, status: 'OK'}
@@ -77,10 +75,9 @@ describe 'SubscriptionsController', ->
     describe 'when subscriber.getSubscriptions yields an error', ->
       beforeEach ->
         request =
-          metadata:
-            auth: {uuid: 'fatal', token: 'error'}
-            toUuid: 'goose'
-            fromUuid: 'fatal'
+          auth: {uuid: 'fatal', token: 'error'}
+          toUuid: 'goose'
+          fromUuid: undefined
         @subscriber.getSubscriptions.withArgs(request).yields new Error("oh no!")
 
       describe 'when called with a request containing auth information', ->

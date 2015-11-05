@@ -9,13 +9,10 @@ class SubscriptionsController
     @authParser = new MeshbluAuthParser
 
   getAll: (request, response)=>
-    auth = @authParser.parse request
-
     internalRequest =
-      metadata:
-        auth: auth
-        fromUuid: request.get('x-as') ? auth.uuid
-        toUuid: request.params.uuid
+      auth:     @authParser.parse request
+      fromUuid: request.get('x-as')
+      toUuid:   request.params.uuid
 
     @subscriber.getSubscriptions internalRequest, (error, subscribeResponse) =>
       return response.status(502).end() if error?
