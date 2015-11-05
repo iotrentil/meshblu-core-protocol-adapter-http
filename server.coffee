@@ -3,11 +3,13 @@ errorHandler       = require 'errorhandler'
 express            = require 'express'
 meshbluHealthcheck = require 'express-meshblu-healthcheck'
 morgan             = require 'morgan'
-AuthenticateController = require './src/controllers/authenticate-controller'
-MessagesController     = require './src/controllers/messages-controller'
+AuthenticateController  = require './src/controllers/authenticate-controller'
+MessagesController      = require './src/controllers/messages-controller'
+SubscriptionsController = require './src/controllers/subscriptions-controller'
 
-authenticateController = new AuthenticateController
-messagesController     = new MessagesController
+authenticateController  = new AuthenticateController
+messagesController      = new MessagesController
+subscriptionsController = new SubscriptionsController
 
 PORT  = process.env.PORT ? 80
 
@@ -19,6 +21,7 @@ app.use meshbluHealthcheck()
 
 app.post '/authenticate', authenticateController.authenticate
 app.post '/messages', messagesController.create
+app.get '/devices/:uuid/subscriptions', subscriptionsController.getAll
 
 server = app.listen PORT, ->
   host = server.address().address
