@@ -13,7 +13,8 @@ class Subscriber
   getSubscriptions: (options, callback) =>
     responseId = @uuid.v4()
 
-    request =
+    options =
+      responseId: responseId
       metadata:
         auth: options.auth
         fromUuid: options.fromUuid ? options.auth.uuid
@@ -21,7 +22,7 @@ class Subscriber
         jobType: 'SubscriptionList'
         responseId: responseId
 
-    @jobManager.createRequest 'request', request, (error) =>
+    @jobManager.createRequest 'request', options, (error) =>
       return callback error if error?
       @_waitForResponse responseId, callback
 
