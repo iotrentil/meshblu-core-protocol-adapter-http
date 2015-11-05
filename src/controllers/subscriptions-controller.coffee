@@ -1,5 +1,7 @@
 Subscriber     = require '../models/subscriber'
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
+redis = require 'redis'
+RedisNS = require '@octoblu/redis-ns'
 
 class SubscriptionsController
   constructor: (options, dependencies={}) ->
