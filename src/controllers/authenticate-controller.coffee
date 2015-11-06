@@ -2,7 +2,7 @@ redis             = require 'redis'
 RedisNS           = require '@octoblu/redis-ns'
 Authenticator     = require '../models/authenticator'
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
-debug = require('debug')('meshblu-http-server:authenticate-controller')
+debug = require('debug')('meshblu-server-http:authenticate-controller')
 
 class AuthenticateController
   constructor: ({@timeoutSeconds}={})->

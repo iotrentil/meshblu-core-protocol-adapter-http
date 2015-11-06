@@ -1,9 +1,9 @@
 {
-  "name": "meshblu-http-server",
-  "version": "1.2.6",
+  "name": "meshblu-server-http",
+  "version": "1.2.7",
   "description": "",
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=5.0.0"
   },
   "engineStrict": true,
   "main": "index.js",
