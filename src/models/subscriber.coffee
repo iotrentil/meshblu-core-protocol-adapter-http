@@ -14,7 +14,6 @@ class Subscriber
     responseId = @uuid.v4()
 
     options =
-      responseId: responseId
       metadata:
         auth: options.auth
         fromUuid: options.fromUuid ? options.auth.uuid
@@ -34,6 +33,5 @@ class Subscriber
         code: response.metadata.code
         status: response.metadata.status
         data: JSON.parse response.rawData
-
 
 module.exports = Subscriber

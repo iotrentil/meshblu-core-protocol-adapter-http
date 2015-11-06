@@ -14,7 +14,7 @@ describe 'Authenticator', ->
   beforeEach ->
     @uuid = v1: sinon.stub()
     @sut = new Authenticator {timeoutSeconds: 1, client: @redis}, uuid: @uuid
-    @jobManager = new JobManager client: @redis
+    @jobManager = new JobManager client: @redis, timeoutSeconds: 1
 
   describe '->authenticate', ->
     describe 'when redis replies with a 204', ->
@@ -26,7 +26,7 @@ describe 'Authenticator', ->
           code: 204
           status: 'No Content'
 
-        @jobManager.createResponse 'response', responseId: 'some-uuid', metadata: metadata, done
+        @jobManager.createResponse 'response', metadata: metadata, done
 
       beforeEach (done) ->
         @sut.authenticate 'uuid', 'token', (@error, @response) => done()
@@ -71,7 +71,7 @@ describe 'Authenticator', ->
           code: 403
           status: 'Forbidden'
 
-        @jobManager.createResponse 'response', responseId: 'some-other-uuid', metadata: metadata, done
+        @jobManager.createResponse 'response', metadata: metadata, done
 
       beforeEach (done) ->
         @sut.authenticate 'uuid', 'token', (@error, @response) => done()

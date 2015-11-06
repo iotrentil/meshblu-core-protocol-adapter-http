@@ -37,8 +37,8 @@ describe 'SubscriptionsController', ->
             return done error if error?
             return done new Error('no request') unless @internalRequest?
             options =
-              responseId: @internalRequest.metadata.responseId
               metadata:
+                responseId: @internalRequest.metadata.responseId
                 code: 200
               data: [{},{}]
 
