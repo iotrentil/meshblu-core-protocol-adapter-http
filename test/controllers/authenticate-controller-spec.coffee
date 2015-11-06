@@ -1,59 +1,69 @@
 {EventEmitter} = require 'events'
 httpMocks      = require 'node-mocks-http'
+uuid           = require 'uuid'
+redis          = require 'fakeredis'
+RedisNS        = require '@octoblu/redis-ns'
+JobManager     = require 'meshblu-core-job-manager'
+
 AuthenticateController = require '../../src/controllers/authenticate-controller'
 
 describe 'AuthenticateController', ->
   describe 'authenticate', ->
     beforeEach ->
-      @authenticator = authenticate: sinon.stub()
-      @sut = new AuthenticateController {}, authenticator: @authenticator
+      @redisId = uuid.v4()
 
-    describe 'when authenticator.authenticate yields 403 for a specific device', ->
+      @jobManager = new JobManager
+        client: new RedisNS('ns', redis.createClient(@redisId))
+        timeoutSeconds: 1
+
+      @sut = new AuthenticateController timeoutSeconds: 1
+
+    describe 'when called with a request containing auth information', ->
       beforeEach ->
-        authResponse = metadata: {code: 403, status: 'Forbidden'}
-        @authenticator.authenticate.withArgs('wrong', 'person').yields null, authResponse
+        basicAuth = new Buffer("wrong:person").toString 'base64'
 
-      describe 'when called with a request containing auth information', ->
+        @request  = httpMocks.createRequest headers: authorization: "Basic #{basicAuth}"
+        @request.connection = new RedisNS('ns', redis.createClient(@redisId))
+        @response = httpMocks.createResponse eventEmitter: EventEmitter
+
+        @sut.authenticate @request, @response
+
+      describe 'when the request gets popped off the queue', ->
         beforeEach (done) ->
-          basicAuth = new Buffer("wrong:person").toString 'base64'
-          @request  = httpMocks.createRequest headers: authorization: "Basic #{basicAuth}"
-          @response = httpMocks.createResponse eventEmitter: EventEmitter
-          @response.on 'end', done
+          @jobManager.getRequest ['request'], (error, @jobRequest) =>
+            done error
 
-          @sut.authenticate @request, @response
+        describe 'when meshblu yields 403 for a specific device', ->
+          beforeEach (done) ->
+            @response.on 'end', done
 
-        it 'should respond with a 403', ->
-          expect(@response.statusCode).to.equal 403
+            options =
+              metadata:
+                responseId: @jobRequest.metadata.responseId
+                code: 403
 
-    describe 'when authenticator.authenticate yields code 204 for a request', ->
-      beforeEach ->
-        authResponse = metadata: {code: 204, status: 'No Content'}
-        @authenticator.authenticate.withArgs('uuid', 'token').yields null, authResponse
+            @jobManager.createResponse 'response', options, =>
 
-      describe 'when called with a request containing incorrect auth information', ->
-        beforeEach (done) ->
-          basicAuth = new Buffer("uuid:token").toString 'base64'
-          @request  = httpMocks.createRequest headers: authorization: "Basic #{basicAuth}"
-          @response = httpMocks.createResponse eventEmitter: EventEmitter
-          @response.on 'end', done
+          it 'should respond with a 403', ->
+            expect(@response.statusCode).to.equal 403
 
-          @sut.authenticate @request, @response
+        describe 'when meshblu yields 204 for a specific device', ->
+          beforeEach (done) ->
+            @response.on 'end', done
 
-        it 'should respond with a 204', ->
-          expect(@response.statusCode).to.equal 204
+            options =
+              metadata:
+                responseId: @jobRequest.metadata.responseId
+                code: 204
 
-    describe 'when authenticator.authenticate yields an error', ->
-      beforeEach ->
-        @authenticator.authenticate.withArgs('fatal', 'error').yields new Error("oh no!")
+            @jobManager.createResponse 'response', options, =>
 
-      describe 'when called with a request containing auth information', ->
-        beforeEach (done) ->
-          basicAuth = new Buffer("fatal:error").toString 'base64'
-          @request  = httpMocks.createRequest headers: authorization: "Basic #{basicAuth}"
-          @response = httpMocks.createResponse eventEmitter: EventEmitter
-          @response.on 'end', done
+          it 'should respond with a 204', ->
+            expect(@response.statusCode).to.equal 204
 
-          @sut.authenticate @request, @response
+        describe 'when meshblu never yields', ->
+          beforeEach (done) ->
+            @response.on 'end', done
 
-        it 'should respond with a 502', ->
-          expect(@response.statusCode).to.equal 502
+          it 'should respond with a 502', ->
+            expect(@response.statusCode).to.equal 502

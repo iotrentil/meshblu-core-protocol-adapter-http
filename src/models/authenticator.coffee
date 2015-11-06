@@ -11,11 +11,12 @@ class AuthenticatorError extends Error
 class Authenticator
   constructor: (options={}, dependencies={}) ->
     {client,@namespace,@timeoutSeconds} = options
-    @client = _.bindAll client
+
     @timeoutSeconds ?= 30
     @timeoutSeconds = 1 if @timeoutSeconds < 1
+
     @jobManager = new JobManager
-      client: @client
+      client: client
       timeoutSeconds: @timeoutSeconds
 
     {@uuid} = dependencies
