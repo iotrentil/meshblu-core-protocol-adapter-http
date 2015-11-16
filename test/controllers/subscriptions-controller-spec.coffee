@@ -9,10 +9,10 @@ SubscriptionsController = require '../../src/controllers/subscriptions-controlle
 describe 'SubscriptionsController', ->
   beforeEach ->
     @redisId = uuid.v4()
-    @client = new RedisNS 'ns', redis.createClient(@redisId)
+    @client = new RedisNS 'nsNamespaceWithNamespace', redis.createClient(@redisId)
     @dependencies = uuid: @uuid
 
-    @sut = new SubscriptionsController timeoutSeconds: 1, namespace: 'ns'
+    @sut = new SubscriptionsController timeoutSeconds: 1
     @jobManager = new JobManager client: @client, timeoutSeconds: 1
 
   describe '->getAll', ->
@@ -24,7 +24,7 @@ describe 'SubscriptionsController', ->
             authorization: "Basic #{basicAuth}"
             'X-As': 'pothole'
           params: {uuid: 'destination'}
-        @request.connection = redis.createClient @redisId
+        @request.connection = new RedisNS 'nsNamespaceWithNamespace', redis.createClient(@redisId)
 
         @response = httpMocks.createResponse eventEmitter: EventEmitter
 

@@ -15,16 +15,16 @@ PORT      = process.env.PORT ? 80
 NAMESPACE = process.env.NAMESPACE ? 'meshblu'
 JOB_TIMEOUT_SECONDS = process.env.JOB_TIMEOUT_SECONDS ? 30
 
-authenticateController  = new AuthenticateController namespace: NAMESPACE, timeoutSeconds: JOB_TIMEOUT_SECONDS
+authenticateController  = new AuthenticateController timeoutSeconds: JOB_TIMEOUT_SECONDS
 messagesController      = new MessagesController
-subscriptionsController = new SubscriptionsController namespace: NAMESPACE, timeoutSeconds: JOB_TIMEOUT_SECONDS
+subscriptionsController = new SubscriptionsController timeoutSeconds: JOB_TIMEOUT_SECONDS
 
 
 connectionPool = new ConnectionPool
   max: 100
   min: 2
   create: (callback) =>
-    callback null, new RedisNS('meshblu', redis.createClient(process.env.REDIS_URI))
+    callback null, new RedisNS(NAMESPACE, redis.createClient(process.env.REDIS_URI))
   destroy: (client) =>
     client.quit()
 
