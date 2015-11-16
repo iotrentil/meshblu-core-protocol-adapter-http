@@ -4,11 +4,12 @@ MeshbluQueue      = require '../models/meshblu-queue'
 
 class MessagesController
   constructor: (options={}) ->
-    @meshbluQueue = new MeshbluQueue
     @authParser = new MeshbluAuthParser
 
   create: (req, res) =>
     {uuid,token} = @authParser.parse req
+
+    meshbluQueue = new MeshbluQueue client: req.connection
 
     messageToQueue =
       auth:
@@ -16,7 +17,7 @@ class MessagesController
         token: token
       message: req.body
 
-    @meshbluQueue.queueMessage messageToQueue
+    meshbluQueue.queueMessage messageToQueue
     res.status(200).send()
 
 module.exports = MessagesController

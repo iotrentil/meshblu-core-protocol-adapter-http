@@ -16,14 +16,14 @@ describe 'AuthenticateController', ->
         client: new RedisNS('ns', redis.createClient(@redisId))
         timeoutSeconds: 1
 
-      @sut = new AuthenticateController timeoutSeconds: 1
+      @sut = new AuthenticateController timeoutSeconds: 1, namespace: 'ns'
 
     describe 'when called with a request containing auth information', ->
       beforeEach ->
         basicAuth = new Buffer("wrong:person").toString 'base64'
 
         @request  = httpMocks.createRequest headers: authorization: "Basic #{basicAuth}"
-        @request.connection = new RedisNS('ns', redis.createClient(@redisId))
+        @request.connection = redis.createClient(@redisId)
         @response = httpMocks.createResponse eventEmitter: EventEmitter
 
         @sut.authenticate @request, @response

@@ -21,10 +21,7 @@ connectionPool = new ConnectionPool
   max: 100
   min: 2
   create: (callback) =>
-    client = new RedisNS('meshblu', redis.createClient(process.env.REDIS_URI))
-    uuid = require 'uuid'
-    client.secretId = uuid.v4()
-    callback null, client
+    callback null, new RedisNS('meshblu', redis.createClient(process.env.REDIS_URI))
   destroy: (client) =>
     client.quit()
 
