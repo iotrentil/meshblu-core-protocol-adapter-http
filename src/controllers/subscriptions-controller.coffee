@@ -1,13 +1,15 @@
+RedisNS           = require '@octoblu/redis-ns'
 Subscriber     = require '../models/subscriber'
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
 
 class SubscriptionsController
-  constructor: ({@timeoutSeconds}={}) ->
-    @timeoutSeconds ?= 30
+  constructor: ({@namespace, @timeoutSeconds}={}) ->
     @authParser = new MeshbluAuthParser
 
   getAll: (request, response) =>
-    subscriber = new Subscriber client: request.connection, timeoutSeconds: @timeoutSeconds
+    subscriber = new Subscriber
+      client: new RedisNS @namespace, request.connection
+      timeoutSeconds: @timeoutSeconds
 
     internalRequest =
       auth:     @authParser.parse request

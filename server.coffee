@@ -11,11 +11,14 @@ AuthenticateController  = require './src/controllers/authenticate-controller'
 MessagesController      = require './src/controllers/messages-controller'
 SubscriptionsController = require './src/controllers/subscriptions-controller'
 
-authenticateController  = new AuthenticateController
-messagesController      = new MessagesController
-subscriptionsController = new SubscriptionsController timeoutSeconds: process.env.JOB_TIMEOUT_SECONDS
+PORT      = process.env.PORT ? 80
+NAMESPACE = process.env.NAMESPACE ? 'meshblu'
+JOB_TIMEOUT_SECONDS = process.env.JOB_TIMEOUT_SECONDS ? 30
 
-PORT  = process.env.PORT ? 80
+authenticateController  = new AuthenticateController namespace: NAMESPACE, timeoutSeconds: JOB_TIMEOUT_SECONDS
+messagesController      = new MessagesController
+subscriptionsController = new SubscriptionsController namespace: NAMESPACE, timeoutSeconds: JOB_TIMEOUT_SECONDS
+
 
 connectionPool = new ConnectionPool
   max: 100

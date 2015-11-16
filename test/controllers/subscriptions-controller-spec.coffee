@@ -1,17 +1,18 @@
 {EventEmitter} = require 'events'
-redis = require 'fakeredis'
-uuid = require 'uuid'
+redis          = require 'fakeredis'
+RedisNS        = require '@octoblu/redis-ns'
+uuid           = require 'uuid'
 httpMocks      = require 'node-mocks-http'
-JobManager = require 'meshblu-core-job-manager'
+JobManager     = require 'meshblu-core-job-manager'
 SubscriptionsController = require '../../src/controllers/subscriptions-controller'
 
 describe 'SubscriptionsController', ->
   beforeEach ->
     @redisId = uuid.v4()
-    @client = redis.createClient @redisId
+    @client = new RedisNS 'ns', redis.createClient(@redisId)
     @dependencies = uuid: @uuid
 
-    @sut = new SubscriptionsController timeoutSeconds: 1
+    @sut = new SubscriptionsController timeoutSeconds: 1, namespace: 'ns'
     @jobManager = new JobManager client: @client, timeoutSeconds: 1
 
   describe '->getAll', ->

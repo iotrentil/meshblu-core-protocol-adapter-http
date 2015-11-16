@@ -5,9 +5,7 @@ MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
 debug = require('debug')('meshblu-server-http:authenticate-controller')
 
 class AuthenticateController
-  constructor: ({@timeoutSeconds,@namespace}={})->
-    @namespace ?= 'meshblu'
-    @timeoutSeconds ?= 30
+  constructor: ({@namespace,@timeoutSeconds}={})->
 
   authenticate: (request, response) =>
     {uuid,token} = new MeshbluAuthParser().parse request
