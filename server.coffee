@@ -16,8 +16,8 @@ NAMESPACE = process.env.NAMESPACE ? 'meshblu'
 JOB_TIMEOUT_SECONDS = process.env.JOB_TIMEOUT_SECONDS ? 30
 
 authenticateController  = new AuthenticateController timeoutSeconds: JOB_TIMEOUT_SECONDS
-messagesController      = new MessagesController
 subscriptionsController = new SubscriptionsController timeoutSeconds: JOB_TIMEOUT_SECONDS
+messagesController = new MessagesController client: new RedisNS(NAMESPACE, redis.createClient(process.env.REDIS_URI))
 
 
 connectionPool = new ConnectionPool
