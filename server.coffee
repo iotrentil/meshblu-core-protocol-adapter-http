@@ -4,6 +4,7 @@ express            = require 'express'
 meshbluHealthcheck = require 'express-meshblu-healthcheck'
 morgan             = require 'morgan'
 redis              = require 'redis'
+debug              = require('debug')('meshblu-server-http:server')
 RedisNS            = require '@octoblu/redis-ns'
 ConnectionPool     = require './src/models/connection-pool'
 
@@ -19,14 +20,14 @@ authenticateController  = new AuthenticateController timeoutSeconds: JOB_TIMEOUT
 messagesController      = new MessagesController
 subscriptionsController = new SubscriptionsController timeoutSeconds: JOB_TIMEOUT_SECONDS
 
-
 connectionPool = new ConnectionPool
   max: 100
-  min: 2
+  min: 0
+  returnToHead: true # sets connection pool to stack instead of queue behavior
   create: (callback) =>
     callback null, new RedisNS(NAMESPACE, redis.createClient(process.env.REDIS_URI))
   destroy: (client) =>
-    client.quit()
+    client.end true
 
 app = express()
 app.use morgan('combined', immediate: false)
@@ -39,6 +40,8 @@ app.use connectionPool.gateway
 app.post '/authenticate', authenticateController.authenticate
 app.post '/messages', messagesController.create
 app.get '/devices/:uuid/subscriptions', subscriptionsController.getAll
+
+setInterval (=> debug 'connectionPool', JSON.stringify(connectionPool.getInfo())), 30000
 
 server = app.listen PORT, ->
   host = server.address().address

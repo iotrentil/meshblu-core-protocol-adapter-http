@@ -15,4 +15,11 @@ class ConnectionPool
     return response.status(502).end() unless request.connection?
     next()
 
+  getInfo: =>
+    name: @pool.getName()
+    poolSize: @pool.getPoolSize()
+    availableObjectsCount: @pool.availableObjectsCount()
+    waitingClientsCount: @pool.waitingClientsCount()
+    maxPoolSize: @pool.getMaxPoolSize()
+
 module.exports = ConnectionPool
