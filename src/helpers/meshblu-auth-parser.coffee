@@ -30,6 +30,6 @@ class MeshbluAuthParser
     return unless request.header(uuidHeader) and request.header(tokenHeader)
     uuid  = request.header(uuidHeader).trim()
     token = request.header(tokenHeader).trim()
-    return {uuid:uuid, token:token}
+    return {uuid, token}
 
 module.exports = MeshbluAuthParser

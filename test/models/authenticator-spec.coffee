@@ -113,4 +113,4 @@ describe 'Authenticator', ->
 
       it 'should error', ->
         expect(@isAuthenticated).not.to.exist
-        expect(=> throw @error).to.throw 'No response from authenticate worker'
+        expect(=> throw @error).to.throw 'Response timeout exceeded'

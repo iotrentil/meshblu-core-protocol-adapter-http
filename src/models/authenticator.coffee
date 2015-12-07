@@ -3,11 +3,6 @@ uuid       = require 'uuid'
 async      = require 'async'
 JobManager = require 'meshblu-core-job-manager'
 
-class AuthenticatorError extends Error
-  name: 'AuthenticatorError'
-  constructor: (@code, @status) ->
-    @message = "#{@code}: #{@status}"
-
 class Authenticator
   constructor: (options={}, dependencies={}) ->
     {client,timeoutSeconds} = options

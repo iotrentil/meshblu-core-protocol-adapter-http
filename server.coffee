@@ -11,6 +11,7 @@ ConnectionPool     = require './src/models/connection-pool'
 AuthenticateController  = require './src/controllers/authenticate-controller'
 MessagesController      = require './src/controllers/messages-controller'
 SubscriptionsController = require './src/controllers/subscriptions-controller'
+WhoamiController        = require './src/controllers/whoami-controller'
 
 PORT      = process.env.PORT ? 80
 NAMESPACE = process.env.NAMESPACE ? 'meshblu'
@@ -19,6 +20,7 @@ JOB_TIMEOUT_SECONDS = process.env.JOB_TIMEOUT_SECONDS ? 30
 authenticateController  = new AuthenticateController timeoutSeconds: JOB_TIMEOUT_SECONDS
 messagesController      = new MessagesController
 subscriptionsController = new SubscriptionsController timeoutSeconds: JOB_TIMEOUT_SECONDS
+whoamiController        = new WhoamiController timeoutSeconds: JOB_TIMEOUT_SECONDS
 
 connectionPool = new ConnectionPool
   max: 100
@@ -40,6 +42,7 @@ app.use connectionPool.gateway
 app.post '/authenticate', authenticateController.authenticate
 app.post '/messages', messagesController.create
 app.get '/devices/:uuid/subscriptions', subscriptionsController.getAll
+app.get '/v2/whoami', whoamiController.whoami
 
 setInterval (=> debug 'connectionPool', JSON.stringify(connectionPool.getInfo())), 30000
 
