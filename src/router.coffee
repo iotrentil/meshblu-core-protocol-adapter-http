@@ -11,9 +11,9 @@ class Router
     @whoamiController        = new WhoamiController {timeoutSeconds}
 
   route: (app) =>
-    app.post '/authenticate', @authenticateController.authenticate
+    app.post '/authenticate', @authenticateController.create
     app.post '/messages', @messagesController.create
-    app.get '/devices/:uuid/subscriptions', @subscriptionsController.getAll
-    app.get '/v2/whoami', @whoamiController.whoami
+    app.get '/devices/:uuid/subscriptions', @subscriptionsController.list
+    app.get '/v2/whoami', @whoamiController.show
 
 module.exports = Router

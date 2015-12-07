@@ -1,23 +1,28 @@
-debug = require('debug')('nanocyte-engine-simple:messages-controller')
+JobManager = require 'meshblu-core-job-manager'
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
-MeshbluQueue      = require '../models/meshblu-queue'
+debug = require('debug')('meshblu-server-http:messages-controller')
 
 class MessagesController
-  constructor: (options={}) ->
+  constructor: ({@timeoutSeconds}) ->
     @authParser = new MeshbluAuthParser
 
   create: (req, res) =>
-    {uuid,token} = @authParser.parse req
+    jobManager = new JobManager
+      client: req.connection
+      timeoutSeconds: @timeoutSeconds
 
-    meshbluQueue = new MeshbluQueue client: req.connection
+    auth = @authParser.parse req
 
-    messageToQueue =
-      auth:
-        uuid:  uuid
-        token: token
-      message: req.body
+    options =
+      metadata:
+        auth:     auth
+        fromUuid: auth.uuid
+        toUuid:   auth.uuid
+        jobType: 'SendMessage'
+      data: req.body
 
-    meshbluQueue.queueMessage messageToQueue
-    res.status(200).send()
+    jobManager.do 'request', 'response', options, (error, response) =>
+      return res.status(error.code ? 500).send(error.message) if error?
+      res.status(response.metadata.code).end()
 
 module.exports = MessagesController

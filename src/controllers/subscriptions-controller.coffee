@@ -1,23 +1,27 @@
-Subscriber     = require '../models/subscriber'
+JobManager = require 'meshblu-core-job-manager'
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
+debug = require('debug')('meshblu-server-http:subscription-controller')
 
 class SubscriptionsController
-  constructor: ({@timeoutSeconds}={}) ->
+  constructor: ({@timeoutSeconds}) ->
     @authParser = new MeshbluAuthParser
 
-  getAll: (request, response) =>
-    subscriber = new Subscriber
-      client: request.connection
+  list: (req, res) =>
+    jobManager = new JobManager
+      client: req.connection
       timeoutSeconds: @timeoutSeconds
 
-    internalRequest =
-      auth:     @authParser.parse request
-      fromUuid: request.get('x-as')
-      toUuid:   request.params.uuid
+    auth = @authParser.parse req
 
-    subscriber.getSubscriptions internalRequest, (error, subscribeResponse) =>
-      return response.status(502).end() if error?
-      {code,data} = subscribeResponse
-      response.status(code).json data
+    options =
+      metadata:
+        auth: auth
+        fromUuid: req.get('x-as') ? auth.uuid
+        toUuid: req.params.uuid
+        jobType: 'SubscriptionList'
+
+    jobManager.do 'request', 'response', options, (error, response) =>
+      return res.status(error.code ? 500).send(error.message) if error?
+      res.status(response.metadata.code).send JSON.parse(response.rawData)
 
 module.exports = SubscriptionsController

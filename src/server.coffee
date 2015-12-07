@@ -8,12 +8,12 @@ redis              = require 'redis'
 RedisNS            = require '@octoblu/redis-ns'
 debug              = require('debug')('meshblu-server-http:server')
 Router             = require './router'
-ConnectionPool     = require './models/connection-pool'
+ConnectionPool     = require './helpers/connection-pool'
 
 class Server
   constructor: (options)->
     {@disableLogging, @port} = options
-    {@connectionPoolMaxConnections, @redisUri, @namespace} = options
+    {@connectionPoolMaxConnections, @redisUri, @namespace, @jobTimeoutSeconds} = options
 
   address: =>
     @server.address()
