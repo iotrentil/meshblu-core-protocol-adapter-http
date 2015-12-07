@@ -17,7 +17,7 @@ class WhoamiController
       metadata:
         auth: auth
         fromUuid: auth.uuid
-        toUuid: auth.uuid
+        toUuid: req.get('x-as') ? auth.uuid
         jobType: 'GetDevice'
 
     jobManager.do 'request', 'response', options, (error, response) =>
