@@ -12,7 +12,7 @@ class ConnectionPool
       next()
 
   gateway: (request,response,next) =>
-    return response.status(502).end() unless request.connection?
+    return response.status(502).send("Connection Pool error") unless request.connection?
     next()
 
   getInfo: =>
