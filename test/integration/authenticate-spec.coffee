@@ -21,8 +21,7 @@ describe 'POST /authenticate', ->
     @sut.stop => done()
 
   beforeEach ->
-    @redis = new RedisNS 'meshblu:server:http:test', redis.createClient()
-    @redis = _.bindAll @redis
+    @redis = _.bindAll new RedisNS 'meshblu:server:http:test', redis.createClient()
     @jobManager = new JobManager client: @redis, timeoutSeconds: 1
 
   context 'when the request is successful', ->

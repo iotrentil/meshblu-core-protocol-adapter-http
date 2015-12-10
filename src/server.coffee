@@ -1,3 +1,4 @@
+_                  = require 'lodash'
 morgan             = require 'morgan'
 express            = require 'express'
 bodyParser         = require 'body-parser'
@@ -46,7 +47,7 @@ class Server
       min: 0
       returnToHead: true # sets connection pool to stack instead of queue behavior
       create: (callback) =>
-        callback null, new RedisNS @namespace, redis.createClient(@redisUri)
+        callback null, _.bindAll new RedisNS @namespace, redis.createClient(@redisUri)
       destroy: (client) =>
         client.end true
     setInterval (=> debug 'connectionPool', JSON.stringify(connectionPool.getInfo())), 30000
