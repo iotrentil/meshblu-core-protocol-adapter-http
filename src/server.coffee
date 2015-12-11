@@ -47,9 +47,22 @@ class Server
       min: 0
       returnToHead: true # sets connection pool to stack instead of queue behavior
       create: (callback) =>
-        callback null, _.bindAll new RedisNS @namespace, redis.createClient(@redisUri)
-      destroy: (client) =>
-        client.end true
+        client = _.bindAll new RedisNS @namespace, redis.createClient(@redisUri)
+
+        client.on 'end', ->
+          client.hasError = new Error 'ended'
+
+        client.on 'error', (error) ->
+          client.hasError = error
+          callback error if callback?
+
+        client.once 'ready', ->
+          callback null, client
+          callback = null
+
+      destroy: (client) => client.end true
+      validate: (client) => !client.hasError?
+
     setInterval (=> debug 'connectionPool', JSON.stringify(connectionPool.getInfo())), 30000
     return connectionPool
 
