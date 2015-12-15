@@ -22,9 +22,8 @@ class GetDeviceController
 
     debug('dispatching request', options)
     jobManager.do 'request', 'response', options, (error, jobResponse) =>
-      _.each jobResponse.metadata, (value, key) =>
-        res.set "x-meshblu-#{key}", value
       return res.status(error.code ? 500).send(error.message) if error?
+      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
       res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
 
 module.exports = GetDeviceController

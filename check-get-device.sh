@@ -1,6 +1,10 @@
 #!/bin/bash
-MESHBLU_SERVER=meshblu.octoblu.com
-MESHBLU_HTTP_SERVER=meshblu.octoblu.com
+# MESHBLU_SERVER=meshblu.octoblu.com
+# MESHBLU_HTTP_SERVER=meshblu.octoblu.com
+
+MESHBLU_SERVER=localhost:3000
+MESHBLU_HTTP_SERVER=localhost:5000
+
 
 AUTH_DEVICE=`meshblu-util register -s $MESHBLU_SERVER  -t device:auth `
 AUTH_DEVICE_UUID=`echo $AUTH_DEVICE | jq -r '.uuid'`
