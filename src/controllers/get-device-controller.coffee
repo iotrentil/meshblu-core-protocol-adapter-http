@@ -1,12 +1,12 @@
 JobManager = require 'meshblu-core-job-manager'
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
-debug = require('debug')('meshblu-server-http:whoami-controller')
+debug = require('debug')('meshblu-server-http:get-device-controller')
 
-class WhoamiController
+class GetDeviceController
   constructor: ({@timeoutSeconds}) ->
     @authParser = new MeshbluAuthParser
 
-  show: (req, res) =>
+  get: (req, res) =>
     jobManager = new JobManager
       client: req.connection
       timeoutSeconds: @timeoutSeconds
@@ -16,13 +16,12 @@ class WhoamiController
     options =
       metadata:
         auth: auth
-        fromUuid: req.get('x-as')  ? auth.uuid
-        toUuid: req.get('x-as') ? auth.uuid
+        fromUuid: req.get('x-as') ? auth.uuid
+        toUuid: req.params.uuid
         jobType: 'GetDevice'
 
-    debug('dispatching request', options)
     jobManager.do 'request', 'response', options, (error, response) =>
       return res.status(error.code ? 500).send(error.message) if error?
       res.status(response.metadata.code).send JSON.parse(response.rawData)
 
-module.exports = WhoamiController
+module.exports = GetDeviceController
