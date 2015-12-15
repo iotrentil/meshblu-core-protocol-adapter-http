@@ -6,7 +6,7 @@ redis      = require 'redis'
 RedisNS    = require '@octoblu/redis-ns'
 JobManager = require 'meshblu-core-job-manager'
 
-describe 'GET /v2/devices/:uuid', ->
+describe 'GET /v3/devices/:uuid', ->
   beforeEach (done) ->
     @port = 0xd00d
     @sut = new Server
@@ -35,6 +35,7 @@ describe 'GET /v2/devices/:uuid', ->
             metadata:
               code: 200
               responseId: request.metadata.responseId
+              name: 'koshin'
             data:
               uuid: 'secret-island'
 
@@ -49,7 +50,7 @@ describe 'GET /v2/devices/:uuid', ->
         headers:
           'x-as': 'treasure-map'
 
-      request.get "http://localhost:#{@port}/v2/devices/secret-island", options, (error, @response, @body) =>
+      request.get "http://localhost:#{@port}/v3/devices/secret-island", options, (error, @response, @body) =>
         done error
 
     it 'should return a 200', ->
@@ -57,3 +58,8 @@ describe 'GET /v2/devices/:uuid', ->
 
     it 'should have the device in the body', ->
       expect(JSON.parse(@body)).to.contain uuid: 'secret-island'
+
+    it 'should have the metadata in the headers', ->
+      expect(@response.headers).to.containSubset
+        'x-meshblu-code': '200'        
+        'x-meshblu-name': 'koshin'

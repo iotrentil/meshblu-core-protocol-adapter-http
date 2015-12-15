@@ -17,6 +17,6 @@ class Router
     app.post '/messages', @messagesController.create
     app.get '/devices/:uuid/subscriptions', @subscriptionsController.list
     app.get '/v2/whoami', @whoamiController.show
-    app.get '/v2/devices/:uuid', @getDeviceController.get
+    app.get '/v3/devices/:uuid', @getDeviceController.get
 
 module.exports = Router

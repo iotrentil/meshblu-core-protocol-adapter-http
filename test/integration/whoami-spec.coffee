@@ -35,6 +35,7 @@ describe 'GET /v2/whoami', ->
             metadata:
               code: 200
               responseId: request.metadata.responseId
+              coffeeCake: "is delicious"
             data:
               uuid: 'irritable-captian'
 
@@ -54,3 +55,8 @@ describe 'GET /v2/whoami', ->
 
     it 'should have the device in the body', ->
       expect(JSON.parse(@body)).to.contain uuid: 'irritable-captian'
+
+    it 'should have the metadata in the headers', ->
+      expect(@response.headers).to.containSubset
+        'x-meshblu-code': '200'
+        'x-meshblu-coffeecake': 'is delicious'
