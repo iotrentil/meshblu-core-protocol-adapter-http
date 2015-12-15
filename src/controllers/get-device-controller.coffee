@@ -20,6 +20,7 @@ class GetDeviceController
         toUuid: req.params.uuid
         jobType: 'GetDevice'
 
+    debug('dispatching request', options)
     jobManager.do 'request', 'response', options, (error, response) =>
       return res.status(error.code ? 500).send(error.message) if error?
       res.status(response.metadata.code).send JSON.parse(response.rawData)
