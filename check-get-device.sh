@@ -2,8 +2,8 @@
 # MESHBLU_SERVER=meshblu.octoblu.com
 # MESHBLU_HTTP_SERVER=meshblu.octoblu.com
 
-MESHBLU_SERVER=localhost:3000
-MESHBLU_HTTP_SERVER=localhost:5000
+MESHBLU_SERVER=meshblu.octoblu.com
+MESHBLU_HTTP_SERVER=meshblu.octoblu.com
 
 
 AUTH_DEVICE=`meshblu-util register -s $MESHBLU_SERVER  -t device:auth `
@@ -25,17 +25,20 @@ echo $DISCOVERER | jq '.'
 echo "DISCOVEREE: "
 echo $DISCOVEREE | jq '.'
 
+# echo "whoami as auth device get auth:"
+# curl http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v2/whoami | jq '.type'
+
+
 echo "get discoverer should fail:"
 curl -v http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v3/devices/$DISCOVERER_UUID
 
-echo "get discoverer as discoverer device should work:"
-curl http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v3/devices/$DISCOVERER_UUID -H "X-AS: $DISCOVERER_UUID" | jq '.type'
+echo "get discoverer as discoverer device should fail:"
+curl http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v3/devices/$DISCOVERER_UUID -H "X-AS: $DISCOVERER_UUID"
+
 echo "get discoveree as discoverer device should work:"
 curl http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v3/devices/$DISCOVEREE_UUID -H "X-AS: $DISCOVERER_UUID" | jq '.type'
-echo "whoami as auth device get auth:"
-curl http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v2/whoami | jq '.type'
 
-echo "whoami as discoverer device get discoverer:"
+echo "whoami as discoverer device get discoverer should fail:"
 curl http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v2/whoami -H "X-AS: $DISCOVERER_UUID" | jq '.type'
 
 echo "whoami as discoveree device should fail:"
