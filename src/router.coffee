@@ -2,7 +2,8 @@ AuthenticateController  = require './controllers/authenticate-controller'
 MessagesController      = require './controllers/messages-controller'
 SubscriptionsController = require './controllers/subscriptions-controller'
 WhoamiController        = require './controllers/whoami-controller'
-GetDeviceController        = require './controllers/get-device-controller'
+GetDeviceController     = require './controllers/get-device-controller'
+SearchDeviceController  = require './controllers/search-device-controller'
 
 class Router
   constructor: ({timeoutSeconds})->
@@ -11,6 +12,7 @@ class Router
     @subscriptionsController = new SubscriptionsController {timeoutSeconds}
     @whoamiController        = new WhoamiController {timeoutSeconds}
     @getDeviceController     = new GetDeviceController {timeoutSeconds}
+    @searchDeviceController  = new SearchDeviceController {timeoutSeconds}
 
   route: (app) =>
     app.post '/authenticate', @authenticateController.create
@@ -18,5 +20,6 @@ class Router
     app.get '/devices/:uuid/subscriptions', @subscriptionsController.list
     app.get '/v2/whoami', @whoamiController.show
     app.get '/v3/devices/:uuid', @getDeviceController.get
+    app.post '/devices/search', @searchDeviceController.search
 
 module.exports = Router
