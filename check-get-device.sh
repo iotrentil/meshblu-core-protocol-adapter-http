@@ -2,8 +2,8 @@
 # MESHBLU_SERVER=meshblu.octoblu.com
 # MESHBLU_HTTP_SERVER=meshblu.octoblu.com
 
-MESHBLU_SERVER=meshblu.octoblu.com
-MESHBLU_HTTP_SERVER=meshblu.octoblu.com
+MESHBLU_SERVER=localhost:3000
+MESHBLU_HTTP_SERVER=localhost:5000
 
 
 AUTH_DEVICE=`meshblu-util register -s $MESHBLU_SERVER  -t device:auth `
@@ -43,3 +43,7 @@ curl http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v2/whoami 
 
 echo "whoami as discoveree device should fail:"
 curl -v http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v2/whoami -H "X-AS: $DISCOVEREE_UUID"
+
+echo "search for discoveree as discoverer should work:"
+curl -X POST http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/devices/search -d "type=device:discoverer" | jq '.'
+curl -X POST http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/devices/search -H "X-AS: $DISCOVERER_UUID" -H "Content-Type: application/json" -d '{"online":true}' | jq '.'

@@ -1,6 +1,6 @@
 JobManager = require 'meshblu-core-job-manager'
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
-debug = require('debug')('meshblu-server-http:get-device-controller')
+debug = require('debug')('meshblu-server-http:search-device-controller')
 _     = require 'lodash'
 class SearchDeviceController
   constructor: ({@timeoutSeconds}) ->
