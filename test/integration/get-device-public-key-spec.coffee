@@ -58,7 +58,7 @@ describe 'GET /devices/:uuid/publickey', ->
       expect(@response.statusCode).to.equal 200
 
     it 'should have the device in the body', ->
-      expect(JSON.parse(@body)).to.equal publicKey: 'abc123'
+      expect(JSON.parse(@body)).to.deep.equal publicKey: 'abc123', uuid: 'secret-island'
 
     it 'should have the metadata in the headers', ->
       expect(@response.headers).to.containSubset
