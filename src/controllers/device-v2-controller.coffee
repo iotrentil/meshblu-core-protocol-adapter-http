@@ -23,9 +23,26 @@ class DeviceV2Controller
 
     debug('dispatching request', job)
     jobManager.do 'request', 'response', job, (error, jobResponse) =>
-      if error?.code == 404 # backwards compatibility with meshblu
-        error.message = 'Devices not found'
-      return res.status(error.code ? 500).send(error.message) if error?
+      if !error? && jobResponse.metadata?.code == 403
+        error = code: 404, message: 'Devices not found'
+
+      if error?
+        if error.code == 403 # backwards compatibility with meshblu
+          error.code = 404
+          error.message = 'Devices not found'
+
+        jsonError =
+          code: error.code
+          message: error.message
+        return res.status(error.code ? 500).send jsonError
+
+      data = JSON.parse jobResponse.rawData
+      unless data?
+        jsonError =
+          code: 404
+          message: 'Devices not found'
+        return res.status(404).send jsonError
+
       _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
       res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
 
