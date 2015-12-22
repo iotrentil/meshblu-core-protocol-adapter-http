@@ -2,7 +2,8 @@ JobManager = require 'meshblu-core-job-manager'
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
 debug = require('debug')('meshblu-server-http:get-device-controller')
 _     = require 'lodash'
-class GetDeviceController
+
+class DeviceV2Controller
   constructor: ({@timeoutSeconds}) ->
     @authParser = new MeshbluAuthParser
 
@@ -22,8 +23,10 @@ class GetDeviceController
 
     debug('dispatching request', job)
     jobManager.do 'request', 'response', job, (error, jobResponse) =>
+      if error?.code == 404 # backwards compatibility with meshblu
+        error.message = 'Devices not found'
       return res.status(error.code ? 500).send(error.message) if error?
       _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
       res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
 
-module.exports = GetDeviceController
+module.exports = DeviceV2Controller
