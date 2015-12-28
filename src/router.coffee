@@ -2,10 +2,11 @@ AuthenticateController  = require './controllers/authenticate-controller'
 MessagesController      = require './controllers/messages-controller'
 SubscriptionsController = require './controllers/subscriptions-controller'
 WhoamiController        = require './controllers/whoami-controller'
-DeviceV1Controller     = require './controllers/device-v1-controller'
-DeviceV2Controller     = require './controllers/device-v2-controller'
-DeviceV3Controller     = require './controllers/device-v3-controller'
+DeviceV1Controller      = require './controllers/device-v1-controller'
+DeviceV2Controller      = require './controllers/device-v2-controller'
+DeviceV3Controller      = require './controllers/device-v3-controller'
 SearchDeviceController  = require './controllers/search-device-controller'
+TokenController         = require './controllers/token-controller'
 
 class Router
   constructor: ({timeoutSeconds})->
@@ -17,6 +18,7 @@ class Router
     @deviceV2Controller      = new DeviceV2Controller {timeoutSeconds}
     @deviceV3Controller      = new DeviceV3Controller {timeoutSeconds}
     @searchDeviceController  = new SearchDeviceController {timeoutSeconds}
+    @tokenController         = new TokenController {timeoutSeconds}
 
   route: (app) =>
     app.post '/authenticate', @authenticateController.create
@@ -28,5 +30,6 @@ class Router
     app.get '/v2/devices/:uuid', @deviceV2Controller.get
     app.get '/v3/devices/:uuid', @deviceV3Controller.get
     app.post '/search/devices', @searchDeviceController.search
+    app.delete '/devices/:uuid/tokens', @tokenController.revokeByQuery
 
 module.exports = Router
