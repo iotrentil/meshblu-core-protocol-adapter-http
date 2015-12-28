@@ -27,6 +27,6 @@ class Router
     app.get '/devices/:uuid/publickey', @deviceV1Controller.getPublicKey
     app.get '/v2/devices/:uuid', @deviceV2Controller.get
     app.get '/v3/devices/:uuid', @deviceV3Controller.get
-    app.post '/devices/search', @searchDeviceController.search
+    app.post '/search/devices', @searchDeviceController.search
 
 module.exports = Router

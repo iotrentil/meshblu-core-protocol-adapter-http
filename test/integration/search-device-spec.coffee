@@ -6,7 +6,7 @@ redis      = require 'redis'
 RedisNS    = require '@octoblu/redis-ns'
 JobManager = require 'meshblu-core-job-manager'
 
-describe 'POST /devices/search', ->
+describe 'POST /search/devices', ->
   beforeEach (done) ->
     @port = 0xd00d
     @sut = new Server
@@ -54,7 +54,7 @@ describe 'POST /devices/search', ->
         headers:
           'x-as': 'treasure-map'
 
-      request.post "http://localhost:#{@port}/devices/search", options, (error, @response, @body) =>
+      request.post "http://localhost:#{@port}/search/devices", options, (error, @response, @body) =>
         done error
 
     it 'should return a 200', ->
