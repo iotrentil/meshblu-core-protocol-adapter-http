@@ -9,6 +9,8 @@ class ConnectionPool
       request.connection = client
       response.on 'finish', =>
         @pool.release client
+      response.on 'close', =>
+        @pool.release client
       next()
 
   gateway: (request,response,next) =>
