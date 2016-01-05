@@ -9,7 +9,8 @@ redis              = require 'redis'
 RedisNS            = require '@octoblu/redis-ns'
 debug              = require('debug')('meshblu-server-http:server')
 Router             = require './router'
-ConnectionPool     = require './helpers/connection-pool'
+{Pool}             = require 'generic-pool'
+PooledJobManager   = require './pooled-job-manager'
 
 class Server
   constructor: (options)->
@@ -29,10 +30,11 @@ class Server
     app.use bodyParser.json limit : '50mb'
 
     connectionPool = @_createConnectionPool()
-    app.use connectionPool.acquire
-    app.use connectionPool.gateway
+    jobManager = new PooledJobManager
+      timeoutSeconds: @jobTimeoutSeconds
+      pool: connectionPool
 
-    router = new Router timeoutSeconds: @jobTimeoutSeconds
+    router = new Router {jobManager}
 
     router.route app
 
@@ -42,7 +44,7 @@ class Server
     @server.close callback
 
   _createConnectionPool: =>
-    connectionPool = new ConnectionPool
+    connectionPool = new Pool
       max: @connectionPoolMaxConnections
       min: 0
       returnToHead: true # sets connection pool to stack instead of queue behavior
@@ -63,7 +65,6 @@ class Server
       destroy: (client) => client.end true
       validate: (client) => !client.hasError?
 
-    setInterval (=> debug 'connectionPool', JSON.stringify(connectionPool.getInfo())), 30000
     return connectionPool
 
 module.exports = Server

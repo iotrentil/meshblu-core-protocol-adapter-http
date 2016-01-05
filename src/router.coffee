@@ -7,18 +7,19 @@ DeviceV2Controller      = require './controllers/device-v2-controller'
 DeviceV3Controller      = require './controllers/device-v3-controller'
 SearchDeviceController  = require './controllers/search-device-controller'
 TokenController         = require './controllers/token-controller'
+PooledJobManager        = require './pooled-job-manager'
 
 class Router
-  constructor: ({timeoutSeconds})->
-    @authenticateController  = new AuthenticateController {timeoutSeconds}
-    @messagesController      = new MessagesController {timeoutSeconds}
-    @subscriptionsController = new SubscriptionsController {timeoutSeconds}
-    @whoamiController        = new WhoamiController {timeoutSeconds}
-    @deviceV1Controller      = new DeviceV1Controller {timeoutSeconds}
-    @deviceV2Controller      = new DeviceV2Controller {timeoutSeconds}
-    @deviceV3Controller      = new DeviceV3Controller {timeoutSeconds}
-    @searchDeviceController  = new SearchDeviceController {timeoutSeconds}
-    @tokenController         = new TokenController {timeoutSeconds}
+  constructor: ({jobManager})->
+    @authenticateController  = new AuthenticateController {jobManager}
+    @messagesController      = new MessagesController {jobManager}
+    @subscriptionsController = new SubscriptionsController {jobManager}
+    @whoamiController        = new WhoamiController {jobManager}
+    @deviceV1Controller      = new DeviceV1Controller {jobManager}
+    @deviceV2Controller      = new DeviceV2Controller {jobManager}
+    @deviceV3Controller      = new DeviceV3Controller {jobManager}
+    @searchDeviceController  = new SearchDeviceController {jobManager}
+    @tokenController         = new TokenController {jobManager}
 
   route: (app) =>
     app.post '/authenticate', @authenticateController.create

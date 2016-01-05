@@ -1,17 +1,12 @@
-JobManager = require 'meshblu-core-job-manager'
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
 debug = require('debug')('meshblu-server-http:get-device-controller')
 _     = require 'lodash'
 
 class DeviceV2Controller
-  constructor: ({@timeoutSeconds}) ->
+  constructor: ({@jobManager}) ->
     @authParser = new MeshbluAuthParser
 
   revokeByQuery: (request, response) =>
-    jobManager = new JobManager
-      client: request.connection
-      timeoutSeconds: @timeoutSeconds
-
     auth = @authParser.parse request
 
     job =
@@ -23,7 +18,7 @@ class DeviceV2Controller
       data: request.query
 
     debug('dispatching request', job)
-    jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
       if error?
         jsonError =
           code: error.code
