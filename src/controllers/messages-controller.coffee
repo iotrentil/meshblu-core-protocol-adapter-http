@@ -7,11 +7,10 @@ class MessagesController
 
   create: (req, res) =>
     auth = @authParser.parse req
-
     options =
       metadata:
         auth:     auth
-        fromUuid: auth.uuid
+        fromUuid: req.get('x-meshblu-as') ? req.get('x-as')
         toUuid:   auth.uuid
         jobType: 'SendMessage'
       data: req.body

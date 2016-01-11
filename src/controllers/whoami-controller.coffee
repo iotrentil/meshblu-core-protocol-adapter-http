@@ -8,12 +8,11 @@ class WhoamiController
 
   show: (req, res) =>
     auth = @authParser.parse req
-
     job =
       metadata:
         auth: auth
-        fromUuid: req.get('x-as')  ? auth.uuid
-        toUuid: req.get('x-as') ? auth.uuid
+        fromUuid: auth.uuid
+        toUuid: auth.uuid
         jobType: 'GetDevice'
 
     debug('dispatching request', job)
