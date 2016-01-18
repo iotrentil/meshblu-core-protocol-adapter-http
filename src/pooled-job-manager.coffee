@@ -15,7 +15,7 @@ class PooledJobManager
 
   do: (requestQueue, responseQueue, request, callback) =>
     benchmark = new Benchmark label: 'pooled-job-manager'
-    debug 'Stats:', JSON.stringify(@poolStats(), null, 2)
+    debug 'Stats:', JSON.stringify @poolStats()
     @pool.acquire (error, client) =>
       debug '@pool.acquire', benchmark.toString()
       return callback error if error?
