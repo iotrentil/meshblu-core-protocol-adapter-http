@@ -24,5 +24,8 @@ class PooledJobManager
         @pool.release client
         debug '@pool.release', benchmark.toString()
         callback error, response
+        if benchmark.elapsed() > 5000
+          console.error 'Taking too long, quitting'
+          process.exit 5
 
 module.exports = PooledJobManager
