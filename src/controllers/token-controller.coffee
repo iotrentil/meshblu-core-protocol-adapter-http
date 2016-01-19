@@ -12,7 +12,7 @@ class DeviceV2Controller
     job =
       metadata:
         auth: auth
-        fromUuid: request.get('x-as') ? auth.uuid
+        fromUuid: request.get('x-meshblu-as')
         toUuid: request.params.uuid
         jobType: 'RevokeTokenByQuery'
       data: request.query

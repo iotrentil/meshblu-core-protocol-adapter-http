@@ -52,7 +52,7 @@ describe 'POST /search/devices', ->
         json: type: 'dinosaur'
 
         headers:
-          'x-as': 'treasure-map'
+          'x-meshblu-as': 'treasure-map'
 
       request.post "http://localhost:#{@port}/search/devices", options, (error, @response, @body) =>
         done error

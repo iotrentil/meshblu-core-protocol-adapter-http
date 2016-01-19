@@ -48,7 +48,7 @@ describe 'GET /devices/:uuid', ->
           password: 'poop-deck'
 
         headers:
-          'x-as': 'treasure-map'
+          'x-meshblu-as': 'treasure-map'
 
       request.get "http://localhost:#{@port}/devices/secret-island", options, (error, @response, @body) =>
         done error

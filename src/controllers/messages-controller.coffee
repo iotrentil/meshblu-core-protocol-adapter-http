@@ -10,7 +10,7 @@ class MessagesController
     options =
       metadata:
         auth:     auth
-        fromUuid: req.get('x-meshblu-as') ? req.get('x-as')
+        fromUuid: req.get('x-meshblu-as')
         toUuid:   auth.uuid
         jobType: 'SendMessage'
       data: req.body

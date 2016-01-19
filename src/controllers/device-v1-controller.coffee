@@ -13,7 +13,7 @@ class DeviceV1Controller
     job =
       metadata:
         auth: auth
-        fromUuid: req.get('x-meshblu-as') ? req.get('x-as')
+        fromUuid: req.get('x-meshblu-as')
         toUuid: req.params.uuid
         jobType: 'GetDevice'
 
@@ -41,7 +41,7 @@ class DeviceV1Controller
 
     job =
       metadata:
-        fromUuid: req.get('x-as') ? auth.uuid
+        fromUuid: req.get('x-meshblu-as')
         toUuid: req.params.uuid
         jobType: 'GetDevicePublicKey'
 

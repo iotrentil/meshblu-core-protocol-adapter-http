@@ -11,7 +11,7 @@ class SubscriptionsController
     options =
       metadata:
         auth: auth
-        fromUuid: req.get('x-as') ? auth.uuid
+        fromUuid: req.get('x-meshblu-as')
         toUuid: req.params.uuid
         jobType: 'SubscriptionList'
 

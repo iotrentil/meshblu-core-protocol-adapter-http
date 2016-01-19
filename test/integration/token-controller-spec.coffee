@@ -57,7 +57,6 @@ describe 'DELETE /devices/:uuid/tokens/query', ->
     it 'should dispatch the correct metadata', ->
       expect(@request).to.containSubset
         metadata:
-          fromUuid: 'irritable-captian'
           auth:
             uuid: 'irritable-captian'
             token: 'poop-deck'

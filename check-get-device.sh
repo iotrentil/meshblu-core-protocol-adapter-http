@@ -33,17 +33,17 @@ echo "get discoverer should fail:"
 curl -v http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v3/devices/$DISCOVERER_UUID
 
 echo "get discoverer as discoverer device should fail:"
-curl http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v3/devices/$DISCOVERER_UUID -H "X-AS: $DISCOVERER_UUID"
+curl http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v3/devices/$DISCOVERER_UUID -H "'x-meshblu-as': $DISCOVERER_UUID"
 
 echo "get discoveree as discoverer device should work:"
-curl http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v3/devices/$DISCOVEREE_UUID -H "X-AS: $DISCOVERER_UUID" | jq '.type'
+curl http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v3/devices/$DISCOVEREE_UUID -H "'x-meshblu-as': $DISCOVERER_UUID" | jq '.type'
 
 echo "whoami as discoverer device get discoverer should fail:"
-curl http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v2/whoami -H "X-AS: $DISCOVERER_UUID" | jq '.type'
+curl http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v2/whoami -H "'x-meshblu-as': $DISCOVERER_UUID" | jq '.type'
 
 echo "whoami as discoveree device should fail:"
-curl -v http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v2/whoami -H "X-AS: $DISCOVEREE_UUID"
+curl -v http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/v2/whoami -H "'x-meshblu-as': $DISCOVEREE_UUID"
 
 echo "search for discoveree as discoverer should work:"
 curl -X POST http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/devices/search -d "type=device:discoverer" | jq '.'
-curl -X POST http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/devices/search -H "X-AS: $DISCOVERER_UUID" -H "Content-Type: application/json" -d '{"online":true}' | jq '.'
+curl -X POST http://$AUTH_DEVICE_UUID:$AUTH_DEVICE_TOKEN@$MESHBLU_HTTP_SERVER/devices/search -H "'x-meshblu-as': $DISCOVERER_UUID" -H "Content-Type: application/json" -d '{"online":true}' | jq '.'
