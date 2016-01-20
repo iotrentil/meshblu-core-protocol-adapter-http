@@ -53,6 +53,7 @@ describe 'POST /search/devices', ->
 
         headers:
           'x-meshblu-as': 'treasure-map'
+          'x-meshblu-erik-feature': 'custom-headers'
 
       request.post "http://localhost:#{@port}/search/devices", options, (error, @response, @body) =>
         done error
@@ -64,6 +65,7 @@ describe 'POST /search/devices', ->
       expect(@request).to.containSubset
         metadata:
           fromUuid: 'treasure-map'
+          erikFeature: 'custom-headers'
           auth:
             uuid: 'irritable-captian'
             token: 'poop-deck'
