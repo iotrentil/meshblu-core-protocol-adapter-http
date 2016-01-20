@@ -11,6 +11,8 @@ debug              = require('debug')('meshblu-server-http:server')
 Router             = require './router'
 {Pool}             = require 'generic-pool'
 PooledJobManager   = require './pooled-job-manager'
+JobToHttp          = require './helpers/job-to-http'
+PackageJSON        = require '../package.json'
 
 class Server
   constructor: (options)->
@@ -34,7 +36,9 @@ class Server
       timeoutSeconds: @jobTimeoutSeconds
       pool: connectionPool
 
-    router = new Router {jobManager}
+
+    jobToHttp = new JobToHttp
+    router = new Router {jobManager, jobToHttp}
 
     router.route app
 

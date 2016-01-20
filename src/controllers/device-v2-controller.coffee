@@ -3,10 +3,10 @@ debug = require('debug')('meshblu-server-http:get-device-controller')
 _     = require 'lodash'
 
 class DeviceV2Controller
-  constructor: ({@jobManager}) ->
+  constructor: ({@jobManager, @jobToHttp}) ->
 
   get: (req, res) =>
-    job = JobToHttp.requestToJob jobType: 'GetDevice', request: req, toUuid: req.params.uuid
+    job = @jobToHttp.httpToJob jobType: 'GetDevice', request: req, toUuid: req.params.uuid
 
     debug('dispatching request', job)
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>

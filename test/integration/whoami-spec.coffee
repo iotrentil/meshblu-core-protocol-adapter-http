@@ -59,4 +59,4 @@ describe 'GET /v2/whoami', ->
     it 'should have the metadata in the headers', ->
       expect(@response.headers).to.containSubset
         'x-meshblu-code': '200'
-        'x-meshblu-coffeecake': 'is delicious'
+        'x-meshblu-coffee-cake': 'is delicious'

@@ -3,14 +3,12 @@ _         = require 'lodash'
 JobToHttp = require '../helpers/job-to-http'
 
 class SubscriptionsController
-  constructor: ({@jobManager}) ->
+  constructor: ({@jobManager, @jobToHttp}) ->
 
   list: (req, res) =>
-    job = JobToHttp.requestToJob jobType: 'SubscriptionList', request: req, toUuid: req.params.uuid
+    job = @jobToHttp.httpToJob jobType: 'SubscriptionList', request: req, toUuid: req.params.uuid
 
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
-      return res.status(error.code ? 500).send(error.message) if error?
-      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
-      res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
+      @jobToHttp.sendJobResponse {jobResponse, res}
 
 module.exports = SubscriptionsController

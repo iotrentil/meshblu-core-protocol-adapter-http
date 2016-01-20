@@ -74,3 +74,4 @@ describe 'GET /v3/devices/:uuid', ->
       expect(@response.headers).to.containSubset
         'x-meshblu-code': '200'
         'x-meshblu-name': 'koshin'
+        'x-meshblu-response-id': @jobRequest.metadata.responseId
