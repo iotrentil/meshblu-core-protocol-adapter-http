@@ -1,5 +1,6 @@
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
 debug = require('debug')('meshblu-server-http:messages-controller')
+_     = require 'lodash'
 
 class MessagesController
   constructor: ({@jobManager}) ->
@@ -10,7 +11,7 @@ class MessagesController
     options =
       metadata:
         auth:     auth
-        fromUuid: req.get('x-meshblu-as')
+        fromUuid: req.get('x-meshblu-as') ? auth.uuid
         toUuid:   auth.uuid
         jobType: 'SendMessage'
       data: req.body

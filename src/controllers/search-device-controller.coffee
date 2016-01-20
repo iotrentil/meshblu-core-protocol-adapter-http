@@ -12,7 +12,7 @@ class SearchDeviceController
     job =
       metadata:
         auth: auth
-        fromUuid: req.get('x-meshblu-as')
+        fromUuid: req.get('x-meshblu-as') ? auth.uuid
         jobType: 'SearchDevices'
       data: req.body
 

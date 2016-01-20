@@ -1,4 +1,3 @@
-JobManager = require 'meshblu-core-job-manager'
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
 debug = require('debug')('meshblu-server-http:get-device-controller')
 _     = require 'lodash'
@@ -13,7 +12,7 @@ class DeviceV1Controller
     job =
       metadata:
         auth: auth
-        fromUuid: req.get('x-meshblu-as')
+        fromUuid: req.get('x-meshblu-as') ? auth.uuid
         toUuid: req.params.uuid
         jobType: 'GetDevice'
 
@@ -41,7 +40,7 @@ class DeviceV1Controller
 
     job =
       metadata:
-        fromUuid: req.get('x-meshblu-as')
+        fromUuid: req.get('x-meshblu-as') ? auth.uuid
         toUuid: req.params.uuid
         jobType: 'GetDevicePublicKey'
 

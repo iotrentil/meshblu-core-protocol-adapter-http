@@ -1,5 +1,6 @@
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
 debug = require('debug')('meshblu-server-http:subscription-controller')
+_     = require 'lodash'
 
 class SubscriptionsController
   constructor: ({@jobManager}) ->
@@ -11,12 +12,13 @@ class SubscriptionsController
     options =
       metadata:
         auth: auth
-        fromUuid: req.get('x-meshblu-as')
+        fromUuid: req.get('x-meshblu-as') ? auth.uuid
         toUuid: req.params.uuid
         jobType: 'SubscriptionList'
 
-    @jobManager.do 'request', 'response', options, (error, response) =>
+    @jobManager.do 'request', 'response', options, (error, jobResponse) =>
       return res.status(error.code ? 500).send(error.message) if error?
-      res.status(response.metadata.code).send JSON.parse(response.rawData)
+      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
+      res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
 
 module.exports = SubscriptionsController
