@@ -1,20 +1,12 @@
-MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
 debug = require('debug')('meshblu-server-http:search-device-controller')
 _     = require 'lodash'
+JobToHttp = require '../helpers/job-to-http'
 
 class SearchDeviceController
   constructor: ({@jobManager}) ->
-    @authParser = new MeshbluAuthParser
 
   search: (req, res) =>
-    auth = @authParser.parse req
-
-    job =
-      metadata:
-        auth: auth
-        fromUuid: req.get('x-meshblu-as') ? auth.uuid
-        jobType: 'SearchDevices'
-      data: req.body
+    job = JobToHttp.requestToJob jobType: 'SearchDevices', request: req
 
     debug('dispatching request', job)
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>

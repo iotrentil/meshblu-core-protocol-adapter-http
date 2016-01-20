@@ -27,14 +27,14 @@ describe 'GET /v3/devices/:uuid', ->
   context 'when the request is successful', ->
     beforeEach ->
       async.forever (next) =>
-        @jobManager.getRequest ['request'], (error, request) =>
-          next request
-          return unless request?
+        @jobManager.getRequest ['request'], (error, @jobRequest) =>
+          next @jobRequest
+          return unless @jobRequest?
 
           response =
             metadata:
               code: 200
-              responseId: request.metadata.responseId
+              responseId: @jobRequest.metadata.responseId
               name: 'koshin'
             data:
               uuid: 'secret-island'
@@ -59,7 +59,18 @@ describe 'GET /v3/devices/:uuid', ->
     it 'should have the device in the body', ->
       expect(JSON.parse(@body)).to.contain uuid: 'secret-island'
 
+    it 'should have set the fromUuid correctly', ->
+      expect(@jobRequest.metadata.fromUuid).to.equal 'treasure-map'
+
+    it 'should have set the toUuid correctly', ->
+      expect(@jobRequest.metadata.toUuid).to.equal 'secret-island'
+
+    it 'should have set the auth correctly', ->
+      expect(@jobRequest.metadata.auth).to.deep.equal
+        uuid: 'irritable-captian'
+        token: 'poop-deck'
+
     it 'should have the metadata in the headers', ->
       expect(@response.headers).to.containSubset
-        'x-meshblu-code': '200'        
+        'x-meshblu-code': '200'
         'x-meshblu-name': 'koshin'

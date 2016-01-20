@@ -1,6 +1,7 @@
-MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
 debug = require('debug')('meshblu-server-http:whoami-controller')
 _ = require 'lodash'
+JobToHttp = require '../helpers/job-to-http'
+MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
 
 class WhoamiController
   constructor: ({@jobManager}) ->
@@ -8,13 +9,7 @@ class WhoamiController
 
   show: (req, res) =>
     auth = @authParser.parse req
-
-    job =
-      metadata:
-        auth: auth
-        fromUuid: auth.uuid
-        toUuid: auth.uuid
-        jobType: 'GetDevice'
+    job = JobToHttp.requestToJob jobType: 'GetDevice', request: req, toUuid: auth.uuid
 
     debug('dispatching request', job)
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
