@@ -9,7 +9,7 @@ class MessagesController
 
   create: (req, res) =>
     auth = @authParser.parse req
-    job = @jobToHttp.httpToJob jobType: 'GetDevice', request: req, toUuid: auth.uuid
+    job = @jobToHttp.httpToJob jobType: 'SendMessage', request: req, toUuid: auth.uuid
 
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
       @jobToHttp.sendJobResponse {jobResponse, res}

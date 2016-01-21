@@ -27,14 +27,14 @@ describe 'POST /messages', ->
   context 'when the request is successful', ->
     beforeEach ->
       async.forever (next) =>
-        @jobManager.getRequest ['request'], (error, request) =>
-          next request
-          return unless request?
+        @jobManager.getRequest ['request'], (error, @jobRequest) =>
+          next @jobRequest
+          return unless @jobRequest?
 
           response =
             metadata:
               code: 201
-              responseId: request.metadata.responseId
+              responseId: @jobRequest.metadata.responseId
 
           @jobManager.createResponse 'response', response
 
@@ -51,3 +51,13 @@ describe 'POST /messages', ->
 
     it 'should return a 201', ->
       expect(@response.statusCode).to.equal 201
+
+    it 'should submit the correct job type', ->
+      expect(@jobRequest.metadata.jobType).to.equal 'SendMessage'
+
+    it 'should set the correct auth data', ->
+      expect(@jobRequest.metadata.auth).to.deep.equal uuid: 'irritable-captian', token: 'poop-deck'
+
+    it 'should send the correct message', ->
+      message = JSON.parse @jobRequest.rawData
+      expect(message).to.deep.equal devices: ['*']

@@ -6,6 +6,7 @@ class JobToHttp
     @authParser = new MeshbluAuthParser
 
   httpToJob: ({jobType, request, toUuid, data}) ->
+    data ?= request.body
     userMetadata = @getMetadataFromHeaders request.headers
 
     auth = @authParser.parse request
@@ -17,8 +18,8 @@ class JobToHttp
 
     job =
       metadata: _.extend userMetadata, systemMetadata
-      data: data ? request.body
-      
+      data: data
+          
     job
 
   getMetadataFromHeaders: (headers) =>
