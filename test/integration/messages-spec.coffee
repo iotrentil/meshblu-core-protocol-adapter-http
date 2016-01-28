@@ -2,6 +2,7 @@ _ = require 'lodash'
 request = require 'request'
 Server = require '../../src/server'
 async      = require 'async'
+moment     = require 'moment'
 redis      = require 'redis'
 RedisNS    = require '@octoblu/redis-ns'
 JobManager = require 'meshblu-core-job-manager'
@@ -76,9 +77,11 @@ describe 'POST /messages', ->
     it 'should log the attempt and success of the message', (done) ->
       @jobLogClient.lindex 'meshblu:job-log', 0, (error, jobStr) =>
         return done error if error?
+        todaySuffix = moment.utc().format('YYYY-MM-DD')
+        index = "meshblu_http-#{todaySuffix}"
         expect(JSON.parse jobStr).to.containSubset {
-          "_index": "meshblu_http-2016-01-28"
-          "_type": "job"
+          "index": index
+          "type": "job"
           "body": {
             "request": {
               "auth": {
