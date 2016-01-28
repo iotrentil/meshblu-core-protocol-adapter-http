@@ -78,19 +78,21 @@ describe 'POST /messages', ->
       @jobLogClient.lindex 'meshblu:job-log', 0, (error, jobStr) =>
         return done error if error?
         todaySuffix = moment.utc().format('YYYY-MM-DD')
-        index = "meshblu_http-#{todaySuffix}"
+        index = "metric:meshblu-server-http-#{todaySuffix}"
         expect(JSON.parse jobStr).to.containSubset {
           "index": index
-          "type": "meshblu-server-http"
+          "type": "meshblu-server-http:request"
           "body": {
             "request": {
-              "auth": {
-                "token": "poop-deck"
-                "uuid": "irritable-captian"
+              "metadata": {
+                "auth": {
+                  "token": "poop-deck"
+                  "uuid": "irritable-captian"
+                }
+                "fromUuid": "irritable-captian"
+                "jobType": "SendMessage"
+                "toUuid": "irritable-captian"
               }
-              "fromUuid": "irritable-captian"
-              "jobType": "SendMessage"
-              "toUuid": "irritable-captian"
             }
             "response": {
               "metadata": {
