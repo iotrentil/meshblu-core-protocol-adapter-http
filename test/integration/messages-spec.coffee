@@ -14,6 +14,7 @@ describe 'POST /messages', ->
       disableLogging: true
       jobTimeoutSeconds: 1
       namespace: 'meshblu:server:http:test'
+      jobLogQueue: 'meshblu:job-log'
 
     @sut.run done
 
@@ -23,6 +24,10 @@ describe 'POST /messages', ->
   beforeEach ->
     @redis = _.bindAll new RedisNS 'meshblu:server:http:test', redis.createClient()
     @jobManager = new JobManager client: @redis, timeoutSeconds: 1
+
+  beforeEach (done) ->
+    @jobLogClient = redis.createClient()
+    @jobLogClient.del 'meshblu:job-log', done
 
   context 'when the request is successful', ->
     beforeEach ->
@@ -61,3 +66,35 @@ describe 'POST /messages', ->
     it 'should send the correct message', ->
       message = JSON.parse @jobRequest.rawData
       expect(message).to.deep.equal devices: ['*']
+
+    it 'should log the message', (done) ->
+      @jobLogClient.llen 'meshblu:job-log', (error, count) =>
+        return done error if error?
+        expect(count).to.equal 1
+        done()
+
+    it 'should log the attempt and success of the message', (done) ->
+      @jobLogClient.lindex 'meshblu:job-log', 0, (error, jobStr) =>
+        return done error if error?
+        expect(JSON.parse jobStr).to.containSubset {
+          "_index": "meshblu_http-2016-01-28"
+          "_type": "job"
+          "body": {
+            "request": {
+              "auth": {
+                "token": "poop-deck"
+                "uuid": "irritable-captian"
+              }
+              "fromUuid": "irritable-captian"
+              "jobType": "SendMessage"
+              "toUuid": "irritable-captian"
+            }
+            "response": {
+              "metadata": {
+                "code": 201
+                "success": true
+              }
+            }
+          }
+        }
+        done()

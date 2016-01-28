@@ -14,6 +14,7 @@ describe 'GET /devices/:uuid/subscriptions', ->
       disableLogging: true
       jobTimeoutSeconds: 1
       namespace: 'meshblu:server:http:test'
+      jobLogQueue: 'meshblu:job-log'
 
     @sut.run done
 

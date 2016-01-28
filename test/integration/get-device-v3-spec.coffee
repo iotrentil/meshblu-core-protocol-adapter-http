@@ -14,6 +14,7 @@ describe 'GET /v3/devices/:uuid', ->
       disableLogging: true
       jobTimeoutSeconds: 1
       namespace: 'meshblu:server:http:test'
+      jobLogQueue: 'meshblu:job-log'
 
     @sut.run done
 

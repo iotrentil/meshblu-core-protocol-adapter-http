@@ -10,6 +10,8 @@ class Command
       jobTimeoutSeconds:            process.env.JOB_TIMEOUT_SECONDS || 30
       connectionPoolMaxConnections: process.env.CONNECTION_POOL_MAX_CONNECTIONS || 100
       disableLogging:               process.env.DISABLE_LOGGING == "true"
+      jobLogRedisUri:               process.env.JOB_LOG_REDIS_URI
+      jobLogQueue:                  process.env.JOB_LOG_QUEUE
 
   panic: (error) =>
     console.error error.stack
