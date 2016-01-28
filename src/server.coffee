@@ -44,7 +44,7 @@ class Server
     jobLogger = new JobLogger
       jobLogQueue: @jobLogQueue
       indexPrefix: 'meshblu_http'
-      type: 'job'
+      type: 'meshblu-server-http'
       client: redis.createClient(@jobLogRedisUri)
 
     connectionPool = @_createConnectionPool()

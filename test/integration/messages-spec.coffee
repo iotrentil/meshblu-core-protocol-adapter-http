@@ -81,7 +81,7 @@ describe 'POST /messages', ->
         index = "meshblu_http-#{todaySuffix}"
         expect(JSON.parse jobStr).to.containSubset {
           "index": index
-          "type": "job"
+          "type": "meshblu-server-http"
           "body": {
             "request": {
               "auth": {
