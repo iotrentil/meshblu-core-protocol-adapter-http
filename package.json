@@ -1,6 +1,6 @@
 {
   "name": "meshblu-server-http",
-  "version": "1.12.6",
+  "version": "1.12.7",
   "description": "",
   "engines": {
     "node": ">=5.0.0"
@@ -29,6 +29,7 @@
     "job-logger": "^1.2.0",
     "lodash": "^4.0.0",
     "meshblu-core-job-manager": "^3.1.4",
+    "meshblu-core-pooled-job-manager": "^1.0.0",
     "morgan": "^1.6.1",
     "redis": "^2.2.5",
     "request": "^2.67.0",

@@ -7,7 +7,6 @@ DeviceV2Controller      = require './controllers/device-v2-controller'
 DeviceV3Controller      = require './controllers/device-v3-controller'
 SearchDeviceController  = require './controllers/search-device-controller'
 TokenController         = require './controllers/token-controller'
-PooledJobManager        = require './pooled-job-manager'
 
 class Router
   constructor: ({jobManager, jobToHttp})->
