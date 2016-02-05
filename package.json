@@ -1,6 +1,6 @@
 {
   "name": "meshblu-server-http",
-  "version": "1.12.8",
+  "version": "1.12.9",
   "description": "",
   "engines": {
     "node": ">=5.0.0"
