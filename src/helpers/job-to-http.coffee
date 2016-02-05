@@ -19,7 +19,7 @@ class JobToHttp
     job =
       metadata: _.extend userMetadata, systemMetadata
       data: data
-          
+
     job
 
   getMetadataFromHeaders: (headers) =>
@@ -29,7 +29,7 @@ class JobToHttp
       newMetadata[key] = value
 
   sendJobResponse: ({jobResponse, res}) ->
-    return res.status(error.code ? 500).send(error.message) if error?
+    return res.sendStatus(500) unless jobResponse?
     _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{_.kebabCase(key)}", value
 
     return res.sendStatus jobResponse.metadata.code unless jobResponse.rawData?
