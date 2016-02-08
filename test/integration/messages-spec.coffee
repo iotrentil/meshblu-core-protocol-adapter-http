@@ -42,7 +42,8 @@ describe 'POST /messages', ->
               code: 201
               responseId: @jobRequest.metadata.responseId
 
-          @jobManager.createResponse 'response', response
+          @jobManager.createResponse 'response', response, (error) =>
+            throw error if error?
 
     beforeEach (done) ->
       options =

@@ -38,7 +38,8 @@ describe 'DELETE /devices/:uuid/tokens/query', ->
               responseId: @request.metadata.responseId
               name: 'dinosaur-getter'
 
-          @jobManager.createResponse 'response', response
+          @jobManager.createResponse 'response', response, (error) =>
+            throw error if error?
 
     beforeEach (done) ->
       options =

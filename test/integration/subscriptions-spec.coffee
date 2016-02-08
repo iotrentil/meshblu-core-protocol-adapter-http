@@ -38,7 +38,8 @@ describe 'GET /devices/:uuid/subscriptions', ->
               responseId: request.metadata.responseId
             data: []
 
-          @jobManager.createResponse 'response', response
+          @jobManager.createResponse 'response', response, (error) =>
+            throw error if error?
 
     beforeEach (done) ->
       options =

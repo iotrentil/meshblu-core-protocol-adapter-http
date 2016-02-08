@@ -40,7 +40,8 @@ describe 'GET /devices/:uuid', ->
             data:
               uuid: 'secret-island'
 
-          @jobManager.createResponse 'response', response
+          @jobManager.createResponse 'response', response, (error) =>
+            throw error if error?
 
     beforeEach (done) ->
       options =

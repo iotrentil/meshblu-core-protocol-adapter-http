@@ -25,6 +25,8 @@ describe 'POST /authenticate', ->
     @redis = _.bindAll new RedisNS 'meshblu:server:http:test', redis.createClient()
     @jobManager = new JobManager client: @redis, timeoutSeconds: 1
 
+
+
   context 'when the request is successful', ->
     beforeEach ->
       async.forever (next) =>
@@ -37,7 +39,8 @@ describe 'POST /authenticate', ->
               code: 204
               responseId: request.metadata.responseId
 
-          @jobManager.createResponse 'response', response
+          @jobManager.createResponse 'response', response, (error) =>
+            throw error if error?
 
     beforeEach (done) ->
       options =

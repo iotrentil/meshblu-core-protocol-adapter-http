@@ -41,7 +41,8 @@ describe 'GET /devices/:uuid/publickey', ->
               uuid: 'secret-island'
               publicKey: 'abc123'
 
-          @jobManager.createResponse 'response', response
+          @jobManager.createResponse 'response', response, (error) =>
+            throw error if error?
 
     beforeEach (done) ->
       options =
