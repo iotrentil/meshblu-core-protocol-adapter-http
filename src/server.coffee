@@ -22,6 +22,7 @@ class Server
     {@connectionPoolMaxConnections, @redisUri, @namespace, @jobTimeoutSeconds} = options
     {@jobLogRedisUri, @jobLogQueue} = options
     @panic 'missing @jobLogQueue', 2 unless @jobLogQueue?
+    @panic 'missing @jobLogRedisUri', 2 unless @jobLogRedisUri?
 
   address: =>
     @server.address()
