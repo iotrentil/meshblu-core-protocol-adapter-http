@@ -87,7 +87,6 @@ describe 'POST /messages', ->
             "request": {
               "metadata": {
                 "auth": {
-                  "token": "poop-deck"
                   "uuid": "irritable-captian"
                 }
                 "fromUuid": "irritable-captian"

@@ -10,6 +10,15 @@ class SubscriptionsController
 
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
       return res.status(error.code ? 500).send(error.message) if error?
-      @jobToHttp.sendJobResponse {jobResponse, res}
+      return res.sendStatus(500) unless jobResponse?
+
+      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{_.kebabCase(key)}", value
+      return res.sendStatus jobResponse.metadata.code unless jobResponse.rawData?
+      subscriptions = _.map JSON.parse(jobResponse.rawData), (subscription) =>
+        uuid: subscription.emitterUuid
+        type: subscription.type
+        
+      res.status(200).send(subscriptions)
+
 
 module.exports = SubscriptionsController

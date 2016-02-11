@@ -6,7 +6,7 @@ redis      = require 'redis'
 RedisNS    = require '@octoblu/redis-ns'
 JobManager = require 'meshblu-core-job-manager'
 
-describe 'GET /devices/:uuid/subscriptions', ->
+describe 'GET /v2/devices/:uuid/subscriptions', ->
   beforeEach (done) ->
     @port = 0xd00d
     @sut = new Server
@@ -47,7 +47,7 @@ describe 'GET /devices/:uuid/subscriptions', ->
           username: 'irritable-captian'
           password: 'poop-deck'
 
-      request.get "http://localhost:#{@port}/devices/irritable-captian/subscriptions", options, (error, @response, @body) =>
+      request.get "http://localhost:#{@port}/v2/devices/irritable-captian/subscriptions", options, (error, @response, @body) =>
         done error
 
     it 'should return a 200', ->

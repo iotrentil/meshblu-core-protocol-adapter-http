@@ -23,7 +23,7 @@ class Router
   route: (app) =>
     app.post '/authenticate', @authenticateController.create
     app.post '/messages', @messagesController.create
-    app.get '/devices/:uuid/subscriptions', @subscriptionsController.list
+    app.get '/v2/devices/:uuid/subscriptions', @subscriptionsController.list
     app.get '/v2/whoami', @whoamiController.show
     app.get '/devices/:uuid', @deviceV1Controller.get
     app.get '/devices/:uuid/publickey', @deviceV1Controller.getPublicKey
