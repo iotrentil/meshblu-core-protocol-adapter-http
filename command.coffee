@@ -12,6 +12,8 @@ class Command
       disableLogging:               process.env.DISABLE_LOGGING == "true"
       jobLogRedisUri:               process.env.JOB_LOG_REDIS_URI
       jobLogQueue:                  process.env.JOB_LOG_QUEUE
+      meshbluHost:                  process.env.MESHBLU_HOST
+      meshbluPort:                  process.env.MESHBLU_PORT
 
   panic: (error) =>
     console.error error.stack

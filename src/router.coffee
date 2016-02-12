@@ -7,9 +7,11 @@ DeviceV2Controller      = require './controllers/device-v2-controller'
 DeviceV3Controller      = require './controllers/device-v3-controller'
 SearchDeviceController  = require './controllers/search-device-controller'
 TokenController         = require './controllers/token-controller'
+request                 = require 'request'
+url                     = require 'url'
 
 class Router
-  constructor: ({jobManager, jobToHttp})->
+  constructor: ({jobManager, jobToHttp, @meshbluHost, @meshbluPort})->
     @authenticateController  = new AuthenticateController {jobManager, jobToHttp}
     @messagesController      = new MessagesController {jobManager, jobToHttp}
     @subscriptionsController = new SubscriptionsController {jobManager, jobToHttp}
@@ -31,5 +33,20 @@ class Router
     app.get '/v3/devices/:uuid', @deviceV3Controller.get
     app.post '/search/devices', @searchDeviceController.search
     app.delete '/devices/:uuid/tokens', @tokenController.revokeByQuery
+    app.all '*', (req, res) ->
+      currentUrl = url.parse req.originalUrl
+      meshbluUrl = url.format
+        pathname: currentUrl.pathname
+        protocol: req.protocol
+        query: currentUrl.query
+        hostname: @meshbluHost
+        port: @meshbluPort
+
+      request[req.method.toLowerCase()]
+        headers: req.headers
+        uri: meshbluUrl
+        json: req.body
+        (err,info, body) =>
+          res.status(info.statusCode).set(info.headers).send(body).end()
 
 module.exports = Router

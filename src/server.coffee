@@ -19,10 +19,12 @@ PackageJSON        = require '../package.json'
 class Server
   constructor: (options)->
     {@disableLogging, @port} = options
-    {@connectionPoolMaxConnections, @redisUri, @namespace, @jobTimeoutSeconds} = options
+    {@connectionPoolMaxConnections, @redisUri, @namespace, @jobTimeoutSeconds, @meshbluPort, @meshbluHost} = options
     {@jobLogRedisUri, @jobLogQueue} = options
     @panic 'missing @jobLogQueue', 2 unless @jobLogQueue?
     @panic 'missing @jobLogRedisUri', 2 unless @jobLogRedisUri?
+    @panic 'missing @meshbluHost', 2 unless @meshbluHost?
+    @panic 'missing @meshbluPort', 2 unless @meshbluPort?
 
   address: =>
     @server.address()
@@ -55,7 +57,7 @@ class Server
       jobLogger: jobLogger
 
     jobToHttp = new JobToHttp
-    router = new Router {jobManager, jobToHttp}
+    router = new Router {jobManager, jobToHttp, @meshbluHost, @meshbluPort}
 
     router.route app
 
