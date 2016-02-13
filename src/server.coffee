@@ -56,7 +56,7 @@ class Server
       pool: connectionPool
       jobLogger: jobLogger
 
-    jobToHttp = new JobToHttp
+    jobToHttp = new JobToHttp    
     router = new Router {jobManager, jobToHttp, @meshbluHost, @meshbluPort}
 
     router.route app
