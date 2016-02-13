@@ -13,8 +13,11 @@ describe 'POST /authenticate', ->
       port: @port
       disableLogging: true
       jobTimeoutSeconds: 1
-      namespace: 'meshblu:server:http:test'
+      namespace:   'meshblu:server:http:test'
       jobLogQueue: 'meshblu:job-log'
+      jobLogRedisUri: 'redis://localhost:6379'
+      meshbluHost: 'localhost'
+      meshbluPort: 3000
 
     @sut.run done
 
