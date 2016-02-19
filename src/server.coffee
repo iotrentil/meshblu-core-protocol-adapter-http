@@ -37,9 +37,9 @@ class Server
 
   run: (callback) =>
     app = express()
+    app.use meshbluHealthcheck()
     app.use morgan 'dev', immediate: false unless @disableLogging
     app.use errorHandler()
-    app.use meshbluHealthcheck()
     app.use cors()
     app.use bodyParser.urlencoded limit: '50mb', extended : true
     app.use bodyParser.json limit : '50mb'
@@ -56,7 +56,7 @@ class Server
       pool: connectionPool
       jobLogger: jobLogger
 
-    jobToHttp = new JobToHttp    
+    jobToHttp = new JobToHttp
     router = new Router {jobManager, jobToHttp, @meshbluHost, @meshbluPort}
 
     router.route app
