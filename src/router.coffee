@@ -33,21 +33,5 @@ class Router
     app.get '/v3/devices/:uuid', @deviceV3Controller.get
     app.post '/search/devices', @searchDeviceController.search
     app.delete '/devices/:uuid/tokens', @tokenController.revokeByQuery
-    app.all '*', (req, res) =>
-      currentUrl = url.parse req.originalUrl
-      meshbluUrl = url.format
-        pathname: currentUrl.pathname
-        protocol: req.protocol
-        query: currentUrl.query
-        hostname: @meshbluHost
-        port: @meshbluPort
-
-
-      options = headers: req.headers, uri: meshbluUrl, json: req.body
-
-      request[req.method.toLowerCase()] options, (error, meshbluResponse, body) =>
-        console.log {error, meshbluResponse, body}
-        return res.status(error.code || 500).send(error.message) if error?
-        res.status(meshbluResponse.statusCode).set(meshbluResponse.headers).send(body).end()
 
 module.exports = Router
