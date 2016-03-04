@@ -33,4 +33,34 @@ class DeviceV2Controller
       _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
       res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
 
+  update: (req, res) =>
+    # insert $set first
+    req.body = $set: req.body
+    job = @jobToHttp.httpToJob jobType: 'UpdateDevice', request: req, toUuid: req.params.uuid
+
+    debug('dispatching request', job)
+    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+      if error?
+        jsonError =
+          code: error.code
+          message: error.message
+        return res.status(error.code ? 500).send jsonError
+
+      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
+      res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
+
+  updateDangerously: (req, res) =>
+    job = @jobToHttp.httpToJob jobType: 'UpdateDevice', request: req, toUuid: req.params.uuid
+
+    debug('dispatching request', job)
+    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+      if error?
+        jsonError =
+          code: error.code
+          message: error.message
+        return res.status(error.code ? 500).send jsonError
+
+      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
+      res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
+
 module.exports = DeviceV2Controller

@@ -29,7 +29,10 @@ class Router
     app.get '/v2/whoami', @whoamiController.show
     app.get '/devices/:uuid', @deviceV1Controller.get
     app.get '/devices/:uuid/publickey', @deviceV1Controller.getPublicKey
+    app.put '/devices/:uuid', @deviceV2Controller.update
     app.get '/v2/devices/:uuid', @deviceV2Controller.get
+    app.patch '/v2/devices/:uuid', @deviceV2Controller.update
+    app.put '/v2/devices/:uuid', @deviceV2Controller.updateDangerously
     app.get '/v3/devices/:uuid', @deviceV3Controller.get
     app.post '/search/devices', @searchDeviceController.search
     app.delete '/devices/:uuid/tokens', @tokenController.revokeByQuery
