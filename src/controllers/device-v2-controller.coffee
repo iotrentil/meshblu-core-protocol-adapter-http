@@ -35,7 +35,12 @@ class DeviceV2Controller
 
   update: (req, res) =>
     # insert $set first
-    req.body = $set: req.body
+    unless _.isPlainObject req.body
+      return res.status(422).send message: 'Invalid Request'
+    body = req.body
+    delete body.uuid
+    delete body.token
+    req.body = $set: body
     job = @jobToHttp.httpToJob jobType: 'UpdateDevice', request: req, toUuid: req.params.uuid
 
     debug('dispatching request', job)
