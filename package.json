@@ -1,6 +1,6 @@
 {
   "name": "meshblu-server-http",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "",
   "engines": {
     "node": ">=5.0.0"
@@ -12,6 +12,10 @@
     "test": "istanbul cover _mocha -- --require coffee-coverage/register-istanbul --reporter spec"
   },
   "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octoblu/meshblu-server-http.git"
+  },
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -25,6 +29,7 @@
     "errorhandler": "^1.4.2",
     "express": "^4.13.3",
     "express-meshblu-healthcheck": "^1.0.1",
+    "express-send-error": "^1.0.4",
     "generic-pool": "^2.3.0",
     "job-logger": "^1.2.2",
     "lodash": "^4.0.0",

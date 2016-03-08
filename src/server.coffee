@@ -6,6 +6,7 @@ bodyParser         = require 'body-parser'
 cors               = require 'cors'
 errorHandler       = require 'errorhandler'
 meshbluHealthcheck = require 'express-meshblu-healthcheck'
+SendError          = require 'express-send-error'
 redis              = require 'redis'
 RedisNS            = require '@octoblu/redis-ns'
 debug              = require('debug')('meshblu-server-http:server')
@@ -37,6 +38,7 @@ class Server
 
   run: (callback) =>
     app = express()
+    app.use SendError()
     app.use meshbluHealthcheck()
     app.use morgan 'dev', immediate: false unless @disableLogging
     app.use errorHandler()

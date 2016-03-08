@@ -106,3 +106,77 @@ describe 'POST /messages', ->
           }
         }
         done()
+
+  context 'when the request is unsuccessful', ->
+    beforeEach ->
+      async.forever (next) =>
+        @jobManager.getRequest ['request'], (error, @jobRequest) =>
+          next @jobRequest
+          return unless @jobRequest?
+
+          response =
+            metadata:
+              code: 506
+              responseId: @jobRequest.metadata.responseId
+
+          @jobManager.createResponse 'response', response, (error) =>
+            throw error if error?
+
+    beforeEach (done) ->
+      options =
+        auth:
+          username: 'irritable-captian'
+          password: 'poop-deck'
+        json:
+          devices: ['*']
+
+      request.post "http://localhost:#{@port}/messages", options, (error, @response) =>
+        done error
+
+    it 'should return a 506', ->
+      expect(@response.statusCode).to.equal 506
+
+    it 'should submit the correct job type', ->
+      expect(@jobRequest.metadata.jobType).to.equal 'SendMessage'
+
+    it 'should set the correct auth data', ->
+      expect(@jobRequest.metadata.auth).to.deep.equal uuid: 'irritable-captian', token: 'poop-deck'
+
+    it 'should send the correct message', ->
+      message = JSON.parse @jobRequest.rawData
+      expect(message).to.deep.equal devices: ['*']
+
+    it 'should log the message', (done) ->
+      @jobLogClient.llen 'meshblu:job-log', (error, count) =>
+        return done error if error?
+        expect(count).to.equal 1
+        done()
+
+    it 'should log the attempt and success of the message', (done) ->
+      @jobLogClient.lindex 'meshblu:job-log', 0, (error, jobStr) =>
+        return done error if error?
+        todaySuffix = moment.utc().format('YYYY-MM-DD')
+        index = "metric:meshblu-server-http-#{todaySuffix}"
+        expect(JSON.parse jobStr).to.containSubset {
+          "index": index
+          "type": "meshblu-server-http:request"
+          "body": {
+            "request": {
+              "metadata": {
+                "auth": {
+                  "uuid": "irritable-captian"
+                }
+                "fromUuid": "irritable-captian"
+                "jobType": "SendMessage"
+                "toUuid": "irritable-captian"
+              }
+            }
+            "response": {
+              "metadata": {
+                "code": 506
+                "success": false
+              }
+            }
+          }
+        }
+        done()
