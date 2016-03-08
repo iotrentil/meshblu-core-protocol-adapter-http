@@ -15,7 +15,7 @@ class DeviceV2Controller
 
     debug('dispatching request', job)
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
-      return res.status(error.code ? 500).send(error.message) if error?
+      return res.sendError error if error?
       @jobToHttp.sendJobResponse {jobResponse, res}
 
 module.exports = DeviceV2Controller

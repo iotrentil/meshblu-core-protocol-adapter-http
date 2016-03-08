@@ -15,7 +15,7 @@ class AuthenticateController
         jobType: 'Authenticate'
 
     @jobManager.do 'request', 'response', options, (error, jobResponse) =>
-      return res.status(error.code ? 500).send(error.message) if error?
+      return res.sendError error if error?
       _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
       res.status(jobResponse.metadata.code).end()
 
