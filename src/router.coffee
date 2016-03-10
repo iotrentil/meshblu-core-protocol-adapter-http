@@ -9,11 +9,12 @@ StatusController          = require './controllers/status-controller'
 SubscriptionsController   = require './controllers/subscriptions-controller'
 TokenController           = require './controllers/token-controller'
 WhoamiController          = require './controllers/whoami-controller'
+MessengerController       = require './controllers/messenger-controller'
 request                   = require 'request'
 url                       = require 'url'
 
 class Router
-  constructor: ({jobManager, jobToHttp, @meshbluHost, @meshbluPort})->
+  constructor: ({jobManager, jobToHttp, messengerClientFactory, @meshbluHost, @meshbluPort})->
     @authenticateController    = new AuthenticateController {jobManager, jobToHttp}
     @deviceV1Controller        = new DeviceV1Controller {jobManager, jobToHttp}
     @deviceV2Controller        = new DeviceV2Controller {jobManager, jobToHttp}
@@ -25,6 +26,7 @@ class Router
     @subscriptionsController   = new SubscriptionsController {jobManager, jobToHttp}
     @tokenController           = new TokenController {jobManager, jobToHttp}
     @whoamiController          = new WhoamiController {jobManager, jobToHttp}
+    @messengerController       = new MessengerController {jobManager, jobToHttp, messengerClientFactory}
 
   route: (app) =>
     app.get '/publickey', @globalPublicKeyController.get
@@ -42,5 +44,6 @@ class Router
     app.post '/search/devices', @searchDeviceController.search
     app.get '/status', @statusController.get
     app.delete '/devices/:uuid/tokens', @tokenController.revokeByQuery
+    app.get '/subscribe', @messengerController.subscribeSelf
 
 module.exports = Router
