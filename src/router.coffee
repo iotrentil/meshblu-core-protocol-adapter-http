@@ -6,12 +6,13 @@ DeviceV1Controller      = require './controllers/device-v1-controller'
 DeviceV2Controller      = require './controllers/device-v2-controller'
 DeviceV3Controller      = require './controllers/device-v3-controller'
 SearchDeviceController  = require './controllers/search-device-controller'
+MessengerController     = require './controllers/messenger-controller'
 TokenController         = require './controllers/token-controller'
 request                 = require 'request'
 url                     = require 'url'
 
 class Router
-  constructor: ({jobManager, jobToHttp, @meshbluHost, @meshbluPort})->
+  constructor: ({jobManager, jobToHttp, messengerClientFactory, @meshbluHost, @meshbluPort})->
     @authenticateController  = new AuthenticateController {jobManager, jobToHttp}
     @messagesController      = new MessagesController {jobManager, jobToHttp}
     @subscriptionsController = new SubscriptionsController {jobManager, jobToHttp}
@@ -21,6 +22,7 @@ class Router
     @deviceV3Controller      = new DeviceV3Controller {jobManager, jobToHttp}
     @searchDeviceController  = new SearchDeviceController {jobManager, jobToHttp}
     @tokenController         = new TokenController {jobManager, jobToHttp}
+    @messengerController     = new MessengerController {jobManager, jobToHttp, messengerClientFactory}
 
   route: (app) =>
     app.post '/authenticate', @authenticateController.create
@@ -36,5 +38,6 @@ class Router
     app.get '/v3/devices/:uuid', @deviceV3Controller.get
     app.post '/search/devices', @searchDeviceController.search
     app.delete '/devices/:uuid/tokens', @tokenController.revokeByQuery
+    app.get '/subscribe', @messengerController.subscribeSelf
 
 module.exports = Router

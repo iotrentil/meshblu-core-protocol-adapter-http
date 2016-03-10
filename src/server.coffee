@@ -1,31 +1,34 @@
-_                  = require 'lodash'
-colors             = require 'colors'
-morgan             = require 'morgan'
-express            = require 'express'
-bodyParser         = require 'body-parser'
-cors               = require 'cors'
-errorHandler       = require 'errorhandler'
-meshbluHealthcheck = require 'express-meshblu-healthcheck'
-SendError          = require 'express-send-error'
-redis              = require 'redis'
-RedisNS            = require '@octoblu/redis-ns'
-debug              = require('debug')('meshblu-server-http:server')
-Router             = require './router'
-{Pool}             = require 'generic-pool'
-PooledJobManager   = require 'meshblu-core-pooled-job-manager'
-JobLogger          = require 'job-logger'
-JobToHttp          = require './helpers/job-to-http'
-PackageJSON        = require '../package.json'
+_                      = require 'lodash'
+colors                 = require 'colors'
+morgan                 = require 'morgan'
+express                = require 'express'
+bodyParser             = require 'body-parser'
+cors                   = require 'cors'
+errorHandler           = require 'errorhandler'
+meshbluHealthcheck     = require 'express-meshblu-healthcheck'
+SendError              = require 'express-send-error'
+redis                  = require 'redis'
+RedisNS                = require '@octoblu/redis-ns'
+debug                  = require('debug')('meshblu-server-http:server')
+Router                 = require './router'
+{Pool}                 = require 'generic-pool'
+PooledJobManager       = require 'meshblu-core-pooled-job-manager'
+JobLogger              = require 'job-logger'
+JobToHttp              = require './helpers/job-to-http'
+PackageJSON            = require '../package.json'
+MessengerClientFactory = require './messenger-client-factory'
 
 class Server
   constructor: (options)->
     {@disableLogging, @port} = options
-    {@connectionPoolMaxConnections, @redisUri, @namespace, @jobTimeoutSeconds, @meshbluPort, @meshbluHost} = options
+    {@redisUri, @namespace, @jobTimeoutSeconds, @meshbluPort, @meshbluHost} = options
+    {@connectionPoolMaxConnections} = options
     {@jobLogRedisUri, @jobLogQueue} = options
     @panic 'missing @jobLogQueue', 2 unless @jobLogQueue?
     @panic 'missing @jobLogRedisUri', 2 unless @jobLogRedisUri?
     @panic 'missing @meshbluHost', 2 unless @meshbluHost?
     @panic 'missing @meshbluPort', 2 unless @meshbluPort?
+    @panic 'missing @connectionPoolMaxConnections', 2 unless @connectionPoolMaxConnections?
 
   address: =>
     @server.address()
@@ -45,21 +48,27 @@ class Server
     app.use cors()
     app.use bodyParser.urlencoded limit: '50mb', extended : true
     app.use bodyParser.json limit : '50mb'
-
+    app.use (req, res, next) =>
+      req.merged_params = _.extend {}, req.query, req.body
+      next()
+      
     jobLogger = new JobLogger
       jobLogQueue: @jobLogQueue
       indexPrefix: 'metric:meshblu-server-http'
       type: 'meshblu-server-http:request'
       client: redis.createClient(@jobLogRedisUri)
 
-    connectionPool = @_createConnectionPool()
+    jobManagerConnectionPool = @_createConnectionPool(maxConnections: @connectionPoolMaxConnections)
+
     jobManager = new PooledJobManager
       timeoutSeconds: @jobTimeoutSeconds
-      pool: connectionPool
+      pool: jobManagerConnectionPool
       jobLogger: jobLogger
 
+    messengerClientFactory = new MessengerClientFactory {@namespace, @redisUri}
+
     jobToHttp = new JobToHttp
-    router = new Router {jobManager, jobToHttp, @meshbluHost, @meshbluPort}
+    router = new Router {jobManager, jobToHttp, @meshbluHost, @meshbluPort, messengerClientFactory}
 
     router.route app
 
@@ -68,9 +77,9 @@ class Server
   stop: (callback) =>
     @server.close callback
 
-  _createConnectionPool: =>
+  _createConnectionPool: ({maxConnections}) =>
     connectionPool = new Pool
-      max: @connectionPoolMaxConnections
+      max: maxConnections
       min: 0
       returnToHead: true # sets connection pool to stack instead of queue behavior
       create: (callback) =>
