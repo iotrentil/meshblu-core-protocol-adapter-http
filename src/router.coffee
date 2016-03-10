@@ -25,7 +25,7 @@ class Router
     @whoamiController          = new WhoamiController {jobManager, jobToHttp}
 
   route: (app) =>
-    app.get '/publicKey', @globalPublicKeyController.get
+    app.get '/publickey', @globalPublicKeyController.get
     app.post '/authenticate', @authenticateController.create
     app.post '/messages', @messagesController.create
     app.get '/v2/devices/:uuid/subscriptions', @subscriptionsController.list

@@ -46,7 +46,7 @@ describe 'GET /publickey', ->
             throw error if error?
 
     beforeEach (done) ->
-      request.get "http://localhost:#{@port}/publicKey", (error, @response, @body) =>
+      request.get "http://localhost:#{@port}/publickey", (error, @response, @body) =>
         done error
 
     it 'should return a 200', ->
