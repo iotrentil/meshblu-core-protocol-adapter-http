@@ -10,7 +10,8 @@ class MessengerController
 
   subscribeSelf: (req, res) =>
     auth = @authParser.parse req
-    job = @jobToHttp.httpToJob jobType: 'Authenticate', request: req, toUuid: auth.uuid
+    req.body = _.extend {}, req.query, req.body
+    job = @jobToHttp.httpToJob jobType: 'GetAuthorizedSubscriptionTypes', request: req, toUuid: auth.uuid
 
     debug('dispatching request', job)
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
@@ -24,8 +25,8 @@ class MessengerController
       readStream.pipe res
 
       messenger = new MessengerManager {client}
-
-      types = req.merged_params.types || ['broadcast', 'received', 'sent']
+      data = JSON.parse jobResponse.rawData
+      {types} = data
 
       _.each types, (type) =>
         messenger.subscribe type, auth.uuid

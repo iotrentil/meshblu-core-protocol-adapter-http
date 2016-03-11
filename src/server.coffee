@@ -48,9 +48,6 @@ class Server
     app.use cors()
     app.use bodyParser.urlencoded limit: '50mb', extended : true
     app.use bodyParser.json limit : '50mb'
-    app.use (req, res, next) =>
-      req.merged_params = _.extend {}, req.query, req.body
-      next()
       
     jobLogger = new JobLogger
       jobLogQueue: @jobLogQueue
