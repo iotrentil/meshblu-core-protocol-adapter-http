@@ -5,6 +5,7 @@ DeviceV3Controller        = require './controllers/device-v3-controller'
 GlobalPublicKeyController = require './controllers/global-public-key-controller'
 MessagesController        = require './controllers/messages-controller'
 SearchDeviceController    = require './controllers/search-device-controller'
+StatusController          = require './controllers/status-controller'
 SubscriptionsController   = require './controllers/subscriptions-controller'
 TokenController           = require './controllers/token-controller'
 WhoamiController          = require './controllers/whoami-controller'
@@ -20,6 +21,7 @@ class Router
     @globalPublicKeyController = new GlobalPublicKeyController {jobManager, jobToHttp}
     @messagesController        = new MessagesController {jobManager, jobToHttp}
     @searchDeviceController    = new SearchDeviceController {jobManager, jobToHttp}
+    @statusController          = new StatusController {jobManager}
     @subscriptionsController   = new SubscriptionsController {jobManager, jobToHttp}
     @tokenController           = new TokenController {jobManager, jobToHttp}
     @whoamiController          = new WhoamiController {jobManager, jobToHttp}
@@ -38,6 +40,7 @@ class Router
     app.put '/v2/devices/:uuid', @deviceV2Controller.updateDangerously
     app.get '/v3/devices/:uuid', @deviceV3Controller.get
     app.post '/search/devices', @searchDeviceController.search
+    app.get '/status', @statusController.get
     app.delete '/devices/:uuid/tokens', @tokenController.revokeByQuery
 
 module.exports = Router
