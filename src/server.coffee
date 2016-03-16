@@ -17,13 +17,15 @@ JobLogger              = require 'job-logger'
 JobToHttp              = require './helpers/job-to-http'
 PackageJSON            = require '../package.json'
 MessengerClientFactory = require './messenger-client-factory'
+UuidAliasResolver      = require 'meshblu-uuid-alias-resolver'
 
 class Server
   constructor: (options)->
-    {@disableLogging, @port} = options
+    {@disableLogging, @port, @aliasServerUri} = options
     {@redisUri, @namespace, @jobTimeoutSeconds, @meshbluPort, @meshbluHost} = options
     {@connectionPoolMaxConnections} = options
     {@jobLogRedisUri, @jobLogQueue} = options
+    @panic 'missing @aliasServerUri', 2 unless @aliasServerUri?
     @panic 'missing @jobLogQueue', 2 unless @jobLogQueue?
     @panic 'missing @jobLogRedisUri', 2 unless @jobLogRedisUri?
     @panic 'missing @meshbluHost', 2 unless @meshbluHost?
@@ -48,7 +50,7 @@ class Server
     app.use cors()
     app.use bodyParser.urlencoded limit: '50mb', extended : true
     app.use bodyParser.json limit : '50mb'
-      
+
     jobLogger = new JobLogger
       jobLogQueue: @jobLogQueue
       indexPrefix: 'metric:meshblu-server-http'
@@ -65,7 +67,13 @@ class Server
     messengerClientFactory = new MessengerClientFactory {@namespace, @redisUri}
 
     jobToHttp = new JobToHttp
-    router = new Router {jobManager, jobToHttp, @meshbluHost, @meshbluPort, messengerClientFactory}
+
+    uuidAliasClient = _.bindAll new RedisNS 'uuid-alias', redis.createClient(@redisUri)
+    uuidAliasResolver = new UuidAliasResolver
+      cache: uuidAliasResolver
+      aliasServerUri: @aliasServerUri
+
+    router = new Router {jobManager, jobToHttp, @meshbluHost, @meshbluPort, messengerClientFactory, uuidAliasResolver}
 
     router.route app
 
