@@ -1,5 +1,5 @@
 _                 = require 'lodash'
-debug             = require('debug')('meshblu-server-http:whoami-controller')
+debug             = require('debug')('meshblu-server-http:messenger-controller')
 {Readable}        = require 'stream'
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
 MessengerManager  = require 'meshblu-core-manager-messenger'
@@ -44,9 +44,16 @@ class MessengerController
 
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
       return res.sendError error if error?
+
       if jobResponse?.metadata?.code != 204
         return @jobToHttp.sendJobResponse {jobResponse, res}
 
+      res.type 'application/json'
+      res.set {
+        'Connection': 'keep-alive'
+      }
+
+      res.set @jobToHttp.metadataToHeaders jobResponse.metadata
       client = @messengerClientFactory.build()
       readStream = new Readable
       readStream._read = _.noop
@@ -61,6 +68,7 @@ class MessengerController
         return # subscribe sometimes returns false
 
       messenger.on 'message', (channel, message) =>
+        debug 'on message', JSON.stringify(message)
         readStream.push JSON.stringify(message) + '\n'
 
       res.on 'close', ->

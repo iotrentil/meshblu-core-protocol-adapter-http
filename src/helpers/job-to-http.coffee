@@ -28,9 +28,16 @@ class JobToHttp
       key = _.camelCase( _.replace(header, "x-meshblu-", '' ))
       newMetadata[key] = value
 
+  metadataToHeaders: (metadata) =>
+    headers = {}
+    _.each metadata, (value, key) =>
+      header = "x-meshblu-#{_.kebabCase(key)}"
+      _.set headers, header, value
+    headers
+
   sendJobResponse: ({jobResponse, res}) ->
     return res.sendStatus(500) unless jobResponse?
-    _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{_.kebabCase(key)}", value
+    res.set @metadataToHeaders(jobResponse.metadata)
 
     return res.sendStatus jobResponse.metadata.code unless jobResponse.rawData?
 
