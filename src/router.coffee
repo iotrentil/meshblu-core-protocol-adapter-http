@@ -14,7 +14,7 @@ request                   = require 'request'
 url                       = require 'url'
 
 class Router
-  constructor: ({jobManager, jobToHttp, messengerClientFactory, @meshbluHost, @meshbluPort})->
+  constructor: ({jobManager, jobToHttp, messengerClientFactory, uuidAliasResolver})->
     @authenticateController    = new AuthenticateController {jobManager, jobToHttp}
     @deviceV1Controller        = new DeviceV1Controller {jobManager, jobToHttp}
     @deviceV2Controller        = new DeviceV2Controller {jobManager, jobToHttp}

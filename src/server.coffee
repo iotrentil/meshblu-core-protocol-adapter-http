@@ -25,12 +25,10 @@ class Server
     {@redisUri, @namespace, @jobTimeoutSeconds, @meshbluPort, @meshbluHost} = options
     {@connectionPoolMaxConnections} = options
     {@jobLogRedisUri, @jobLogQueue} = options
-    @panic 'missing @aliasServerUri', 2 unless @aliasServerUri?
     @panic 'missing @jobLogQueue', 2 unless @jobLogQueue?
     @panic 'missing @jobLogRedisUri', 2 unless @jobLogRedisUri?
     @panic 'missing @meshbluHost', 2 unless @meshbluHost?
     @panic 'missing @meshbluPort', 2 unless @meshbluPort?
-    @panic 'missing @connectionPoolMaxConnections', 2 unless @connectionPoolMaxConnections?
 
   address: =>
     @server.address()
