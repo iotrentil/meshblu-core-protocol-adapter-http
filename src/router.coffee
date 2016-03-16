@@ -12,7 +12,7 @@ request                 = require 'request'
 url                     = require 'url'
 
 class Router
-  constructor: ({jobManager, jobToHttp, messengerClientFactory, @meshbluHost, @meshbluPort})->
+  constructor: ({jobManager, jobToHttp, messengerClientFactory, uuidAliasResolver})->
     @authenticateController  = new AuthenticateController {jobManager, jobToHttp}
     @messagesController      = new MessagesController {jobManager, jobToHttp}
     @subscriptionsController = new SubscriptionsController {jobManager, jobToHttp}
@@ -22,7 +22,7 @@ class Router
     @deviceV3Controller      = new DeviceV3Controller {jobManager, jobToHttp}
     @searchDeviceController  = new SearchDeviceController {jobManager, jobToHttp}
     @tokenController         = new TokenController {jobManager, jobToHttp}
-    @messengerController     = new MessengerController {jobManager, jobToHttp, messengerClientFactory}
+    @messengerController     = new MessengerController {jobManager, jobToHttp, messengerClientFactory, uuidAliasResolver}
 
   route: (app) =>
     app.post '/authenticate', @authenticateController.create
@@ -39,5 +39,9 @@ class Router
     app.post '/search/devices', @searchDeviceController.search
     app.delete '/devices/:uuid/tokens', @tokenController.revokeByQuery
     app.get '/subscribe', @messengerController.subscribeSelf
+    app.get '/subscribe/:uuid', @messengerController.subscribe
+    app.get '/subscribe/:uuid/broadcast', @messengerController.subscribeBroadcast
+    app.get '/subscribe/:uuid/sent', @messengerController.subscribeSent
+    app.get '/subscribe/:uuid/received', @messengerController.subscribeReceived
 
 module.exports = Router
