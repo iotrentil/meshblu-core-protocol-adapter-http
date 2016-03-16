@@ -5,6 +5,7 @@ DeviceV3Controller        = require './controllers/device-v3-controller'
 GlobalPublicKeyController = require './controllers/global-public-key-controller'
 MessagesController        = require './controllers/messages-controller'
 MessengerController       = require './controllers/messenger-controller'
+RegisterDeviceController  = require './controllers/register-device-controller'
 SearchDeviceController    = require './controllers/search-device-controller'
 StatusController          = require './controllers/status-controller'
 SubscriptionsController   = require './controllers/subscriptions-controller'
@@ -22,6 +23,7 @@ class Router
     @globalPublicKeyController = new GlobalPublicKeyController {jobManager, jobToHttp}
     @messagesController        = new MessagesController {jobManager, jobToHttp}
     @messengerController       = new MessengerController {jobManager, jobToHttp, messengerClientFactory, uuidAliasResolver}
+    @registerDeviceController  = new RegisterDeviceController {jobManager}
     @searchDeviceController    = new SearchDeviceController {jobManager, jobToHttp}
     @statusController          = new StatusController {jobManager}
     @subscriptionsController   = new SubscriptionsController {jobManager, jobToHttp}
@@ -34,6 +36,7 @@ class Router
     app.post '/messages', @messagesController.create
     app.get '/v2/devices/:uuid/subscriptions', @subscriptionsController.list
     app.get '/v2/whoami', @whoamiController.show
+    app.post '/devices', @registerDeviceController.register
     app.get '/devices/:uuid', @deviceV1Controller.get
     app.get '/devices/:uuid/publickey', @deviceV1Controller.getPublicKey
     app.put '/devices/:uuid', @deviceV2Controller.update
