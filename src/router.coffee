@@ -4,17 +4,16 @@ DeviceV2Controller        = require './controllers/device-v2-controller'
 DeviceV3Controller        = require './controllers/device-v3-controller'
 GlobalPublicKeyController = require './controllers/global-public-key-controller'
 MessagesController        = require './controllers/messages-controller'
+MessengerController       = require './controllers/messenger-controller'
 SearchDeviceController    = require './controllers/search-device-controller'
 StatusController          = require './controllers/status-controller'
 SubscriptionsController   = require './controllers/subscriptions-controller'
 TokenController           = require './controllers/token-controller'
 WhoamiController          = require './controllers/whoami-controller'
-MessengerController       = require './controllers/messenger-controller'
 request                   = require 'request'
 url                       = require 'url'
 
 class Router
-<<<<<<< HEAD
   constructor: ({jobManager, jobToHttp, messengerClientFactory, @meshbluHost, @meshbluPort})->
     @authenticateController    = new AuthenticateController {jobManager, jobToHttp}
     @deviceV1Controller        = new DeviceV1Controller {jobManager, jobToHttp}
@@ -22,25 +21,12 @@ class Router
     @deviceV3Controller        = new DeviceV3Controller {jobManager, jobToHttp}
     @globalPublicKeyController = new GlobalPublicKeyController {jobManager, jobToHttp}
     @messagesController        = new MessagesController {jobManager, jobToHttp}
+    @messengerController       = new MessengerController {jobManager, jobToHttp, messengerClientFactory, uuidAliasResolver}
     @searchDeviceController    = new SearchDeviceController {jobManager, jobToHttp}
     @statusController          = new StatusController {jobManager}
     @subscriptionsController   = new SubscriptionsController {jobManager, jobToHttp}
     @tokenController           = new TokenController {jobManager, jobToHttp}
     @whoamiController          = new WhoamiController {jobManager, jobToHttp}
-    @messengerController       = new MessengerController {jobManager, jobToHttp, messengerClientFactory}
-=======
-  constructor: ({jobManager, jobToHttp, messengerClientFactory, uuidAliasResolver})->
-    @authenticateController  = new AuthenticateController {jobManager, jobToHttp}
-    @messagesController      = new MessagesController {jobManager, jobToHttp}
-    @subscriptionsController = new SubscriptionsController {jobManager, jobToHttp}
-    @whoamiController        = new WhoamiController {jobManager, jobToHttp}
-    @deviceV1Controller      = new DeviceV1Controller {jobManager, jobToHttp}
-    @deviceV2Controller      = new DeviceV2Controller {jobManager, jobToHttp}
-    @deviceV3Controller      = new DeviceV3Controller {jobManager, jobToHttp}
-    @searchDeviceController  = new SearchDeviceController {jobManager, jobToHttp}
-    @tokenController         = new TokenController {jobManager, jobToHttp}
-    @messengerController     = new MessengerController {jobManager, jobToHttp, messengerClientFactory, uuidAliasResolver}
->>>>>>> added subscribe/:uuid routes, add uuid-alias-resolver
 
   route: (app) =>
     app.get '/publickey', @globalPublicKeyController.get
