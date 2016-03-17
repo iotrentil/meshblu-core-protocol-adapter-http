@@ -57,10 +57,10 @@ class DeviceV2Controller
     job = @jobToHttp.httpToJob jobType: 'UpdateDevice', request: req, toUuid: req.params.uuid
     job.data =
       $addToSet:
-        discoverWhitelist: [job.metadata.fromUuid]
-        configureWhitelist: [job.metadata.fromUuid]
+        discoverWhitelist: job.metadata.fromUuid
+        configureWhitelist: job.metadata.fromUuid
       $set:
-        owner: [job.metadata.fromUuid]
+        owner: job.metadata.fromUuid
 
     debug('dispatching request', job)
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>

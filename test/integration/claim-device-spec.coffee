@@ -42,8 +42,8 @@ describe 'POST /claimdevice/:uuid', ->
               responseId: request.metadata.responseId
             data:
               uuid: 'secret-island'
-              discoverWhitelist: ['treasure-map']
-              configureWhitelist: ['treasure-map']
+              discoverWhitelist: 'treasure-map'
+              configureWhitelist: 'treasure-map'
               owner: 'treasure-map'
 
           @jobManager.createResponse 'response', response, (error) =>
@@ -67,7 +67,7 @@ describe 'POST /claimdevice/:uuid', ->
     it 'should not have the uuid and token in the request', ->
       expect(JSON.parse @request.rawData).to.deep.equal
         $addToSet:
-          discoverWhitelist: ['treasure-map']
-          configureWhitelist: ['treasure-map']
+          discoverWhitelist: 'treasure-map'
+          configureWhitelist: 'treasure-map'
         $set:
-          owner: ['treasure-map']
+          owner: 'treasure-map'
