@@ -16,8 +16,6 @@ PooledJobManager       = require 'meshblu-core-pooled-job-manager'
 JobLogger              = require 'job-logger'
 JobToHttp              = require './helpers/job-to-http'
 PackageJSON            = require '../package.json'
-MessengerClientFactory = require './messenger-client-factory'
-UuidAliasResolver      = require 'meshblu-uuid-alias-resolver'
 
 class Server
   constructor: (options)->
@@ -55,23 +53,16 @@ class Server
       type: 'meshblu-server-http:request'
       client: redis.createClient(@jobLogRedisUri)
 
-    jobManagerConnectionPool = @_createConnectionPool(maxConnections: @connectionPoolMaxConnections)
+    connectionPool = @_createConnectionPool(maxConnections: @connectionPoolMaxConnections)
 
     jobManager = new PooledJobManager
       timeoutSeconds: @jobTimeoutSeconds
-      pool: jobManagerConnectionPool
+      pool: connectionPool
       jobLogger: jobLogger
-
-    messengerClientFactory = new MessengerClientFactory {@namespace, @redisUri}
 
     jobToHttp = new JobToHttp
 
-    uuidAliasClient = _.bindAll new RedisNS 'uuid-alias', redis.createClient(@redisUri)
-    uuidAliasResolver = new UuidAliasResolver
-      cache: uuidAliasResolver
-      aliasServerUri: @aliasServerUri
-
-    router = new Router {jobManager, jobToHttp, @meshbluHost, @meshbluPort, messengerClientFactory, uuidAliasResolver}
+    router = new Router {jobManager, jobToHttp, @meshbluHost, @meshbluPort}
 
     router.route app
 

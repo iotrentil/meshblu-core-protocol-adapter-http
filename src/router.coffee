@@ -4,7 +4,6 @@ DeviceV2Controller         = require './controllers/device-v2-controller'
 DeviceV3Controller         = require './controllers/device-v3-controller'
 GlobalPublicKeyController  = require './controllers/global-public-key-controller'
 MessagesController         = require './controllers/messages-controller'
-MessengerController        = require './controllers/messenger-controller'
 RegisterDeviceController   = require './controllers/register-device-controller'
 SearchDeviceController     = require './controllers/search-device-controller'
 StatusController           = require './controllers/status-controller'
@@ -16,14 +15,13 @@ request                    = require 'request'
 url                        = require 'url'
 
 class Router
-  constructor: ({jobManager, jobToHttp, messengerClientFactory, uuidAliasResolver})->
+  constructor: ({jobManager, jobToHttp})->
     @authenticateController     = new AuthenticateController {jobManager, jobToHttp}
     @deviceV1Controller         = new DeviceV1Controller {jobManager, jobToHttp}
     @deviceV2Controller         = new DeviceV2Controller {jobManager, jobToHttp}
     @deviceV3Controller         = new DeviceV3Controller {jobManager, jobToHttp}
     @globalPublicKeyController  = new GlobalPublicKeyController {jobManager, jobToHttp}
     @messagesController         = new MessagesController {jobManager, jobToHttp}
-    @messengerController        = new MessengerController {jobManager, jobToHttp, messengerClientFactory, uuidAliasResolver}
     @registerDeviceController   = new RegisterDeviceController {jobManager}
     @searchDeviceController     = new SearchDeviceController {jobManager, jobToHttp}
     @statusController           = new StatusController {jobManager}
@@ -53,10 +51,10 @@ class Router
     app.post '/search/devices', @searchDeviceController.searchV3
     app.get '/status', @statusController.get
     app.delete '/devices/:uuid/tokens', @tokenController.revokeByQuery
-    app.get '/subscribe', @messengerController.subscribeSelf
-    app.get '/subscribe/:uuid', @messengerController.subscribe
-    app.get '/subscribe/:uuid/broadcast', @messengerController.subscribeBroadcast
-    app.get '/subscribe/:uuid/sent', @messengerController.subscribeSent
-    app.get '/subscribe/:uuid/received', @messengerController.subscribeReceived
+    app.get '/subscribe*', (req, res) =>
+      proto = req.header('x-forwarded-proto') ? 'https'
+      host = 'meshblu-http-streaming.octoblu.com'
+      url = "#{proto}://#{host}#{req.url}"
+      res.redirect(301, url)
 
 module.exports = Router
