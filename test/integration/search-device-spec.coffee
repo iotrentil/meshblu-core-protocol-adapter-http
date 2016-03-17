@@ -133,11 +133,65 @@ describe 'POST /search/devices, GET /v2/devices, GET /devices', ->
 
       it 'should send the search body as the data of the job', ->
         data = JSON.parse @request.rawData
-        expect(data).to.containSubset type: 'dinosaur'
+        expect(data).to.deep.equal type: 'dinosaur'
 
       it 'should have a devices array in the response', ->
         expect(@body).to.be.an.array
         expect(@body.length).to.equal 3
+
+  describe '->mydevices', ->
+    context 'when the request is successful', ->
+      beforeEach ->
+        async.forever (next) =>
+          @jobManager.getRequest ['request'], (error, @request) =>
+            next @request
+            return unless @request?
+
+            response =
+              metadata:
+                code: 200
+                responseId: @request.metadata.responseId
+              data: [
+                {uuid: 't-rex'}
+                {uuid: 'megalodon'}
+                {uuid: 'killasaurus'}
+              ]
+
+            @jobManager.createResponse 'response', response, (error) =>
+              throw error if error?
+
+      beforeEach (done) ->
+        options =
+          auth:
+            username: 'irritable-captian'
+            password: 'poop-deck'
+          json: true
+          qs:
+            type: 'dinosaur'
+          headers:
+            'x-meshblu-as': 'treasure-map'
+
+        request.get "http://localhost:#{@port}/mydevices", options, (error, @response, @body) =>
+          done error
+
+      it 'should return a 200', ->
+        expect(@response.statusCode).to.equal 200
+
+      it 'should dispatch the correct metadata', ->
+        expect(@request).to.containSubset
+          metadata:
+            fromUuid: 'treasure-map'
+            auth:
+              uuid: 'irritable-captian'
+              token: 'poop-deck'
+
+      it 'should send the search body as the data of the job', ->
+        data = JSON.parse @request.rawData
+        expect(data).to.deep.equal type: 'dinosaur', owner: 'treasure-map'
+
+      it 'should have a devices array in the response', ->
+        expect(@body.devices).to.be.an.array
+        expect(@body.devices.length).to.equal 3
 
   describe '->v1', ->
     context 'when the request is successful', ->

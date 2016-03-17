@@ -47,6 +47,7 @@ class Router
     app.patch '/v2/devices/:uuid', @deviceV2Controller.update
     app.put '/v2/devices/:uuid', @deviceV2Controller.updateDangerously
     app.get '/v3/devices/:uuid', @deviceV3Controller.get
+    app.get '/mydevices', @searchDeviceController.mydevices
     app.get '/devices', @searchDeviceController.searchV1
     app.get '/v2/devices', @searchDeviceController.searchV2
     app.post '/search/devices', @searchDeviceController.searchV3

@@ -5,6 +5,15 @@ JobToHttp = require '../helpers/job-to-http'
 class SearchDeviceController
   constructor: ({@jobManager, @jobToHttp}) ->
 
+  mydevices: (req, res) =>
+    job = @_oldFormatToJob req
+    job.data.owner = job.metadata.fromUuid
+
+    debug('dispatching request mydevices', job)
+    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+      return res.sendError error if error?
+      res.status(jobResponse.metadata.code).send devices: JSON.parse jobResponse.rawData
+
   searchV1: (req, res) =>
     job = @_oldFormatToJob req
 
