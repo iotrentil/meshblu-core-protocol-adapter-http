@@ -6,7 +6,7 @@ redis      = require 'redis'
 RedisNS    = require '@octoblu/redis-ns'
 JobManager = require 'meshblu-core-job-manager'
 
-describe 'POST /authenticate', ->
+describe 'Authenticate', ->
   beforeEach (done) ->
     @port = 0xd00d
     @sut = new Server
@@ -28,29 +28,75 @@ describe 'POST /authenticate', ->
     @redis = _.bindAll new RedisNS 'meshblu:server:http:test', redis.createClient()
     @jobManager = new JobManager client: @redis, timeoutSeconds: 1
 
-  context 'when the request is successful', ->
-    beforeEach ->
-      async.forever (next) =>
-        @jobManager.getRequest ['request'], (error, request) =>
-          next request
-          return unless request?
+  describe 'POST /authenticate', ->
+    context 'when the request is successful', ->
+      beforeEach ->
+        async.forever (next) =>
+          @jobManager.getRequest ['request'], (error, request) =>
+            next request
+            return unless request?
+            @request = request
 
-          response =
-            metadata:
-              code: 204
-              responseId: request.metadata.responseId
+            response =
+              metadata:
+                code: 204
+                responseId: request.metadata.responseId
 
-          @jobManager.createResponse 'response', response, (error) =>
-            throw error if error?
+            @jobManager.createResponse 'response', response, (error) =>
+              throw error if error?
 
-    beforeEach (done) ->
-      options =
-        auth:
-          username: 'irritable-captian'
-          password: 'poop-deck'
+      beforeEach (done) ->
+        options =
+          auth:
+            username: 'irritable-captian'
+            password: 'poop-deck'
 
-      request.post "http://localhost:#{@port}/authenticate", options, (error, @response) =>
-        done error
+        request.post "http://localhost:#{@port}/authenticate", options, (error, @response) =>
+          done error
 
-    it 'should return a 204', ->
-      expect(@response.statusCode).to.equal 204
+      it 'should have jobType Authenticate', ->
+        expect(@request.metadata.jobType).to.equal 'Authenticate'
+
+      it 'should have auth correct', ->
+        expect(@request.metadata.auth).to.deep.equal uuid: 'irritable-captian', token: 'poop-deck'
+
+      it 'should return a 204', ->
+        expect(@response.statusCode).to.equal 204
+
+  describe 'GET /authenticate/:uuid', ->
+    context 'when the request is successful', ->
+      beforeEach ->
+        async.forever (next) =>
+          @jobManager.getRequest ['request'], (error, request) =>
+            next request
+            return unless request?
+            @request = request
+
+            response =
+              metadata:
+                code: 204
+                responseId: @request.metadata.responseId
+
+            @jobManager.createResponse 'response', response, (error) =>
+              throw error if error?
+
+      beforeEach (done) ->
+        options =
+          auth:
+            username: 'irritable-captian'
+            password: 'poop-deck'
+
+        request.get "http://localhost:#{@port}/authenticate/some-uuid", options, (error, @response) =>
+          done error
+
+      it 'should have jobType Authenticate', ->
+        expect(@request.metadata.jobType).to.equal 'Authenticate'
+
+      it 'should have auth correct', ->
+        expect(@request.metadata.auth).to.deep.equal uuid: 'irritable-captian', token: 'poop-deck'
+
+      it 'should have the toUuid of some-uuid', ->
+        expect(@request.metadata.toUuid).to.equal 'some-uuid'
+
+      it 'should return a 204', ->
+        expect(@response.statusCode).to.equal 204
