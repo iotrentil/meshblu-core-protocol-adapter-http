@@ -42,6 +42,7 @@ class Router
     app.get '/devices/:uuid/publickey', @deviceV1Controller.getPublicKey
     app.put '/devices/:uuid', @deviceV2Controller.update
     app.get '/v2/devices/:uuid', @deviceV2Controller.get
+    app.post '/claimdevice/:uuid', @deviceV2Controller.claimdevice
     app.patch '/v2/devices/:uuid', @deviceV2Controller.update
     app.put '/v2/devices/:uuid', @deviceV2Controller.updateDangerously
     app.get '/v3/devices/:uuid', @deviceV3Controller.get

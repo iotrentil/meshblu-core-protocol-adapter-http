@@ -45,11 +45,26 @@ class DeviceV2Controller
 
     debug('dispatching request', job)
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
-      if error?
-        jsonError =
-          code: error.code
-          message: error.message
-        return res.status(error.code ? 500).send jsonError
+      return res.sendError error if error?
+
+      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
+      res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
+
+  claimdevice: (req, res) =>
+    # insert $set first
+    unless _.isPlainObject req.body
+      return res.status(422).send message: 'Invalid Request'
+    job = @jobToHttp.httpToJob jobType: 'UpdateDevice', request: req, toUuid: req.params.uuid
+    job.data =
+      $addToSet:
+        discoverWhitelist: [job.metadata.fromUuid]
+        configureWhitelist: [job.metadata.fromUuid]
+      $set:
+        owner: [job.metadata.fromUuid]
+
+    debug('dispatching request', job)
+    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+      return res.sendError error if error?
 
       _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
       res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
@@ -59,11 +74,7 @@ class DeviceV2Controller
 
     debug('dispatching request', job)
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
-      if error?
-        jsonError =
-          code: error.code
-          message: error.message
-        return res.status(error.code ? 500).send jsonError
+      return res.sendError error if error?
 
       _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
       res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
