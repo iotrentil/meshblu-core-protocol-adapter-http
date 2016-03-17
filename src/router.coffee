@@ -31,7 +31,7 @@ class Router
     @whoamiController           = new WhoamiController {jobManager, jobToHttp}
 
   route: (app) =>
-    app.get    '/authenticate/:uuid', @authenticateController.check
+    app.get    '/authenticate/:uuid', @authenticateController.checkDevice
     app.post   '/authenticate', @authenticateController.check
     app.post   '/claimdevice/:uuid', @deviceV2Controller.claimdevice
     app.get    '/devices', @searchDeviceController.searchV1

@@ -85,6 +85,8 @@ describe 'Authenticate', ->
           auth:
             username: 'irritable-captian'
             password: 'poop-deck'
+          qs:
+            token: 'some-token'
 
         request.get "http://localhost:#{@port}/authenticate/some-uuid", options, (error, @response) =>
           done error
@@ -93,10 +95,7 @@ describe 'Authenticate', ->
         expect(@request.metadata.jobType).to.equal 'Authenticate'
 
       it 'should have auth correct', ->
-        expect(@request.metadata.auth).to.deep.equal uuid: 'irritable-captian', token: 'poop-deck'
+        expect(@request.metadata.auth).to.deep.equal uuid: 'some-uuid', token: 'some-token'
 
-      it 'should have the toUuid of some-uuid', ->
-        expect(@request.metadata.toUuid).to.equal 'some-uuid'
-
-      it 'should return a 204', ->
-        expect(@response.statusCode).to.equal 204
+      it 'should return a 200', ->
+        expect(@response.statusCode).to.equal 200
