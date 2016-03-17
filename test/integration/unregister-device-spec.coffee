@@ -50,15 +50,15 @@ describe 'DELETE /devices/:uuid', ->
         auth:
           username: 'irritable-captian'
           password: 'poop-deck'
-        json:
-          uuid: 'foooo-you-id'
-          token: 'broken'
-          props: 'yes, please'
+        json: true
         headers:
           'x-meshblu-as': 'treasure-map'
 
       request.del "http://localhost:#{@port}/devices/secret-island", options, (error, @response, @body) =>
         done error
 
-    it 'should return a 204', ->
-      expect(@response.statusCode).to.equal 204
+    it 'should return a 200', ->
+      expect(@response.statusCode).to.equal 200
+
+    it 'should respond with uuid', ->
+      expect(@body.uuid).to.equal 'secret-island'
