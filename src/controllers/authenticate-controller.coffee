@@ -3,20 +3,14 @@ debug = require('debug')('meshblu-server-http:authenticate-controller')
 _     = require 'lodash'
 
 class AuthenticateController
-  constructor: ({@jobManager}) ->
+  constructor: ({@jobManager,@jobToHttp}) ->
     @authParser = new MeshbluAuthParser
 
   create: (req, res) =>
-    auth = @authParser.parse req
+    job = @jobToHttp.httpToJob jobType: 'Authenticate', request: req
 
-    options =
-      metadata:
-        auth: auth
-        jobType: 'Authenticate'
-
-    @jobManager.do 'request', 'response', options, (error, jobResponse) =>
+    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
       return res.sendError error if error?
-      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
-      res.status(jobResponse.metadata.code).end()
+      @jobToHttp.sendJobResponse {jobResponse, res}
 
 module.exports = AuthenticateController

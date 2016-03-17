@@ -31,31 +31,31 @@ class Router
     @whoamiController           = new WhoamiController {jobManager, jobToHttp}
 
   route: (app) =>
-    app.get '/publickey', @globalPublicKeyController.get
-    app.post '/authenticate', @authenticateController.create
-    app.post '/messages', @messagesController.create
-    app.get '/v2/devices/:uuid/subscriptions', @subscriptionsController.list
-    app.get '/v2/whoami', @whoamiController.show
-    app.post '/devices', @registerDeviceController.register
+    app.post   '/authenticate', @authenticateController.create
+    app.post   '/claimdevice/:uuid', @deviceV2Controller.claimdevice
+    app.get    '/devices', @searchDeviceController.searchV1
+    app.post   '/devices', @registerDeviceController.register
+    app.put    '/devices/:uuid', @deviceV2Controller.update
+    app.get    '/devices/:uuid', @deviceV1Controller.get
     app.delete '/devices/:uuid', @unregisterDeviceController.unregister
-    app.get '/devices/:uuid', @deviceV1Controller.get
-    app.get '/devices/:uuid/publickey', @deviceV1Controller.getPublicKey
-    app.put '/devices/:uuid', @deviceV2Controller.update
-    app.get '/v2/devices/:uuid', @deviceV2Controller.get
-    app.post '/claimdevice/:uuid', @deviceV2Controller.claimdevice
-    app.patch '/v2/devices/:uuid', @deviceV2Controller.update
-    app.put '/v2/devices/:uuid', @deviceV2Controller.updateDangerously
-    app.get '/v3/devices/:uuid', @deviceV3Controller.get
-    app.get '/mydevices', @searchDeviceController.mydevices
-    app.get '/devices', @searchDeviceController.searchV1
-    app.get '/v2/devices', @searchDeviceController.searchV2
-    app.post '/search/devices', @searchDeviceController.searchV3
-    app.get '/status', @statusController.get
     app.delete '/devices/:uuid/tokens', @tokenController.revokeByQuery
-    app.get '/subscribe*', (req, res) =>
+    app.get    '/devices/:uuid/publickey', @deviceV1Controller.getPublicKey
+    app.post   '/messages', @messagesController.create
+    app.get    '/mydevices', @searchDeviceController.mydevices
+    app.get    '/publickey', @globalPublicKeyController.get
+    app.post   '/search/devices', @searchDeviceController.searchV3
+    app.get    '/status', @statusController.get
+    app.get    '/subscribe*', (req, res) =>
       proto = req.header('x-forwarded-proto') ? 'https'
       host = 'meshblu-http-streaming.octoblu.com'
       url = "#{proto}://#{host}#{req.url}"
       res.redirect(301, url)
+    app.get    '/v2/devices', @searchDeviceController.searchV2
+    app.get    '/v2/devices/:uuid', @deviceV2Controller.get
+    app.patch  '/v2/devices/:uuid', @deviceV2Controller.update
+    app.get    '/v2/devices/:uuid/subscriptions', @subscriptionsController.list
+    app.put    '/v2/devices/:uuid', @deviceV2Controller.updateDangerously
+    app.get    '/v3/devices/:uuid', @deviceV3Controller.get
+    app.get    '/v2/whoami', @whoamiController.show
 
 module.exports = Router

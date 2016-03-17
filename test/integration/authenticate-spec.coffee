@@ -28,8 +28,6 @@ describe 'POST /authenticate', ->
     @redis = _.bindAll new RedisNS 'meshblu:server:http:test', redis.createClient()
     @jobManager = new JobManager client: @redis, timeoutSeconds: 1
 
-
-
   context 'when the request is successful', ->
     beforeEach ->
       async.forever (next) =>
