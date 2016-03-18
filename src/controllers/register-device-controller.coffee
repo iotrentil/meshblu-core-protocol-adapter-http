@@ -8,6 +8,8 @@ class RegisterDeviceController
     properties = _.cloneDeep req.body
     properties.discoverWhitelist = [properties.owner] if properties.owner?
     properties.configureWhitelist = [properties.owner] if properties.owner?
+    properties.discoverWhitelist = ['*'] unless properties.discoverWhitelist?
+    properties.configureWhitelist = ['*'] unless properties.configureWhitelist?
 
     options =
       metadata:

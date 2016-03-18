@@ -6,7 +6,7 @@ redis      = require 'redis'
 RedisNS    = require '@octoblu/redis-ns'
 JobManager = require 'meshblu-core-job-manager'
 
-describe 'GET /status', ->
+describe 'POST /devices', ->
   beforeEach (done) ->
     @port = 0xd00d
     @sut = new Server
@@ -34,6 +34,7 @@ describe 'GET /status', ->
         @jobManager.getRequest ['request'], (error, request) =>
           next request
           return unless request?
+          @request = request
 
           response =
             metadata:
@@ -50,6 +51,12 @@ describe 'GET /status', ->
       request.post "http://localhost:#{@port}/devices", options, (error, @response, @body) =>
         done error
 
+    it 'should create the job with the correct type', ->
+      expect(@request.metadata.jobType).to.equal 'RegisterDevice'
+
+    it 'should create the job correct data', ->
+      expect(JSON.parse @request.rawData).to.deep.equal {discoverWhitelist: ['*'],configureWhitelist:['*']}
+
     it 'should return a 201', ->
       expect(@response.statusCode).to.equal 201
 
@@ -62,6 +69,7 @@ describe 'GET /status', ->
         @jobManager.getRequest ['request'], (error, request) =>
           next request
           return unless request?
+          @request = request
 
           response =
             metadata:
@@ -78,6 +86,12 @@ describe 'GET /status', ->
           owner: 'owner-uuid'
       request.post "http://localhost:#{@port}/devices", options, (error, @response, @body) =>
         done error
+
+    it 'should create the job with the correct type', ->
+      expect(@request.metadata.jobType).to.equal 'RegisterDevice'
+
+    it 'should create the job correct data', ->
+      expect(JSON.parse @request.rawData).to.deep.equal {discoverWhitelist: ['owner-uuid'],configureWhitelist:['owner-uuid'],owner: 'owner-uuid'}
 
     it 'should return a 201', ->
       expect(@response.statusCode).to.equal 201
