@@ -20,5 +20,22 @@ class SubscriptionsController
 
       res.status(200).send(subscriptions)
 
+  create: (req, res) =>
+    req.body = _.pick req.params, ['subscriberUuid', 'emitterUuid', 'type']
+    job = @jobToHttp.httpToJob jobType: 'CreateSubscription', request: req, toUuid: req.params.emitterUuid
+
+    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+      return res.sendError error if error?
+      return res.sendError new Error('Did not receive jobResponse') unless jobResponse?
+      @jobToHttp.sendJobResponse {jobResponse, res}
+
+  remove: (req, res) =>
+    req.body = _.pick req.params, ['subscriberUuid', 'emitterUuid', 'type']
+    job = @jobToHttp.httpToJob jobType: 'RemoveSubscription', request: req, toUuid: req.params.emitterUuid
+
+    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+      return res.sendError error if error?
+      return res.sendError new Error('Did not receive jobResponse') unless jobResponse?
+      @jobToHttp.sendJobResponse {jobResponse, res}
 
 module.exports = SubscriptionsController

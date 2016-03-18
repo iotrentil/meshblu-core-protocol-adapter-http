@@ -54,8 +54,10 @@ class Router
     app.get    '/v2/devices', @searchDeviceController.searchV2
     app.get    '/v2/devices/:uuid', @deviceV2Controller.get
     app.patch  '/v2/devices/:uuid', @deviceV2Controller.update
-    app.get    '/v2/devices/:uuid/subscriptions', @subscriptionsController.list
     app.put    '/v2/devices/:uuid', @deviceV2Controller.updateDangerously
+    app.get    '/v2/devices/:uuid/subscriptions', @subscriptionsController.list
+    app.post   '/v2/devices/:subscriberUuid/subscriptions/:emitterUuid/:type', @subscriptionsController.create
+    app.delete '/v2/devices/:subscriberUuid/subscriptions/:emitterUuid/:type', @subscriptionsController.remove
     app.get    '/v3/devices/:uuid', @deviceV3Controller.get
     app.get    '/v2/whoami', @whoamiController.show
 
