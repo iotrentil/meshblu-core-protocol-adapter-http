@@ -55,7 +55,7 @@ describe 'POST /devices', ->
       expect(@request.metadata.jobType).to.equal 'RegisterDevice'
 
     it 'should create the job correct data', ->
-      expect(JSON.parse @request.rawData).to.deep.equal {discoverWhitelist: ['*'],configureWhitelist:['*']}
+      expect(JSON.parse @request.rawData).to.deep.equal {discoverWhitelist: ['*'],configureWhitelist:['*'],sendWhitelist: ['*'],receiveWhitelist:['*']}
 
     it 'should return a 201', ->
       expect(@response.statusCode).to.equal 201
@@ -91,7 +91,13 @@ describe 'POST /devices', ->
       expect(@request.metadata.jobType).to.equal 'RegisterDevice'
 
     it 'should create the job correct data', ->
-      expect(JSON.parse @request.rawData).to.deep.equal {discoverWhitelist: ['owner-uuid'],configureWhitelist:['owner-uuid'],owner: 'owner-uuid'}
+      expect(JSON.parse @request.rawData).to.deep.equal {
+        discoverWhitelist: ['owner-uuid'],
+        configureWhitelist:['owner-uuid'],
+        sendWhitelist: ['*'],
+        receiveWhitelist: ['*'],
+        owner: 'owner-uuid'
+      }
 
     it 'should return a 201', ->
       expect(@response.statusCode).to.equal 201

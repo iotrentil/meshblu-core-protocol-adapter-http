@@ -10,6 +10,8 @@ class RegisterDeviceController
     properties.configureWhitelist = [properties.owner] if properties.owner?
     properties.discoverWhitelist = ['*'] unless properties.discoverWhitelist?
     properties.configureWhitelist = ['*'] unless properties.configureWhitelist?
+    properties.sendWhitelist = ['*'] unless properties.sendWhitelist?
+    properties.receiveWhitelist = ['*'] unless properties.receiveWhitelist?
 
     options =
       metadata:
