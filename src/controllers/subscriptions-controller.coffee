@@ -27,6 +27,7 @@ class SubscriptionsController
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
       return res.sendError error if error?
       return res.sendError new Error('Did not receive jobResponse') unless jobResponse?
+      jobResponse.metadata.code = 204 if jobResponse.metadata.code == 304
       @jobToHttp.sendJobResponse {jobResponse, res}
 
   remove: (req, res) =>

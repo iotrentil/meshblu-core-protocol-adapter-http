@@ -63,3 +63,39 @@ describe 'POST /v2/devices/:subscriberUuid/subscriptions/:emitterUuid/:type', ->
 
     it 'should return a 201', ->
       expect(@response.statusCode).to.equal 201
+
+  context 'when the subscription already exists', ->
+    beforeEach ->
+      async.forever (next) =>
+        @jobManager.getRequest ['request'], (error, request) =>
+          next request
+          return unless request?
+
+          @request = request
+
+          response =
+            metadata:
+              code: 304
+              responseId: request.metadata.responseId
+            data: {}
+
+          @jobManager.createResponse 'response', response, (error) =>
+            throw error if error?
+
+    beforeEach (done) ->
+      options =
+        auth:
+          username: 'irritable-captian'
+          password: 'poop-deck'
+
+      request.post "http://localhost:#{@port}/v2/devices/irritable-captian/subscriptions/another-uuid/broadcast", options, (error, @response, @body) =>
+        done error
+
+    it 'should have the correct jobType', ->
+      expect(@request.metadata.jobType).to.equal 'CreateSubscription'
+
+    it 'should have the correct data', ->
+      expect(JSON.parse @request.rawData).to.deep.equal {subscriberUuid:'irritable-captian', emitterUuid: 'another-uuid', type: 'broadcast'}
+
+    it 'should return a 204', ->
+      expect(@response.statusCode).to.equal 204
