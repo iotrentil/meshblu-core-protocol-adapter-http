@@ -61,8 +61,8 @@ describe 'POST /v2/devices/:subscriberUuid/subscriptions/:emitterUuid/:type', ->
     it 'should have the correct data', ->
       expect(JSON.parse @request.rawData).to.deep.equal {subscriberUuid:'irritable-captian', emitterUuid: 'another-uuid', type: 'broadcast'}
 
-    it 'should return a 201', ->
-      expect(@response.statusCode).to.equal 201
+    it 'should return a 204', ->
+      expect(@response.statusCode).to.equal 204
 
   context 'when the subscription already exists', ->
     beforeEach ->

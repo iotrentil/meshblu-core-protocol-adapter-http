@@ -28,6 +28,7 @@ class SubscriptionsController
       return res.sendError error if error?
       return res.sendError new Error('Did not receive jobResponse') unless jobResponse?
       jobResponse.metadata.code = 204 if jobResponse.metadata.code == 304
+      jobResponse.metadata.code = 204 if jobResponse.metadata.code == 201
       @jobToHttp.sendJobResponse {jobResponse, res}
 
   remove: (req, res) =>
