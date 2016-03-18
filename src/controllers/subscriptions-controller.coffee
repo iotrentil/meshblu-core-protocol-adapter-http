@@ -22,7 +22,7 @@ class SubscriptionsController
 
   create: (req, res) =>
     req.body = _.pick req.params, ['subscriberUuid', 'emitterUuid', 'type']
-    job = @jobToHttp.httpToJob jobType: 'CreateSubscription', request: req, toUuid: req.params.emitterUuid
+    job = @jobToHttp.httpToJob jobType: 'CreateSubscription', request: req, toUuid: req.params.subscriberUuid
 
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
       return res.sendError error if error?
@@ -33,7 +33,7 @@ class SubscriptionsController
 
   remove: (req, res) =>
     req.body = _.pick req.params, ['subscriberUuid', 'emitterUuid', 'type']
-    job = @jobToHttp.httpToJob jobType: 'RemoveSubscription', request: req, toUuid: req.params.emitterUuid
+    job = @jobToHttp.httpToJob jobType: 'RemoveSubscription', request: req, toUuid: req.params.subscriberUuid
 
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
       return res.sendError error if error?

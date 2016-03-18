@@ -58,6 +58,9 @@ describe 'POST /v2/devices/:subscriberUuid/subscriptions/:emitterUuid/:type', ->
     it 'should have the correct jobType', ->
       expect(@request.metadata.jobType).to.equal 'CreateSubscription'
 
+    it 'should have the right toUuid', ->
+      expect(@request.metadata.toUuid).to.equal 'irritable-captian'
+
     it 'should have the correct data', ->
       expect(JSON.parse @request.rawData).to.deep.equal {subscriberUuid:'irritable-captian', emitterUuid: 'another-uuid', type: 'broadcast'}
 
@@ -93,6 +96,9 @@ describe 'POST /v2/devices/:subscriberUuid/subscriptions/:emitterUuid/:type', ->
 
     it 'should have the correct jobType', ->
       expect(@request.metadata.jobType).to.equal 'CreateSubscription'
+
+    it 'should have the right toUuid', ->
+      expect(@request.metadata.toUuid).to.equal 'irritable-captian'
 
     it 'should have the correct data', ->
       expect(JSON.parse @request.rawData).to.deep.equal {subscriberUuid:'irritable-captian', emitterUuid: 'another-uuid', type: 'broadcast'}
