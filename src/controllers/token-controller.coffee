@@ -1,9 +1,9 @@
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
-debug = require('debug')('meshblu-server-http:get-device-controller')
+debug = require('debug')('meshblu-server-http:token-controller')
 _     = require 'lodash'
 JobToHttp = require '../helpers/job-to-http'
 
-class DeviceV2Controller
+class TokenController
   constructor: ({@jobManager, @jobToHttp}) ->
 
   revokeByQuery: (req, res) =>
@@ -18,4 +18,15 @@ class DeviceV2Controller
       return res.sendError error if error?
       @jobToHttp.sendJobResponse {jobResponse, res}
 
-module.exports = DeviceV2Controller
+  resetToken: (req, res) =>
+    job = @jobToHttp.httpToJob
+      jobType: 'ResetToken'
+      request: req
+      toUuid: req.params.uuid
+
+    debug('dispatching request', job)
+    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+      return res.sendError error if error?
+      @jobToHttp.sendJobResponse {jobResponse, res}
+
+module.exports = TokenController

@@ -69,3 +69,64 @@ describe 'DELETE /devices/:uuid/tokens/query', ->
     it 'should send the search body as the data of the job', ->
       data = JSON.parse @request.rawData
       expect(data).to.containSubset type: 'dinosaur'
+
+describe 'POST /devices/:uuid/token', ->
+  beforeEach (done) ->
+    @port = 0xd00d
+    @sut = new Server
+      port: @port
+      disableLogging: true
+      jobTimeoutSeconds: 1
+      namespace: 'meshblu:server:http:test'
+      jobLogQueue: 'meshblu:job-log'
+      jobLogRedisUri: 'redis://localhost:6379'
+      meshbluHost: 'localhost'
+      meshbluPort: 3000
+
+    @sut.run done
+
+  afterEach (done) ->
+    @sut.stop => done()
+
+  beforeEach ->
+    @redis = _.bindAll new RedisNS 'meshblu:server:http:test', redis.createClient()
+    @jobManager = new JobManager client: @redis, timeoutSeconds: 1
+
+  context 'when the request is successful', ->
+    beforeEach ->
+      async.forever (next) =>
+        @jobManager.getRequest ['request'], (error, @request) =>
+          next @request
+          return unless @request?
+
+          response =
+            metadata:
+              code: 204
+              responseId: @request.metadata.responseId
+              name: 'dinosaur-getter'
+
+          @jobManager.createResponse 'response', response, (error) =>
+            throw error if error?
+
+    beforeEach (done) ->
+      options =
+        auth:
+          username: 'irritable-captian'
+          password: 'poop-deck'
+        json: true
+        qs:
+          type: 'dinosaur'
+
+      request.post "http://localhost:#{@port}/devices/:uuid/token", options, (error, @response, @body) =>
+        done error
+
+    it 'should return a 204', ->
+      expect(@response.statusCode).to.equal 204
+
+    it 'should dispatch the correct metadata', ->
+      expect(@request).to.containSubset
+        metadata:
+          auth:
+            uuid: 'irritable-captian'
+            token: 'poop-deck'
+          jobType: 'ResetToken'
