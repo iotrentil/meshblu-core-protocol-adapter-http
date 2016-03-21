@@ -6,8 +6,10 @@ class RegisterDeviceController
 
   register: (req, res) =>
     properties = _.cloneDeep req.body
-    properties.discoverWhitelist = [properties.owner] if properties.owner?
-    properties.configureWhitelist = [properties.owner] if properties.owner?
+    properties.discoverWhitelist ?= []
+    properties.discoverWhitelist.push properties.owner if properties.owner?
+    properties.configureWhitelist ?= []
+    properties.configureWhitelist.push properties.owner if properties.owner?
     properties.discoverWhitelist = ['*'] unless properties.discoverWhitelist?
     properties.configureWhitelist = ['*'] unless properties.configureWhitelist?
     properties.sendWhitelist = ['*'] unless properties.sendWhitelist?
