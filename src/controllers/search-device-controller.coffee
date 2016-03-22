@@ -42,6 +42,14 @@ class SearchDeviceController
     req.body = _.extend {}, req.body, req.query
     job = @jobToHttp.httpToJob jobType: 'SearchDevices', request: req
     {uuid, token} = req.body
+
+    if req.body.online?
+      req.body.online = req.body.online == 'true'
+
+    _.each req.body, (value, key) =>
+      if value == 'null' || value == ''
+        req.body[key] = $exists: false
+
     if uuid? and token?
       job.metadata.auth = {uuid, token}
       delete job.data.token
