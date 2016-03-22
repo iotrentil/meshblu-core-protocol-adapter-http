@@ -39,7 +39,7 @@ class SearchDeviceController
       @jobToHttp.sendJobResponse {jobResponse, res}
 
   _oldFormatToJob: (req) =>
-    req.body = req.query
+    req.body = _.extend {}, req.body, req.query
     job = @jobToHttp.httpToJob jobType: 'SearchDevices', request: req
     {uuid, token} = req.body
     if uuid? and token?
