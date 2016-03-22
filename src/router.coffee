@@ -61,5 +61,6 @@ class Router
     app.get    '/v3/devices/:uuid', @deviceV3Controller.get
     app.get    '/v2/whoami', @whoamiController.show
     app.post   '/devices/:uuid/token', @tokenController.resetToken
+    app.post   '/devices/:uuid/tokens', @tokenController.create
 
 module.exports = Router
