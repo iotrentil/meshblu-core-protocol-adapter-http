@@ -39,8 +39,11 @@ class Router
     app.put    '/devices/:uuid', @deviceV2Controller.update
     app.get    '/devices/:uuid', @deviceV1Controller.get
     app.delete '/devices/:uuid', @unregisterDeviceController.unregister
-    app.delete '/devices/:uuid/tokens', @tokenController.revokeByQuery
     app.get    '/devices/:uuid/publickey', @deviceV1Controller.getPublicKey
+    app.post   '/devices/:uuid/token', @tokenController.resetToken
+    app.post   '/devices/:uuid/tokens', @tokenController.create
+    app.delete '/devices/:uuid/tokens', @tokenController.revokeByQuery
+    app.delete '/devices/:uuid/tokens/:token', @tokenController.destroy
     app.post   '/messages', @messagesController.create
     app.get    '/mydevices', @searchDeviceController.mydevices
     app.get    '/publickey', @globalPublicKeyController.get
@@ -60,7 +63,5 @@ class Router
     app.delete '/v2/devices/:subscriberUuid/subscriptions/:emitterUuid/:type', @subscriptionsController.remove
     app.get    '/v3/devices/:uuid', @deviceV3Controller.get
     app.get    '/v2/whoami', @whoamiController.show
-    app.post   '/devices/:uuid/token', @tokenController.resetToken
-    app.post   '/devices/:uuid/tokens', @tokenController.create
 
 module.exports = Router

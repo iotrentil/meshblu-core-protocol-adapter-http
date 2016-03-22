@@ -18,6 +18,19 @@ class TokenController
       return res.sendError error if error?
       @jobToHttp.sendJobResponse {jobResponse, res}
 
+  destroy: (req, res) =>
+    job = @jobToHttp.httpToJob
+      jobType: 'RevokeSessionToken'
+      request: req
+      toUuid: req.params.uuid
+      data:
+        token: req.params.token
+        
+    debug('dispatching request', job)
+    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+      return res.sendError error if error?
+      @jobToHttp.sendJobResponse {jobResponse, res}
+
   revokeByQuery: (req, res) =>
     job = @jobToHttp.httpToJob
       jobType: 'RevokeTokenByQuery'
