@@ -1,4 +1,4 @@
-debug     = require('debug')('meshblu-server-http:subscription-controller')
+debug     = require('debug')('meshblu-core-protocol-adapter-http:subscription-controller')
 _         = require 'lodash'
 JobToHttp = require '../helpers/job-to-http'
 

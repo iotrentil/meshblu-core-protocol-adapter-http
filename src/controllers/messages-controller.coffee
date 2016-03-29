@@ -1,4 +1,4 @@
-debug = require('debug')('meshblu-server-http:messages-controller')
+debug = require('debug')('meshblu-core-protocol-adapter-http:messages-controller')
 _     = require 'lodash'
 JobToHttp = require '../helpers/job-to-http'
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'

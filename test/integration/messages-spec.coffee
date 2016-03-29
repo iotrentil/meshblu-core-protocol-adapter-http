@@ -82,10 +82,10 @@ describe 'POST /messages', ->
       @jobLogClient.lindex 'meshblu:job-log', 0, (error, jobStr) =>
         return done error if error?
         todaySuffix = moment.utc().format('YYYY-MM-DD')
-        index = "metric:meshblu-server-http-#{todaySuffix}"
+        index = "metric:meshblu-core-protocol-adapter-http-#{todaySuffix}"
         expect(JSON.parse jobStr).to.containSubset {
           "index": index
-          "type": "meshblu-server-http:request"
+          "type": "meshblu-core-protocol-adapter-http:request"
           "body": {
             "request": {
               "metadata": {
@@ -156,10 +156,10 @@ describe 'POST /messages', ->
       @jobLogClient.lindex 'meshblu:job-log', 0, (error, jobStr) =>
         return done error if error?
         todaySuffix = moment.utc().format('YYYY-MM-DD')
-        index = "metric:meshblu-server-http-#{todaySuffix}"
+        index = "metric:meshblu-core-protocol-adapter-http-#{todaySuffix}"
         expect(JSON.parse jobStr).to.containSubset {
           "index": index
-          "type": "meshblu-server-http:request"
+          "type": "meshblu-core-protocol-adapter-http:request"
           "body": {
             "request": {
               "metadata": {

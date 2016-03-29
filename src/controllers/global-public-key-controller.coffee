@@ -1,4 +1,4 @@
-debug = require('debug')('meshblu-server-http:global-public-key-controller')
+debug = require('debug')('meshblu-core-protocol-adapter-http:global-public-key-controller')
 
 class GlobalPublicKeyController
   constructor: ({@jobManager, @jobToHttp}) ->

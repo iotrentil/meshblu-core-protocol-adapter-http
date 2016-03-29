@@ -9,7 +9,7 @@ meshbluHealthcheck     = require 'express-meshblu-healthcheck'
 SendError              = require 'express-send-error'
 redis                  = require 'redis'
 RedisNS                = require '@octoblu/redis-ns'
-debug                  = require('debug')('meshblu-server-http:server')
+debug                  = require('debug')('meshblu-core-protocol-adapter-http:server')
 Router                 = require './router'
 {Pool}                 = require 'generic-pool'
 PooledJobManager       = require 'meshblu-core-pooled-job-manager'
@@ -49,8 +49,8 @@ class Server
 
     jobLogger = new JobLogger
       jobLogQueue: @jobLogQueue
-      indexPrefix: 'metric:meshblu-server-http'
-      type: 'meshblu-server-http:request'
+      indexPrefix: 'metric:meshblu-core-protocol-adapter-http'
+      type: 'meshblu-core-protocol-adapter-http:request'
       client: redis.createClient(@jobLogRedisUri)
 
     connectionPool = @_createConnectionPool(maxConnections: @connectionPoolMaxConnections)

@@ -1,6 +1,6 @@
 {
-  "name": "meshblu-server-http",
-  "version": "3.3.3",
+  "name": "meshblu-core-protocol-adapter-http",
+  "version": "v3.4.0",
   "description": "",
   "engines": {
     "node": ">=5.0.0"
@@ -14,7 +14,7 @@
   "keywords": [],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/octoblu/meshblu-server-http.git"
+    "url": "git+https://github.com/octoblu/meshblu-core-protocol-adapter-http.git"
   },
   "author": "",
   "license": "MIT",

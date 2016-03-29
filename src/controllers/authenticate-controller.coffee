@@ -1,5 +1,5 @@
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
-debug = require('debug')('meshblu-server-http:authenticate-controller')
+debug = require('debug')('meshblu-core-protocol-adapter-http:authenticate-controller')
 _     = require 'lodash'
 
 class AuthenticateController

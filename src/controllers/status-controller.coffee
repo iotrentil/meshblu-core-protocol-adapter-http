@@ -1,4 +1,4 @@
-debug = require('debug')('meshblu-server-http:get-status-controller')
+debug = require('debug')('meshblu-core-protocol-adapter-http:get-status-controller')
 _     = require 'lodash'
 
 class StatusController

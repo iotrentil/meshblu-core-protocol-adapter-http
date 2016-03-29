@@ -1,4 +1,4 @@
-debug = require('debug')('meshblu-server-http:search-device-controller')
+debug = require('debug')('meshblu-core-protocol-adapter-http:search-device-controller')
 _     = require 'lodash'
 JobToHttp = require '../helpers/job-to-http'
 

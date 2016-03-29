@@ -1,4 +1,4 @@
-debug             = require('debug')('meshblu-server-http:whoami-controller')
+debug             = require('debug')('meshblu-core-protocol-adapter-http:whoami-controller')
 MeshbluAuthParser = require '../helpers/meshblu-auth-parser'
 
 class WhoamiController

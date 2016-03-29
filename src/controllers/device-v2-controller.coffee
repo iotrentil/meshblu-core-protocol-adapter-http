@@ -1,5 +1,5 @@
 JobToHttp = require '../helpers/job-to-http'
-debug = require('debug')('meshblu-server-http:get-device-controller')
+debug = require('debug')('meshblu-core-protocol-adapter-http:get-device-controller')
 _     = require 'lodash'
 
 class DeviceV2Controller

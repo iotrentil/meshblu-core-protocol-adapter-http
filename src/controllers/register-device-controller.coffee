@@ -1,4 +1,4 @@
-debug = require('debug')('meshblu-server-http:register-device-controller')
+debug = require('debug')('meshblu-core-protocol-adapter-http:register-device-controller')
 _     = require 'lodash'
 
 class RegisterDeviceController
