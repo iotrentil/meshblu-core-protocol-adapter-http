@@ -16,8 +16,9 @@ describe 'DELETE /devices/:uuid/tokens/query', ->
       namespace: 'meshblu:server:http:test'
       jobLogQueue: 'meshblu:job-log'
       jobLogRedisUri: 'redis://localhost:6379'
-      meshbluHost: 'localhost'
-      meshbluPort: 3000
+      maxConnections: 10
+      jobLogSampleRate: 10
+      redisUri: 'redis://localhost'
 
     @sut.run done
 
@@ -80,8 +81,9 @@ describe 'POST /devices/:uuid/token', ->
       namespace: 'meshblu:server:http:test'
       jobLogQueue: 'meshblu:job-log'
       jobLogRedisUri: 'redis://localhost:6379'
-      meshbluHost: 'localhost'
-      meshbluPort: 3000
+      maxConnections: 10
+      jobLogSampleRate: 10
+      redisUri: 'redis://localhost'
 
     @sut.run done
 
