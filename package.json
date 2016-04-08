@@ -1,6 +1,6 @@
 {
   "name": "meshblu-core-protocol-adapter-http",
-  "version": "3.4.2",
+  "version": "3.4.3",
   "description": "",
   "engines": {
     "node": ">=5.0.0"
@@ -34,7 +34,6 @@
     "meshblu-core-job-manager": "^3.1.4",
     "meshblu-core-redis-pooled-job-manager": "^1.1.0",
     "morgan": "^1.6.1",
-    "redis": "^2.2.5",
     "request": "^2.67.0",
     "simple-benchmark": "^1.0.7",
     "uuid": "^2.0.1"
@@ -51,8 +50,5 @@
     "semver": "^5.0.3",
     "sinon": "^1.17.2",
     "sinon-chai": "^2.8.0"
-  },
-  "optionalDependencies": {
-    "hiredis": "^0.4.1"
   }
 }
