@@ -24,6 +24,7 @@ class JobToHttp
 
   getMetadataFromHeaders: (headers) =>
     _.transform headers, (newMetadata, value, header) =>
+      header = header.toLowerCase()
       return unless _.startsWith header, 'x-meshblu-'
       key = _.camelCase( _.replace(header, "x-meshblu-", '' ))
       newMetadata[key] = value

@@ -109,3 +109,43 @@ describe 'POST /devices', ->
         token: 'secret-boxes-of-stuff'
         discoverWhitelist: ['owner-uuid']
         configureWhitelist: ['owner-uuid']
+
+  context 'when request is made with a meshblu 2.0.0 device', ->
+    beforeEach ->
+      async.forever (next) =>
+        @jobManager.getRequest ['request'], (error, request) =>
+          next request
+          return unless request?
+          @request = request
+
+          response =
+            metadata:
+              code: 201
+              responseId: request.metadata.responseId
+            rawData: '{"uuid":"boxes-of-stuff","token":"secret-boxes-of-stuff","discoverWhitelist":["owner-uuid"],"configureWhitelist":["owner-uuid"]}'
+
+          @jobManager.createResponse 'response', response, (error) =>
+            throw error if error?
+
+    beforeEach (done) ->
+      options =
+        json:
+          meshblu:
+            version: '2.0.0'
+
+      request.post "http://localhost:#{@port}/devices", options, (error, @response, @body) =>
+        done error
+
+    it 'should create the job with the correct type', ->
+      expect(@request.metadata.jobType).to.equal 'RegisterDevice'
+
+    it 'should create the job correct data', ->
+      expect(_.keys(JSON.parse @request.rawData)).not.to.containSubset [
+        "discoverWhitelist"
+        "configureWhitelist"
+        "sendWhitelist"
+        "receiveWhitelist"
+      ]
+
+    it 'should return a 201', ->
+      expect(@response.statusCode).to.equal 201

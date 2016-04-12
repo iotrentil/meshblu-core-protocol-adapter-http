@@ -6,16 +6,18 @@ class RegisterDeviceController
 
   register: (req, res) =>
     properties = _.cloneDeep req.body
-    if properties.owner?
-      properties.discoverWhitelist ?= []
-      properties.configureWhitelist ?= []
-      properties.discoverWhitelist.push(properties.owner) unless _.includes(properties.discoverWhitelist, '*')
-      properties.configureWhitelist.push(properties.owner) unless _.includes(properties.configureWhitelist, '*')
 
-    properties.discoverWhitelist ?= ['*']
-    properties.configureWhitelist ?= ['*']
-    properties.sendWhitelist ?= ['*']
-    properties.receiveWhitelist ?= ['*']
+    unless properties?.meshblu?.version == '2.0.0'
+      if properties.owner?
+        properties.discoverWhitelist ?= []
+        properties.configureWhitelist ?= []
+        properties.discoverWhitelist.push(properties.owner) unless _.includes(properties.discoverWhitelist, '*')
+        properties.configureWhitelist.push(properties.owner) unless _.includes(properties.configureWhitelist, '*')
+
+      properties.discoverWhitelist ?= ['*']
+      properties.configureWhitelist ?= ['*']
+      properties.sendWhitelist ?= ['*']
+      properties.receiveWhitelist ?= ['*']
 
     options =
       metadata:
