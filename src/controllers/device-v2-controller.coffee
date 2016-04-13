@@ -30,8 +30,7 @@ class DeviceV2Controller
           message: 'Devices not found'
         return res.status(404).send jsonError
 
-      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
-      res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
+      return @jobToHttp.sendJobResponse {res, jobResponse}
 
   update: (req, res) =>
     # insert $set first
@@ -46,9 +45,7 @@ class DeviceV2Controller
     debug('dispatching request', job)
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
       return res.sendError error if error?
-
-      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
-      res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
+      return @jobToHttp.sendJobResponse {res, jobResponse}
 
   claimdevice: (req, res) =>
     # insert $set first
@@ -65,9 +62,7 @@ class DeviceV2Controller
     debug('dispatching request', job)
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
       return res.sendError error if error?
-
-      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
-      res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
+      return @jobToHttp.sendJobResponse {res, jobResponse}
 
   updateDangerously: (req, res) =>
     job = @jobToHttp.httpToJob jobType: 'UpdateDevice', request: req, toUuid: req.params.uuid
@@ -75,8 +70,6 @@ class DeviceV2Controller
     debug('dispatching request', job)
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
       return res.sendError error if error?
-
-      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
-      res.status(jobResponse.metadata.code).send JSON.parse(jobResponse.rawData)
+      return @jobToHttp.sendJobResponse {res, jobResponse}
 
 module.exports = DeviceV2Controller

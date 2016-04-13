@@ -23,9 +23,11 @@ class DeviceV1Controller
           message: error.message
         return res.status(error.code ? 500).send jsonError
 
-      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
+      # mutate to old meshblu devices array
       data = JSON.parse jobResponse.rawData
-      res.status(jobResponse.metadata.code).send devices: [data]
+      jobResponse.rawData = JSON.stringify devices: [data]
+
+      return @jobToHttp.sendJobResponse {res, jobResponse}
 
   getPublicKey: (req, res) =>
     job = @jobToHttp.httpToJob jobType: 'GetDevicePublicKey', request: req, toUuid: req.params.uuid

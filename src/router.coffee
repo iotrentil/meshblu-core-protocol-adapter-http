@@ -22,9 +22,9 @@ class Router
     @deviceV3Controller         = new DeviceV3Controller {jobManager, jobToHttp}
     @globalPublicKeyController  = new GlobalPublicKeyController {jobManager, jobToHttp}
     @messagesController         = new MessagesController {jobManager, jobToHttp}
-    @registerDeviceController   = new RegisterDeviceController {jobManager}
+    @registerDeviceController   = new RegisterDeviceController {jobManager, jobToHttp}
     @searchDeviceController     = new SearchDeviceController {jobManager, jobToHttp}
-    @statusController           = new StatusController {jobManager}
+    @statusController           = new StatusController {jobManager, jobToHttp}
     @subscriptionsController    = new SubscriptionsController {jobManager, jobToHttp}
     @tokenController            = new TokenController {jobManager, jobToHttp}
     @unregisterDeviceController = new UnregisterDeviceController {jobManager, jobToHttp}

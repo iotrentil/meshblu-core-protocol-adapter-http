@@ -2,7 +2,7 @@ debug = require('debug')('meshblu-core-protocol-adapter-http:register-device-con
 _     = require 'lodash'
 
 class RegisterDeviceController
-  constructor: ({@jobManager}) ->
+  constructor: ({@jobManager,@jobToHttp}) ->
 
   register: (req, res) =>
     properties = _.cloneDeep req.body
@@ -19,14 +19,12 @@ class RegisterDeviceController
       properties.sendWhitelist ?= ['*']
       properties.receiveWhitelist ?= ['*']
 
-    options =
-      metadata:
-        jobType: 'RegisterDevice'
-      data: properties
+    req.body = properties
 
-    @jobManager.do 'request', 'response', options, (error, jobResponse) =>
+    job = @jobToHttp.httpToJob jobType: 'RegisterDevice', request: req, toUuid: req.params.uuid
+
+    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
       return res.sendError error if error?
-      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{key}", value
-      res.status(jobResponse.metadata.code).send(JSON.parse jobResponse.rawData)
+      @jobToHttp.sendJobResponse {res, jobResponse}
 
 module.exports = RegisterDeviceController
