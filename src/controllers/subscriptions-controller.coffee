@@ -11,10 +11,7 @@ class SubscriptionsController
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
       return res.sendError error if error?
       return res.sendError new Error('Did not receive jobResponse') unless jobResponse?
-
-      _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{_.kebabCase(key)}", value
-      return res.sendStatus jobResponse.metadata.code unless jobResponse.rawData?
-      res.status(200).send jobResponse.rawData
+      @jobToHttp.sendJobResponse {jobResponse, res}
 
   create: (req, res) =>
     req.body = _.pick req.params, ['subscriberUuid', 'emitterUuid', 'type']
