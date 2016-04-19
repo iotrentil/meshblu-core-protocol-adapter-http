@@ -1,6 +1,6 @@
 {
   "name": "meshblu-core-protocol-adapter-http",
-  "version": "3.6.1",
+  "version": "3.6.2",
   "description": "",
   "engines": {
     "node": ">=5.0.0"

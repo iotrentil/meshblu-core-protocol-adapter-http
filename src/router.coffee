@@ -33,7 +33,7 @@ class Router
   route: (app) =>
     app.get    '/authenticate/:uuid', @authenticateController.checkDevice
     app.post   '/authenticate', @authenticateController.check
-    app.post   '/claimdevice/:uuid', @deviceV2Controller.claimdevice
+    app.post   '/claimdevice/:uuid', @deviceV1Controller.claimdevice
     app.get    '/devices', @searchDeviceController.searchV1
     app.post   '/devices', @registerDeviceController.register
     app.put    '/devices/:uuid', @deviceV2Controller.update

@@ -47,23 +47,6 @@ class DeviceV2Controller
       return res.sendError error if error?
       return @jobToHttp.sendJobResponse {res, jobResponse}
 
-  claimdevice: (req, res) =>
-    # insert $set first
-    unless _.isPlainObject req.body
-      return res.status(422).send message: 'Invalid Request'
-    job = @jobToHttp.httpToJob jobType: 'UpdateDevice', request: req, toUuid: req.params.uuid
-    job.data =
-      $addToSet:
-        discoverWhitelist: job.metadata.fromUuid
-        configureWhitelist: job.metadata.fromUuid
-      $set:
-        owner: job.metadata.fromUuid
-
-    debug('dispatching request', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
-      return res.sendError error if error?
-      return @jobToHttp.sendJobResponse {res, jobResponse}
-
   updateDangerously: (req, res) =>
     job = @jobToHttp.httpToJob jobType: 'UpdateDevice', request: req, toUuid: req.params.uuid
 
