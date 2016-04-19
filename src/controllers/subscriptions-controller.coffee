@@ -14,11 +14,7 @@ class SubscriptionsController
 
       _.each jobResponse.metadata, (value, key) => res.set "x-meshblu-#{_.kebabCase(key)}", value
       return res.sendStatus jobResponse.metadata.code unless jobResponse.rawData?
-      subscriptions = _.map JSON.parse(jobResponse.rawData), (subscription) =>
-        uuid: subscription.emitterUuid
-        type: subscription.type
-
-      res.status(200).send(subscriptions)
+      res.status(200).send jobResponse.rawData
 
   create: (req, res) =>
     req.body = _.pick req.params, ['subscriberUuid', 'emitterUuid', 'type']
