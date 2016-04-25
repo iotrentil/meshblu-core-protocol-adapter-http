@@ -12,7 +12,7 @@ class JobToHttp
     auth = @authParser.parse request
     systemMetadata =
       auth: auth
-      fromUuid: request.get('x-meshblu-as') ? auth.uuid
+      fromUuid: auth.uuid
       toUuid: toUuid
       jobType: jobType
 

@@ -5,6 +5,7 @@ class MeshbluAuthParser
     authPair ?= @parseSkynetAuthHeaders request
     authPair ?= @parseExtraHeaders request
     authPair ?= {uuid: undefined, token: undefined}
+    authPair.as = request.header('x-meshblu-as')
     return authPair
 
   parseBasicAuth: (request) =>
