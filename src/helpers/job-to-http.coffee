@@ -8,11 +8,10 @@ class JobToHttp
   httpToJob: ({jobType, request, toUuid, data}) ->
     data ?= request.body
     userMetadata = @getMetadataFromHeaders request.headers
-
     auth = @authParser.parse request
     systemMetadata =
       auth: auth
-      fromUuid: auth.uuid
+      fromUuid: request.get('x-meshblu-as') ? auth.uuid
       toUuid: toUuid
       jobType: jobType
 
