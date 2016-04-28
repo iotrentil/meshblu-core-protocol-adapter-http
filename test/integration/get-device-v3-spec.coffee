@@ -1,6 +1,6 @@
-_ = require 'lodash'
-request = require 'request'
-Server = require '../../src/server'
+_          = require 'lodash'
+request    = require 'request'
+Server     = require '../../src/server'
 async      = require 'async'
 redis      = require 'redis'
 RedisNS    = require '@octoblu/redis-ns'
@@ -73,6 +73,7 @@ describe 'GET /v3/devices/:uuid', ->
 
     it 'should have set the auth correctly', ->
       expect(@jobRequest.metadata.auth).to.deep.equal
+        as: 'treasure-map'
         uuid: 'irritable-captian'
         token: 'poop-deck'
 
