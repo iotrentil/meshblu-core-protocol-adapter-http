@@ -32,7 +32,7 @@ class SearchDeviceController
 
   searchV3: (req, res) =>
     job = @jobToHttp.httpToJob jobType: 'SearchDevices', request: req
-    if job.metadata.projection
+    if job.metadata.projection?
       try
         job.metadata.projection = JSON.parse job.metadata.projection
       catch
