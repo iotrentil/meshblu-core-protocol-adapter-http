@@ -58,8 +58,8 @@ describe 'DELETE /devices/:uuid', ->
       request.del "http://localhost:#{@port}/devices/secret-island", options, (error, @response, @body) =>
         done error
 
-    it 'should return a 200', ->
-      expect(@response.statusCode).to.equal 200
+    it 'should return a 204', ->
+      expect(@response.statusCode).to.equal 204
 
     it 'should respond with uuid', ->
       expect(@body.uuid).to.equal 'secret-island'
