@@ -11,8 +11,9 @@ class RegisterDeviceController
       if properties.owner?
         properties.discoverWhitelist ?= []
         properties.configureWhitelist ?= []
-        properties.discoverWhitelist.push(properties.owner) unless _.includes(properties.discoverWhitelist, '*')
-        properties.configureWhitelist.push(properties.owner) unless _.includes(properties.configureWhitelist, '*')
+        if _.isString properties.owner
+          properties.discoverWhitelist.push(properties.owner) unless _.includes(properties.discoverWhitelist, '*')
+          properties.configureWhitelist.push(properties.owner) unless _.includes(properties.configureWhitelist, '*')
 
       properties.discoverWhitelist ?= ['*']
       properties.configureWhitelist ?= ['*']
