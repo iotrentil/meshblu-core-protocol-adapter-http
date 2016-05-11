@@ -12,8 +12,6 @@ class UnregisterDeviceController
     debug('dispatching request', job)
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
       return res.sendError error if error?
-      {code} = jobResponse.metadata
-      code = 200 if code == 204
-      res.status(code).send({uuid: uuid})
+      @jobToHttp.sendJobResponse {jobResponse, res}
 
 module.exports = UnregisterDeviceController
