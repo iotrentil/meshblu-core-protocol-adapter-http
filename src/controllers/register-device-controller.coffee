@@ -5,7 +5,10 @@ class RegisterDeviceController
   constructor: ({@jobManager,@jobToHttp}) ->
 
   register: (req, res) =>
-    properties = _.cloneDeep req.body
+    properties = req.body
+
+    unless _.isPlainObject properties
+      properties = {}
 
     unless properties?.meshblu?.version == '2.0.0'
       if properties.owner?

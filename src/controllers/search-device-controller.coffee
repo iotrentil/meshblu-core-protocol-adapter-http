@@ -35,7 +35,7 @@ class SearchDeviceController
     if job.metadata.projection?
       try
         job.metadata.projection = JSON.parse job.metadata.projection
-      catch
+      catch error
 
     debug('dispatching request v3', job)
     @jobManager.do 'request', 'response', job, (error, jobResponse) =>
