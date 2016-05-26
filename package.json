@@ -1,6 +1,6 @@
 {
   "name": "meshblu-core-protocol-adapter-http",
-  "version": "3.12.5",
+  "version": "3.12.6",
   "description": "",
   "engines": {
     "node": ">=5.0.0"
@@ -31,7 +31,7 @@
     "express-meshblu-healthcheck": "^1.0.1",
     "express-send-error": "^1.0.4",
     "lodash": "^4.0.0",
-    "meshblu-core-redis-pooled-job-manager": "^1.5.2",
+    "meshblu-core-redis-pooled-job-manager": "^1.5.3",
     "morgan": "^1.6.1",
     "request": "^2.67.0",
     "simple-benchmark": "^1.0.7",
