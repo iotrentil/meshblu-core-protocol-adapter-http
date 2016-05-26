@@ -2,7 +2,7 @@ _          = require 'lodash'
 request    = require 'request'
 Server     = require '../../src/server'
 async      = require 'async'
-redis      = require 'redis'
+redis      = require 'ioredis'
 RedisNS    = require '@octoblu/redis-ns'
 JobManager = require 'meshblu-core-job-manager'
 
