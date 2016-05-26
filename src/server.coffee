@@ -46,7 +46,7 @@ class Server
       jobLogIndexPrefix: 'metric:meshblu-core-protocol-adapter-http'
       jobLogType: 'meshblu-core-protocol-adapter-http:request'
       idleTimeoutMillis: 5*60*1000
-      minConnections: 0
+      minConnections: 5
       @jobTimeoutSeconds
       @jobLogQueue
       @jobLogRedisUri
