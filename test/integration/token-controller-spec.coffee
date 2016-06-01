@@ -26,8 +26,8 @@ describe 'DELETE /devices/:uuid/tokens/query', ->
     @sut.stop => done()
 
   beforeEach ->
-    @redis = _.bindAll new RedisNS 'meshblu:server:http:test', redis.createClient()
-    @jobManager = new JobManager client: @redis, timeoutSeconds: 1
+    @redis = _.bindAll new RedisNS 'meshblu:server:http:test', redis.createClient(dropBufferSupport: true)
+    @jobManager = new JobManager client: @redis, timeoutSeconds: 1, jobLogSampleRate: 1
 
   context 'when the request is successful', ->
     beforeEach ->
@@ -91,8 +91,8 @@ describe 'POST /devices/:uuid/token', ->
     @sut.stop => done()
 
   beforeEach ->
-    @redis = _.bindAll new RedisNS 'meshblu:server:http:test', redis.createClient()
-    @jobManager = new JobManager client: @redis, timeoutSeconds: 1
+    @redis = _.bindAll new RedisNS 'meshblu:server:http:test', redis.createClient(dropBufferSupport: true)
+    @jobManager = new JobManager client: @redis, timeoutSeconds: 1, jobLogSampleRate: 1
 
   context 'when the request is successful', ->
     beforeEach ->

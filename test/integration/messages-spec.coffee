@@ -18,7 +18,7 @@ describe 'POST /messages', ->
       jobLogQueue: 'meshblu:job-log'
       jobLogRedisUri: 'redis://localhost:6379'
       maxConnections: 10
-      jobLogSampleRate: 10
+      jobLogSampleRate: 1
       redisUri: 'redis://localhost'
 
     @sut.run done
@@ -27,11 +27,11 @@ describe 'POST /messages', ->
     @sut.stop => done()
 
   beforeEach ->
-    @redis = _.bindAll new RedisNS 'meshblu:server:http:test', redis.createClient()
-    @jobManager = new JobManager client: @redis, timeoutSeconds: 1
+    @redis = _.bindAll new RedisNS 'meshblu:server:http:test', redis.createClient(dropBufferSupport: true)
+    @jobManager = new JobManager client: @redis, timeoutSeconds: 1, jobLogSampleRate: 1
 
   beforeEach (done) ->
-    @jobLogClient = redis.createClient()
+    @jobLogClient = redis.createClient(dropBufferSupport: true)
     @jobLogClient.del 'meshblu:job-log', done
 
   context 'when the request is successful', ->
@@ -44,6 +44,8 @@ describe 'POST /messages', ->
           response =
             metadata:
               code: 201
+              metrics: @jobRequest.metadata.metrics
+              jobLogs: @jobRequest.metadata.jobLogs
               responseId: @jobRequest.metadata.responseId
 
           @jobManager.createResponse 'response', response, (error) =>
@@ -83,7 +85,7 @@ describe 'POST /messages', ->
       @jobLogClient.lindex 'meshblu:job-log', 0, (error, jobStr) =>
         return done error if error?
         todaySuffix = moment.utc().format('YYYY-MM-DD')
-        index = "metric:meshblu-core-protocol-adapter-http-#{todaySuffix}"
+        index = "metric:meshblu-core-protocol-adapter-http:sampled-#{todaySuffix}"
         expect(JSON.parse jobStr).to.containSubset {
           "index": index
           "type": "meshblu-core-protocol-adapter-http:request"
@@ -150,14 +152,14 @@ describe 'POST /messages', ->
     it 'should log the message', (done) ->
       @jobLogClient.llen 'meshblu:job-log', (error, count) =>
         return done error if error?
-        expect(count).to.equal 1
+        expect(count).to.equal 2
         done()
 
     it 'should log the attempt and success of the message', (done) ->
       @jobLogClient.lindex 'meshblu:job-log', 0, (error, jobStr) =>
         return done error if error?
         todaySuffix = moment.utc().format('YYYY-MM-DD')
-        index = "metric:meshblu-core-protocol-adapter-http-#{todaySuffix}"
+        index = "metric:meshblu-core-protocol-adapter-http:failed-#{todaySuffix}"
         expect(JSON.parse jobStr).to.containSubset {
           "index": index
           "type": "meshblu-core-protocol-adapter-http:request"

@@ -17,11 +17,21 @@ PackageJSON           = require '../package.json'
 
 class Server
   constructor: (options)->
-    {@disableLogging, @port, @aliasServerUri} = options
-    {@redisUri, @namespace, @maxConnections} = options
-    {@jobTimeoutSeconds, @jobLogSampleRate, @jobLogRedisUri, @jobLogQueue} = options
+    {
+      @disableLogging
+      @port
+      @aliasServerUri
+      @redisUri
+      @namespace
+      @maxConnections
+      @jobTimeoutSeconds
+      @jobLogSampleRate
+      @jobLogRedisUri
+      @jobLogQueue
+    } = options
     @panic 'missing @jobLogQueue', 2 unless @jobLogQueue?
     @panic 'missing @jobLogRedisUri', 2 unless @jobLogRedisUri?
+    @panic 'missing @jobLogSampleRate', 2 unless @jobLogSampleRate?
 
   address: =>
     @server.address()
