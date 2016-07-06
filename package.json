@@ -1,6 +1,6 @@
 {
   "name": "meshblu-core-protocol-adapter-http",
-  "version": "3.16.6",
+  "version": "3.17.0",
   "description": "",
   "engines": {
     "node": ">=5.0.0"
@@ -31,7 +31,7 @@
     "express-meshblu-healthcheck": "^1.0.1",
     "express-send-error": "^1.0.4",
     "lodash": "^4.0.0",
-    "meshblu-core-redis-pooled-job-manager": "^2.3.0",
+    "meshblu-core-redis-pooled-job-manager": "^2.5.0",
     "morgan": "^1.6.1",
     "request": "^2.67.0",
     "simple-benchmark": "^1.0.7",
@@ -43,7 +43,7 @@
     "coffee-coverage": "^0.6.3",
     "fakeredis": "^0.3.4",
     "istanbul": "^0.4.0",
-    "meshblu-core-job-manager": "^5.1.0",
+    "meshblu-core-job-manager": "^6.1.2",
     "mocha": "^2.3.3",
     "mocha-istanbul": "^0.2.0",
     "node-mocks-http": "^1.4.4",
