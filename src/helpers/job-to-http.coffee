@@ -37,11 +37,12 @@ class JobToHttp
     headers
 
   sendJobResponse: ({jobResponse, res}) ->
-    return res.sendStatus 500  unless jobResponse?
+    return res.sendStatus 500 unless jobResponse?
 
     res.set 'Content-Type', 'application/json'
     res.set @metadataToHeaders jobResponse.metadata
     res.status jobResponse.metadata.code
+    return res.end() unless jobResponse.rawData?
     res.send jobResponse.rawData
 
   module.exports = JobToHttp
