@@ -1,6 +1,6 @@
+_         = require 'lodash'
 JobToHttp = require '../helpers/job-to-http'
-debug = require('debug')('meshblu-core-protocol-adapter-http:get-device-controller')
-_     = require 'lodash'
+debug     = require('debug')('meshblu-core-protocol-adapter-http:get-device-controller')
 
 class DeviceV1Controller
   constructor: ({@jobManager, @jobToHttp}) ->

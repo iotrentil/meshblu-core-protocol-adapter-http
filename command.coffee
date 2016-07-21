@@ -1,8 +1,10 @@
 _             = require 'lodash'
+OctobluRaven  = require 'octoblu-raven'
 Server        = require './src/server'
 
 class Command
   constructor: ->
+    @octobluRaven = new OctobluRaven()
     @serverOptions =
       port:                         parseInt process.env.PORT || 80
       aliasServerUri:               process.env.ALIAS_SERVER_URI
@@ -14,10 +16,14 @@ class Command
       jobLogRedisUri:               process.env.JOB_LOG_REDIS_URI
       jobLogQueue:                  process.env.JOB_LOG_QUEUE
       jobLogSampleRate:             parseFloat process.env.JOB_LOG_SAMPLE_RATE
+      octobluRaven:                 @octobluRaven
 
   panic: (error) =>
     console.error error.stack
     process.exit 1
+
+  catchErrors: =>
+    @octobluRaven.patchGlobal()
 
   run: =>
     @panic new Error('Missing required environment variable: ALIAS_SERVER_URI') unless @serverOptions.aliasServerUri? # allowed to be empty
@@ -39,4 +45,5 @@ class Command
         process.exit 0
 
 command = new Command()
+command.catchErrors()
 command.run()

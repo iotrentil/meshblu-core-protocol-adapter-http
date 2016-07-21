@@ -4,6 +4,7 @@ morgan                = require 'morgan'
 express               = require 'express'
 bodyParser            = require 'body-parser'
 cors                  = require 'cors'
+OctobluRaven          = require 'octoblu-raven'
 errorHandler          = require 'errorhandler'
 meshbluHealthcheck    = require 'express-meshblu-healthcheck'
 SendError             = require 'express-send-error'
@@ -28,10 +29,12 @@ class Server
       @jobLogSampleRate
       @jobLogRedisUri
       @jobLogQueue
+      @octobluRaven
     } = options
     @panic 'missing @jobLogQueue', 2 unless @jobLogQueue?
     @panic 'missing @jobLogRedisUri', 2 unless @jobLogRedisUri?
     @panic 'missing @jobLogSampleRate', 2 unless @jobLogSampleRate?
+    @octobluRaven ?= new OctobluRaven()
 
   address: =>
     @server.address()
@@ -44,9 +47,12 @@ class Server
 
   run: (callback) =>
     app = express()
+    app.use @octobluRaven.express().handleErrors()
     app.use SendError()
     app.use meshbluHealthcheck()
-    app.use morgan 'dev', immediate: false unless @disableLogging
+    skip = (request, response) =>
+      return response.statusCode < 400
+    app.use morgan 'dev', { immediate: false, skip } unless @disableLogging
     app.use errorHandler()
     app.use cors()
     app.use bodyParser.urlencoded limit: '50mb', extended : true
