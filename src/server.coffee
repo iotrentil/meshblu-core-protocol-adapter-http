@@ -16,6 +16,7 @@ Router                = require './router'
 JobToHttp             = require './helpers/job-to-http'
 PackageJSON           = require '../package.json'
 debug                 = require('debug')('meshblu-core-protocol-adapter-http:server')
+compression           = require 'compression'
 
 class Server
   constructor: (options)->
@@ -48,6 +49,7 @@ class Server
 
   run: (callback) =>
     app = express()
+    app.use compression()
     app.use @octobluRaven.express().handleErrors()
     app.use SendError()
     app.use expressVersion({format: '{"version": "%s"}'})
