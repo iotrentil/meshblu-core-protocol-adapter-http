@@ -8,13 +8,14 @@ OctobluRaven          = require 'octoblu-raven'
 errorHandler          = require 'errorhandler'
 meshbluHealthcheck    = require 'express-meshblu-healthcheck'
 SendError             = require 'express-send-error'
+expressVersion        = require 'express-package-version'
+RedisPooledJobManager = require 'meshblu-core-redis-pooled-job-manager'
 redis                 = require 'ioredis'
 RedisNS               = require '@octoblu/redis-ns'
-debug                 = require('debug')('meshblu-core-protocol-adapter-http:server')
 Router                = require './router'
-RedisPooledJobManager = require 'meshblu-core-redis-pooled-job-manager'
 JobToHttp             = require './helpers/job-to-http'
 PackageJSON           = require '../package.json'
+debug                 = require('debug')('meshblu-core-protocol-adapter-http:server')
 
 class Server
   constructor: (options)->
@@ -49,6 +50,7 @@ class Server
     app = express()
     app.use @octobluRaven.express().handleErrors()
     app.use SendError()
+    app.use expressVersion({format: '{"version": "%s"}'})
     app.use meshbluHealthcheck()
     skip = (request, response) =>
       return response.statusCode < 400
