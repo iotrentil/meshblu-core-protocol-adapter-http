@@ -1,4 +1,5 @@
 AuthenticateController     = require './controllers/authenticate-controller'
+BroadcastsController       = require './controllers/broadcasts-controller'
 DeviceV1Controller         = require './controllers/device-v1-controller'
 DeviceV2Controller         = require './controllers/device-v2-controller'
 DeviceV3Controller         = require './controllers/device-v3-controller'
@@ -17,6 +18,7 @@ url                        = require 'url'
 class Router
   constructor: ({jobManager, jobToHttp})->
     @authenticateController     = new AuthenticateController {jobManager, jobToHttp}
+    @broadcastsController       = new BroadcastsController {jobManager, jobToHttp}
     @deviceV1Controller         = new DeviceV1Controller {jobManager, jobToHttp}
     @deviceV2Controller         = new DeviceV2Controller {jobManager, jobToHttp}
     @deviceV3Controller         = new DeviceV3Controller {jobManager, jobToHttp}
@@ -33,6 +35,7 @@ class Router
   route: (app) =>
     app.get    '/authenticate/:uuid', @authenticateController.checkDevice
     app.post   '/authenticate', @authenticateController.check
+    app.post   '/broadcasts', @broadcastsController.create
     app.post   '/claimdevice/:uuid', @deviceV1Controller.claimdevice
     app.get    '/devices', @searchDeviceController.searchV1
     app.post   '/devices', @registerDeviceController.register
