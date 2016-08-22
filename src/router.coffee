@@ -7,6 +7,7 @@ GlobalPublicKeyController  = require './controllers/global-public-key-controller
 MessagesController         = require './controllers/messages-controller'
 RegisterDeviceController   = require './controllers/register-device-controller'
 SearchDeviceController     = require './controllers/search-device-controller'
+SearchTokenController     = require './controllers/search-token-controller'
 StatusController           = require './controllers/status-controller'
 SubscriptionsController    = require './controllers/subscriptions-controller'
 TokenController            = require './controllers/token-controller'
@@ -26,6 +27,7 @@ class Router
     @messagesController         = new MessagesController {jobManager, jobToHttp}
     @registerDeviceController   = new RegisterDeviceController {jobManager, jobToHttp}
     @searchDeviceController     = new SearchDeviceController {jobManager, jobToHttp}
+    @searchTokenController      = new SearchTokenController {jobManager, jobToHttp}
     @statusController           = new StatusController {jobManager, jobToHttp}
     @subscriptionsController    = new SubscriptionsController {jobManager, jobToHttp}
     @tokenController            = new TokenController {jobManager, jobToHttp}
@@ -51,6 +53,7 @@ class Router
     app.get    '/mydevices', @searchDeviceController.mydevices
     app.get    '/publickey', @globalPublicKeyController.get
     app.post   '/search/devices', @searchDeviceController.searchV3
+    app.post   '/search/tokens', @searchTokenController.search
     app.get    '/status', @statusController.get
     app.get    '/subscribe*', (req, res) =>
       proto = req.header('x-forwarded-proto') ? 'https'
