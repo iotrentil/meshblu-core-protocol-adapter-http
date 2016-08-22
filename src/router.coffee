@@ -7,7 +7,7 @@ GlobalPublicKeyController  = require './controllers/global-public-key-controller
 MessagesController         = require './controllers/messages-controller'
 RegisterDeviceController   = require './controllers/register-device-controller'
 SearchDeviceController     = require './controllers/search-device-controller'
-SearchTokenController     = require './controllers/search-token-controller'
+SearchTokenController      = require './controllers/search-token-controller'
 StatusController           = require './controllers/status-controller'
 SubscriptionsController    = require './controllers/subscriptions-controller'
 TokenController            = require './controllers/token-controller'
@@ -17,7 +17,7 @@ request                    = require 'request'
 url                        = require 'url'
 
 class Router
-  constructor: ({jobManager, jobToHttp})->
+  constructor: ({jobManager, jobToHttp}) ->
     @authenticateController     = new AuthenticateController {jobManager, jobToHttp}
     @broadcastsController       = new BroadcastsController {jobManager, jobToHttp}
     @deviceV1Controller         = new DeviceV1Controller {jobManager, jobToHttp}
