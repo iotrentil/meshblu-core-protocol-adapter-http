@@ -1,15 +1,8 @@
-cors                  = require 'cors'
 _                     = require 'lodash'
 colors                = require 'colors'
-morgan                = require 'morgan'
-express               = require 'express'
 redis                 = require 'ioredis'
-bodyParser            = require 'body-parser'
-compression           = require 'compression'
-OctobluRaven          = require 'octoblu-raven'
+octobluExpress        = require 'express-octoblu'
 RedisNS               = require '@octoblu/redis-ns'
-expressVersion        = require 'express-package-version'
-meshbluHealthcheck    = require 'express-meshblu-healthcheck'
 RateLimitChecker      = require 'meshblu-core-rate-limit-checker'
 RedisPooledJobManager = require 'meshblu-core-redis-pooled-job-manager'
 debug                 = require('debug')('meshblu-core-protocol-adapter-http:server')
@@ -31,12 +24,10 @@ class Server
       @jobLogSampleRate
       @jobLogRedisUri
       @jobLogQueue
-      @octobluRaven
     } = options
     @panic 'missing @jobLogQueue', 2 unless @jobLogQueue?
     @panic 'missing @jobLogRedisUri', 2 unless @jobLogRedisUri?
     @panic 'missing @jobLogSampleRate', 2 unless @jobLogSampleRate?
-    @octobluRaven ?= new OctobluRaven()
     rateLimitCheckerClient = new RedisNS 'meshblu-count', redis.createClient(@redisUri, dropBufferSupport: true)
     @rateLimitChecker = new RateLimitChecker client: rateLimitCheckerClient
     @authParser = new MeshbluAuthParser
@@ -51,17 +42,7 @@ class Server
     process.exit exitCode
 
   run: (callback) =>
-    app = express()
-    @octobluRaven.expressBundle({ app })
-    app.use compression()
-    app.use expressVersion({format: '{"version": "%s"}'})
-    app.use meshbluHealthcheck()
-    skip = (request, response) =>
-      return response.statusCode < 400
-    app.use morgan 'dev', { immediate: false, skip } unless @disableLogging
-    app.use cors()
-    app.use bodyParser.urlencoded limit: '50mb', extended : true
-    app.use bodyParser.json limit : '50mb'
+    app = octobluExpress({ @disableLogging })
 
     rateLimit = (req, res, next) =>
       as = req.get 'x-meshblu-as'

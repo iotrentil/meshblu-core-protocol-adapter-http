@@ -1,10 +1,8 @@
-_             = require 'lodash'
-OctobluRaven  = require 'octoblu-raven'
-Server        = require './src/server'
+_      = require 'lodash'
+Server = require './src/server'
 
 class Command
   constructor: ->
-    @octobluRaven = new OctobluRaven()
     @serverOptions =
       port:                         parseInt process.env.PORT || 80
       aliasServerUri:               process.env.ALIAS_SERVER_URI
@@ -16,21 +14,17 @@ class Command
       jobLogRedisUri:               process.env.JOB_LOG_REDIS_URI
       jobLogQueue:                  process.env.JOB_LOG_QUEUE
       jobLogSampleRate:             parseFloat process.env.JOB_LOG_SAMPLE_RATE
-      octobluRaven:                 @octobluRaven
 
   panic: (error) =>
     console.error error.stack
     process.exit 1
 
-  catchErrors: =>
-    @octobluRaven.patchGlobal()
-
   run: =>
-    @panic new Error('Missing required environment variable: ALIAS_SERVER_URI') unless @serverOptions.aliasServerUri? # allowed to be empty
-    @panic new Error('Missing required environment variable: REDIS_URI') if _.isEmpty @serverOptions.redisUri
-    @panic new Error('Missing required environment variable: JOB_LOG_REDIS_URI') if _.isEmpty @serverOptions.jobLogRedisUri
-    @panic new Error('Missing required environment variable: JOB_LOG_SAMPLE_RATE') unless @serverOptions.jobLogSampleRate?
-    @panic new Error('Missing required environment variable: JOB_LOG_QUEUE') if _.isEmpty @serverOptions.jobLogQueue
+    @panic new Error('Missing environment variable: ALIAS_SERVER_URI') unless @serverOptions.aliasServerUri?
+    @panic new Error('Missing environment variable: REDIS_URI') if _.isEmpty @serverOptions.redisUri
+    @panic new Error('Missing environment variable: JOB_LOG_REDIS_URI') if _.isEmpty @serverOptions.jobLogRedisUri
+    @panic new Error('Missing environment variable: JOB_LOG_SAMPLE_RATE') unless @serverOptions.jobLogSampleRate?
+    @panic new Error('Missing environment variable: JOB_LOG_QUEUE') if _.isEmpty @serverOptions.jobLogQueue
 
     server = new Server @serverOptions
     server.run (error) =>
@@ -41,9 +35,9 @@ class Command
 
     process.on 'SIGTERM', =>
       console.log 'SIGTERM caught, exiting'
+      return process.exit 0 unless server?.stop?
       server.stop =>
         process.exit 0
 
 command = new Command()
-command.catchErrors()
 command.run()
