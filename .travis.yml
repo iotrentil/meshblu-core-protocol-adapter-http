@@ -3,9 +3,6 @@ node_js:
 - '5'
 services:
 - redis
-branches:
-  only:
-  - "/^v[0-9]/"
 addons:
   code_climate:
     repo_token: bfe59d48e8938b2bd3266dd13b1258a123b89d8388be18e48c780331100c2ffd
@@ -14,4 +11,4 @@ before_script:
 after_script:
 - codeclimate-test-reporter < coverage/lcov.info
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash)
