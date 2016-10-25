@@ -55,4 +55,12 @@ class DeviceV2Controller
       return res.sendError error if error?
       return @jobToHttp.sendJobResponse {res, jobResponse}
 
+  findAndUpdate: (req, res) =>
+    job = @jobToHttp.httpToJob jobType: 'FindAndUpdateDevice', request: req, toUuid: req.params.uuid
+
+    debug('dispatching request', job)
+    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+      return res.sendError error if error?
+      return @jobToHttp.sendJobResponse {res, jobResponse}
+
 module.exports = DeviceV2Controller
