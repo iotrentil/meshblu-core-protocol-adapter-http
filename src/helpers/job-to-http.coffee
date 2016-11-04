@@ -32,8 +32,12 @@ class JobToHttp
     headers = {}
     _.each metadata, (value, key) =>
       header = "x-meshblu-#{_.kebabCase(key)}"
-      return _.set headers, header, value if _.isString value
-      return _.set headers, header, JSON.stringify value
+      try
+        return _.set headers, header, value if _.isString value
+        return _.set headers, header, JSON.stringify value
+      catch error
+        console.error error.stack
+        console.error header, JSON.stringify(value)
     headers
 
   sendJobResponse: ({jobResponse, res}) ->
