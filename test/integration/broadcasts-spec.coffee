@@ -33,6 +33,7 @@ describe 'POST /broadcasts', ->
   beforeEach (done) ->
     @jobLogClient = redis.createClient(dropBufferSupport: true)
     @jobLogClient.del 'meshblu:job-log', done
+    return # redis fix
 
   context 'when the request is successful', ->
     beforeEach ->
@@ -80,6 +81,7 @@ describe 'POST /broadcasts', ->
         return done error if error?
         expect(count).to.equal 1
         done()
+      return # redis fix
 
     it 'should log the attempt and success of the broadcast', (done) ->
       @jobLogClient.lindex 'meshblu:job-log', 0, (error, jobStr) =>
@@ -109,6 +111,7 @@ describe 'POST /broadcasts', ->
           }
         }
         done()
+      return # redis fix
 
 
   context 'when the user posts a broadcast that is not json', ->
@@ -168,6 +171,7 @@ describe 'POST /broadcasts', ->
         return done error if error?
         expect(count).to.equal 2
         done()
+      return # redis fix
 
     it 'should log the attempt and success of the broadcast', (done) ->
       @jobLogClient.lindex 'meshblu:job-log', 0, (error, jobStr) =>
@@ -197,3 +201,4 @@ describe 'POST /broadcasts', ->
           }
         }
         done()
+      return # redis fix

@@ -33,6 +33,7 @@ describe 'POST /messages', ->
   beforeEach (done) ->
     @jobLogClient = redis.createClient(dropBufferSupport: true)
     @jobLogClient.del 'meshblu:job-log', done
+    return # redis fix
 
   context 'when the request is successful', ->
     beforeEach ->
@@ -80,6 +81,7 @@ describe 'POST /messages', ->
         return done error if error?
         expect(count).to.equal 1
         done()
+      return # redis fix
 
     it 'should log the attempt and success of the message', (done) ->
       @jobLogClient.lindex 'meshblu:job-log', 0, (error, jobStr) =>
@@ -109,6 +111,7 @@ describe 'POST /messages', ->
           }
         }
         done()
+      return # redis fix
 
   context 'when the request is unsuccessful', ->
     beforeEach ->
@@ -154,6 +157,7 @@ describe 'POST /messages', ->
         return done error if error?
         expect(count).to.equal 2
         done()
+      return # redis fix
 
     it 'should log the attempt and success of the message', (done) ->
       @jobLogClient.lindex 'meshblu:job-log', 0, (error, jobStr) =>
@@ -183,3 +187,4 @@ describe 'POST /messages', ->
           }
         }
         done()
+      return # redis fix
