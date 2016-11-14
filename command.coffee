@@ -4,16 +4,16 @@ Server = require './src/server'
 class Command
   constructor: ->
     @serverOptions =
-      port:                         parseInt process.env.PORT || 80
-      aliasServerUri:               process.env.ALIAS_SERVER_URI
-      redisUri:                     process.env.REDIS_URI
-      namespace:                    process.env.NAMESPACE || 'meshblu'
-      jobTimeoutSeconds:            parseInt process.env.JOB_TIMEOUT_SECONDS || 30
-      maxConnections:               parseInt process.env.CONNECTION_POOL_MAX_CONNECTIONS || 100
-      disableLogging:               process.env.DISABLE_LOGGING == "true"
-      jobLogRedisUri:               process.env.JOB_LOG_REDIS_URI
-      jobLogQueue:                  process.env.JOB_LOG_QUEUE
-      jobLogSampleRate:             parseFloat process.env.JOB_LOG_SAMPLE_RATE
+      port:              parseInt process.env.PORT || 80
+      aliasServerUri:    process.env.ALIAS_SERVER_URI
+      redisUri:          process.env.REDIS_URI
+      namespace:         process.env.NAMESPACE || 'meshblu'
+      jobTimeoutSeconds: parseInt process.env.JOB_TIMEOUT_SECONDS || 30
+      maxConnections:    parseInt process.env.CONNECTION_POOL_MAX_CONNECTIONS || 100
+      disableLogging:    process.env.DISABLE_LOGGING == "true"
+      jobLogRedisUri:    process.env.JOB_LOG_REDIS_URI
+      jobLogQueue:       process.env.JOB_LOG_QUEUE
+      jobLogSampleRate:  parseFloat process.env.JOB_LOG_SAMPLE_RATE
 
   panic: (error) =>
     console.error error.stack

@@ -1,12 +1,12 @@
 {
   "name": "meshblu-core-protocol-adapter-http",
-  "version": "3.21.2",
+  "version": "3.22.0",
   "description": "",
   "engines": {
     "node": ">=5.0.0"
   },
   "engineStrict": true,
-  "main": "command.js",
+  "main": "index.js",
   "scripts": {
     "start": "node command.js",
     "test": "mocha",
