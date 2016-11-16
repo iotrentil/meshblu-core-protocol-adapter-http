@@ -7,6 +7,7 @@ class Command
       port:              parseInt process.env.PORT || 80
       aliasServerUri:    process.env.ALIAS_SERVER_URI
       redisUri:          process.env.REDIS_URI
+      cacheRedisUri:     process.env.CACHE_REDIS_URI
       namespace:         process.env.NAMESPACE || 'meshblu'
       jobTimeoutSeconds: parseInt process.env.JOB_TIMEOUT_SECONDS || 30
       maxConnections:    parseInt process.env.CONNECTION_POOL_MAX_CONNECTIONS || 100
@@ -22,6 +23,7 @@ class Command
   run: =>
     @panic new Error('Missing environment variable: ALIAS_SERVER_URI') unless @serverOptions.aliasServerUri?
     @panic new Error('Missing environment variable: REDIS_URI') if _.isEmpty @serverOptions.redisUri
+    @panic new Error('Missing environment variable: CACHE_REDIS_URI') if _.isEmpty @serverOptions.cacheRedisUri
     @panic new Error('Missing environment variable: JOB_LOG_REDIS_URI') if _.isEmpty @serverOptions.jobLogRedisUri
     @panic new Error('Missing environment variable: JOB_LOG_SAMPLE_RATE') unless @serverOptions.jobLogSampleRate?
     @panic new Error('Missing environment variable: JOB_LOG_QUEUE') if _.isEmpty @serverOptions.jobLogQueue

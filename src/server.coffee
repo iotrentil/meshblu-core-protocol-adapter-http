@@ -18,6 +18,7 @@ class Server
       @port
       @aliasServerUri
       @redisUri
+      @cacheRedisUri
       @namespace
       @maxConnections
       @jobTimeoutSeconds
@@ -28,7 +29,7 @@ class Server
     @panic 'missing @jobLogQueue', 2 unless @jobLogQueue?
     @panic 'missing @jobLogRedisUri', 2 unless @jobLogRedisUri?
     @panic 'missing @jobLogSampleRate', 2 unless @jobLogSampleRate?
-    rateLimitCheckerClient = new RedisNS 'meshblu-count', redis.createClient(@redisUri, dropBufferSupport: true)
+    rateLimitCheckerClient = new RedisNS 'meshblu-count', redis.createClient(@cacheRedisUri, dropBufferSupport: true)
     @rateLimitChecker = new RateLimitChecker client: rateLimitCheckerClient
     @authParser = new MeshbluAuthParser
 
