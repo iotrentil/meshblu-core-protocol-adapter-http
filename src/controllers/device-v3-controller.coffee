@@ -9,7 +9,7 @@ class DeviceV3Controller
     job = @jobToHttp.httpToJob jobType: 'GetDevice', request: req, toUuid: req.params.uuid
 
     debug('dispatching request', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       @jobToHttp.sendJobResponse {jobResponse, res}
 

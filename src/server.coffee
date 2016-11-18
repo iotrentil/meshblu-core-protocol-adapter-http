@@ -1,15 +1,17 @@
-_                     = require 'lodash'
-colors                = require 'colors'
-redis                 = require 'ioredis'
-octobluExpress        = require 'express-octoblu'
-RedisNS               = require '@octoblu/redis-ns'
-RateLimitChecker      = require 'meshblu-core-rate-limit-checker'
-RedisPooledJobManager = require 'meshblu-core-redis-pooled-job-manager'
-debug                 = require('debug')('meshblu-core-protocol-adapter-http:server')
+_                       = require 'lodash'
+UUID                    = require 'uuid'
+colors                  = require 'colors'
+Redis                   = require 'ioredis'
+octobluExpress          = require 'express-octoblu'
+RedisNS                 = require '@octoblu/redis-ns'
+RateLimitChecker        = require 'meshblu-core-rate-limit-checker'
+JobLogger               = require 'job-logger'
+{ JobManagerRequester } = require 'meshblu-core-job-manager'
+debug                   = require('debug')('meshblu-core-protocol-adapter-http:server')
 
-Router                = require './router'
-JobToHttp             = require './helpers/job-to-http'
-MeshbluAuthParser     = require './helpers/meshblu-auth-parser'
+Router                  = require './router'
+JobToHttp               = require './helpers/job-to-http'
+MeshbluAuthParser       = require './helpers/meshblu-auth-parser'
 
 class Server
   constructor: (options)->
@@ -25,12 +27,16 @@ class Server
       @jobLogSampleRate
       @jobLogRedisUri
       @jobLogQueue
+      @requestQueueName
+      @responseQueueName
     } = options
     @panic 'missing @jobLogQueue', 2 unless @jobLogQueue?
     @panic 'missing @jobLogRedisUri', 2 unless @jobLogRedisUri?
+    @panic 'missing @redisUri', 2 unless @redisUri?
+    @panic 'missing @cacheRedisUri', 2 unless @cacheRedisUri?
     @panic 'missing @jobLogSampleRate', 2 unless @jobLogSampleRate?
 
-    cacheClient = redis.createClient @cacheRedisUri, dropBufferSupport: true
+    cacheClient = new Redis @cacheRedisUri, dropBufferSupport: true
     rateLimitCheckerClient = new RedisNS 'meshblu-count', cacheClient
     @rateLimitChecker = new RateLimitChecker client: rateLimitCheckerClient
     @authParser = new MeshbluAuthParser
@@ -58,29 +64,45 @@ class Server
         next()
     app.use rateLimit
 
-    jobManager = new RedisPooledJobManager {
-      jobLogIndexPrefix: 'metric:meshblu-core-protocol-adapter-http'
-      jobLogType: 'meshblu-core-protocol-adapter-http:request'
-      idleTimeoutMillis: 5*60*1000
-      minConnections: 5
+    client = new RedisNS @namespace, new Redis @redisUri, dropBufferSupport: true
+    queueClient = new RedisNS @namespace, new Redis @redisUri, dropBufferSupport: true
+
+    jobLogger = new JobLogger
+      client: new Redis @jobLogRedisUri, dropBufferSupport: true
+      indexPrefix: 'metric:meshblu-core-protocol-adapter-http'
+      type: 'meshblu-core-protocol-adapter-http:request'
+      jobLogQueue: @jobLogQueue
+
+    @jobManager = new JobManagerRequester {
+      client
+      queueClient
       @jobTimeoutSeconds
-      @jobLogQueue
-      @jobLogRedisUri
       @jobLogSampleRate
-      @maxConnections
-      @redisUri
-      @namespace
+      @requestQueueName
+      @responseQueueName
+      queueTimeoutSeconds: @jobTimeoutSeconds
     }
+
+    @jobManager._do = @jobManager.do
+    @jobManager.do = (request, callback) =>
+      @jobManager._do request, (error, response) =>
+        jobLogger.log { error, request, response }, (jobLoggerError) =>
+          return callback jobLoggerError if jobLoggerError?
+          callback error, response
+
+    queueClient.on 'ready', =>
+      @jobManager.startProcessing()
 
     jobToHttp = new JobToHttp
 
-    router = new Router {jobManager, jobToHttp}
+    router = new Router { @jobManager, jobToHttp }
 
     router.route app
 
     @server = app.listen @port, callback
 
   stop: (callback) =>
+    @jobManager.stopProcessing()
     @server.close callback
 
 module.exports = Server

@@ -9,7 +9,7 @@ class AuthenticateController
   check: (req, res) =>
     job = @jobToHttp.httpToJob jobType: 'Authenticate', request: req, toUuid: req.params.uuid
 
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       @jobToHttp.sendJobResponse {jobResponse, res}
 
@@ -18,7 +18,7 @@ class AuthenticateController
     {token} = req.query
     job = @jobToHttp.httpToJob jobType: 'Authenticate', request: req
     job.metadata.auth = {uuid, token}
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       {code} = jobResponse.metadata
       return res.status(code).send JSON.parse jobResponse.rawData unless code == 204

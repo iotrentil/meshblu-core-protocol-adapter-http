@@ -1,5 +1,6 @@
 _      = require 'lodash'
 Server = require './src/server'
+UUID   = require 'uuid'
 
 class Command
   constructor: ->
@@ -15,6 +16,8 @@ class Command
       jobLogRedisUri:    process.env.JOB_LOG_REDIS_URI
       jobLogQueue:       process.env.JOB_LOG_QUEUE
       jobLogSampleRate:  parseFloat process.env.JOB_LOG_SAMPLE_RATE
+      requestQueueName:  process.env.REQUEST_QUEUE_NAME
+      responseQueueBaseName: process.env.RESPONSE_QUEUE_BASE_NAME
 
   panic: (error) =>
     console.error error.stack
@@ -27,6 +30,11 @@ class Command
     @panic new Error('Missing environment variable: JOB_LOG_REDIS_URI') if _.isEmpty @serverOptions.jobLogRedisUri
     @panic new Error('Missing environment variable: JOB_LOG_SAMPLE_RATE') unless @serverOptions.jobLogSampleRate?
     @panic new Error('Missing environment variable: JOB_LOG_QUEUE') if _.isEmpty @serverOptions.jobLogQueue
+    @panic new Error('Missing environment variable: REQUEST_QUEUE_NAME') if _.isEmpty @serverOptions.requestQueueName
+    @panic new Error('Missing environment variable: RESPONSE_QUEUE_BASE_NAME') if _.isEmpty @serverOptions.responseQueueBaseName
+
+    responseQueueId = UUID.v4()
+    @serverOptions.responseQueueName = "#{@serverOptions.responseQueueBaseName}:#{responseQueueId}"
 
     server = new Server @serverOptions
     server.run (error) =>

@@ -15,7 +15,7 @@ class BroadcastsController
 
     job = @jobToHttp.httpToJob jobType: 'SendMessage', request: req, toUuid: auth.uuid
     job.data.devices = ['*']
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       @jobToHttp.sendJobResponse {jobResponse, res}
 

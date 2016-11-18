@@ -8,7 +8,7 @@ class SubscriptionsController
   list: (req, res) =>
     job = @jobToHttp.httpToJob jobType: 'SubscriptionList', request: req, toUuid: req.params.uuid
 
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       return res.sendError new Error('Did not receive jobResponse') unless jobResponse?
       @jobToHttp.sendJobResponse {jobResponse, res}
@@ -17,7 +17,7 @@ class SubscriptionsController
     req.body = _.pick req.params, ['subscriberUuid', 'emitterUuid', 'type']
     job = @jobToHttp.httpToJob jobType: 'CreateSubscription', request: req, toUuid: req.params.subscriberUuid
 
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       return res.sendError new Error('Did not receive jobResponse') unless jobResponse?
       jobResponse.metadata.code = 204 if jobResponse.metadata.code == 304
@@ -28,7 +28,7 @@ class SubscriptionsController
     req.body = _.pick req.params, ['subscriberUuid', 'emitterUuid', 'type']
     job = @jobToHttp.httpToJob jobType: 'RemoveSubscription', request: req, toUuid: req.params.subscriberUuid
 
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       return res.sendError new Error('Did not receive jobResponse') unless jobResponse?
       @jobToHttp.sendJobResponse {jobResponse, res}

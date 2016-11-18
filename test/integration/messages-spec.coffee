@@ -1,56 +1,79 @@
-_ = require 'lodash'
-request = require 'request'
-Server = require '../../src/server'
-async      = require 'async'
-moment     = require 'moment'
-redis      = require 'ioredis'
-RedisNS    = require '@octoblu/redis-ns'
-JobManager = require 'meshblu-core-job-manager'
+_                       = require 'lodash'
+moment                  = require 'moment'
+UUID                    = require 'uuid'
+request                 = require 'request'
+Server                  = require '../../src/server'
+Redis                   = require 'ioredis'
+RedisNS                 = require '@octoblu/redis-ns'
+{ JobManagerResponder } = require 'meshblu-core-job-manager'
 
 describe 'POST /messages', ->
   beforeEach (done) ->
+    @responseQueueId = UUID.v4()
+    @requestQueueName = "request:queue:#{@responseQueueId}"
+    @responseQueueName = "response:queue:#{@responseQueueId}"
+    @namespace = 'test:meshblu-http'
+    @jobLogQueue = 'test:meshblu:job-log'
     @port = 0xd00d
-    @sut = new Server
-      port: @port
+    @sut = new Server {
+      @port
       disableLogging: true
       jobTimeoutSeconds: 1
-      namespace: 'meshblu:server:http:test'
-      jobLogQueue: 'meshblu:job-log'
+      @namespace
+      @jobLogQueue
       jobLogRedisUri: 'redis://localhost:6379'
-      maxConnections: 10
-      jobLogSampleRate: 1
+      jobLogSampleRate: 10
       redisUri: 'redis://localhost'
+      cacheRedisUri: 'redis://localhost'
+      @requestQueueName
+      @responseQueueName
+    }
 
     @sut.run done
 
   afterEach (done) ->
     @sut.stop => done()
 
-  beforeEach ->
-    @redis = _.bindAll new RedisNS 'meshblu:server:http:test', redis.createClient(dropBufferSupport: true)
-    @jobManager = new JobManager client: @redis, timeoutSeconds: 1, jobLogSampleRate: 1
+  beforeEach (done) ->
+    @redis = new RedisNS @namespace, new Redis 'localhost', dropBufferSupport: true
+    @redis.on 'ready', done
+
+  afterEach (done) ->
+    @redis.del @requestQueueName, @responseQueueName, done
+    return # avoid returning redis
 
   beforeEach (done) ->
-    @jobLogClient = redis.createClient(dropBufferSupport: true)
-    @jobLogClient.del 'meshblu:job-log', done
+    @queueRedis = new RedisNS @namespace, new Redis 'localhost', dropBufferSupport: true
+    @queueRedis.on 'ready', done
+
+  beforeEach ->
+    @jobManager = new JobManagerResponder {
+      client: @redis
+      queueClient: @queueRedis
+      queueTimeoutSeconds: 1
+      jobTimeoutSeconds: 1
+      jobLogSampleRate: 1
+      requestQueueName: @requestQueueName
+      responseQueueName: @responseQueueName
+    }
+
+  beforeEach (done) ->
+    @jobLogClient = new Redis 'localhost', dropBufferSupport: true
+    @jobLogClient.on 'ready', =>
+      @jobLogClient.del @jobLogQueue, done
     return # redis fix
 
   context 'when the request is successful', ->
     beforeEach ->
-      async.forever (next) =>
-        @jobManager.getRequest ['request'], (error, @jobRequest) =>
-          next @jobRequest
-          return unless @jobRequest?
+      @jobManager.do (@jobRequest, callback) =>
+        response =
+          metadata:
+            code: 201
+            metrics: @jobRequest.metadata.metrics
+            jobLogs: @jobRequest.metadata.jobLogs
+            responseId: @jobRequest.metadata.responseId
 
-          response =
-            metadata:
-              code: 201
-              metrics: @jobRequest.metadata.metrics
-              jobLogs: @jobRequest.metadata.jobLogs
-              responseId: @jobRequest.metadata.responseId
-
-          @jobManager.createResponse 'response', response, (error) =>
-            throw error if error?
+        callback null, response
 
     beforeEach (done) ->
       options =
@@ -77,14 +100,14 @@ describe 'POST /messages', ->
       expect(message).to.deep.equal devices: ['*']
 
     it 'should log the message', (done) ->
-      @jobLogClient.llen 'meshblu:job-log', (error, count) =>
+      @jobLogClient.llen @jobLogQueue, (error, count) =>
         return done error if error?
         expect(count).to.equal 1
         done()
       return # redis fix
 
     it 'should log the attempt and success of the message', (done) ->
-      @jobLogClient.lindex 'meshblu:job-log', 0, (error, jobStr) =>
+      @jobLogClient.lindex @jobLogQueue, 0, (error, jobStr) =>
         return done error if error?
         todaySuffix = moment.utc().format('YYYY-MM-DD')
         index = "metric:meshblu-core-protocol-adapter-http:sampled-#{todaySuffix}"
@@ -115,18 +138,13 @@ describe 'POST /messages', ->
 
   context 'when the request is unsuccessful', ->
     beforeEach ->
-      async.forever (next) =>
-        @jobManager.getRequest ['request'], (error, @jobRequest) =>
-          next @jobRequest
-          return unless @jobRequest?
+      @jobManager.do (@jobRequest, callback) =>
+        response =
+          metadata:
+            code: 506
+            responseId: @jobRequest.metadata.responseId
 
-          response =
-            metadata:
-              code: 506
-              responseId: @jobRequest.metadata.responseId
-
-          @jobManager.createResponse 'response', response, (error) =>
-            throw error if error?
+        callback null, response
 
     beforeEach (done) ->
       options =
@@ -153,14 +171,14 @@ describe 'POST /messages', ->
       expect(message).to.deep.equal devices: ['*']
 
     it 'should log the message', (done) ->
-      @jobLogClient.llen 'meshblu:job-log', (error, count) =>
+      @jobLogClient.llen @jobLogQueue, (error, count) =>
         return done error if error?
         expect(count).to.equal 2
         done()
       return # redis fix
 
     it 'should log the attempt and success of the message', (done) ->
-      @jobLogClient.lindex 'meshblu:job-log', 0, (error, jobStr) =>
+      @jobLogClient.lindex @jobLogQueue, 0, (error, jobStr) =>
         return done error if error?
         todaySuffix = moment.utc().format('YYYY-MM-DD')
         index = "metric:meshblu-core-protocol-adapter-http:failed-#{todaySuffix}"

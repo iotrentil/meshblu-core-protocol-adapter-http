@@ -10,7 +10,7 @@ class SearchDeviceController
     job.data.owner = job.metadata.fromUuid
 
     debug('dispatching request mydevices', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       res.status(jobResponse.metadata.code).send devices: JSON.parse jobResponse.rawData
 
@@ -18,7 +18,7 @@ class SearchDeviceController
     job = @_oldFormatToJob req
 
     debug('dispatching request v1', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       res.status(jobResponse.metadata.code).send devices: JSON.parse jobResponse.rawData
 
@@ -26,7 +26,7 @@ class SearchDeviceController
     job = @_oldFormatToJob req
 
     debug('dispatching request v2', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       @jobToHttp.sendJobResponse {jobResponse, res}
 
@@ -38,7 +38,7 @@ class SearchDeviceController
       catch error
 
     debug('dispatching request v3', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       @jobToHttp.sendJobResponse {jobResponse, res}
 

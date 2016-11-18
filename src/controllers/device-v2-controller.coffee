@@ -9,7 +9,7 @@ class DeviceV2Controller
     job = @jobToHttp.httpToJob jobType: 'GetDevice', request: req, toUuid: req.params.uuid
 
     debug('dispatching request', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       if !error? && jobResponse.metadata?.code == 403
         error = code: 404, message: 'Devices not found'
 
@@ -43,7 +43,7 @@ class DeviceV2Controller
     job = @jobToHttp.httpToJob jobType: 'UpdateDevice', request: req, toUuid: req.params.uuid
 
     debug('dispatching request', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       return @jobToHttp.sendJobResponse {res, jobResponse}
 
@@ -51,7 +51,7 @@ class DeviceV2Controller
     job = @jobToHttp.httpToJob jobType: 'UpdateDevice', request: req, toUuid: req.params.uuid
 
     debug('dispatching request', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       return @jobToHttp.sendJobResponse {res, jobResponse}
 
@@ -59,7 +59,7 @@ class DeviceV2Controller
     job = @jobToHttp.httpToJob jobType: 'FindAndUpdateDevice', request: req, toUuid: req.params.uuid
 
     debug('dispatching request', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       return @jobToHttp.sendJobResponse {res, jobResponse}
 

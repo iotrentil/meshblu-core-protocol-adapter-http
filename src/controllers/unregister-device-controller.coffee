@@ -10,7 +10,7 @@ class UnregisterDeviceController
     job = @jobToHttp.httpToJob jobType: 'UnregisterDevice', request: req, toUuid: uuid
 
     debug('dispatching request', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       if jobResponse.metadata.code == 204
         jobResponse.metadata.code = 200

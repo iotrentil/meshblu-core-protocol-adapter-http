@@ -7,7 +7,7 @@ class StatusController
   get: (req, res) =>
     job = @jobToHttp.httpToJob jobType: 'GetStatus', request: req, toUuid: req.params.uuid
 
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       @jobToHttp.sendJobResponse {res, jobResponse}
 

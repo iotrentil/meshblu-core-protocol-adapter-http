@@ -14,7 +14,7 @@ class TokenController
       data: req.body
 
     debug('dispatching request', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       @jobToHttp.sendJobResponse {jobResponse, res}
 
@@ -27,7 +27,7 @@ class TokenController
         token: req.params.token
         
     debug('dispatching request', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       @jobToHttp.sendJobResponse {jobResponse, res}
 
@@ -39,7 +39,7 @@ class TokenController
       data: req.query
 
     debug('dispatching request', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       @jobToHttp.sendJobResponse {jobResponse, res}
 
@@ -50,7 +50,7 @@ class TokenController
       toUuid: req.params.uuid
 
     debug('dispatching request', job)
-    @jobManager.do 'request', 'response', job, (error, jobResponse) =>
+    @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       @jobToHttp.sendJobResponse {jobResponse, res}
 
