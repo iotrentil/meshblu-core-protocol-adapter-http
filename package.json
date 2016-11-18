@@ -1,6 +1,6 @@
 {
   "name": "meshblu-core-protocol-adapter-http",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "",
   "engines": {
     "node": ">=5.0.0"
@@ -28,6 +28,7 @@
     "colors": "^1.1.2",
     "debug": "^2.3.2",
     "express-octoblu": "^1.1.1",
+    "ioredis": "^2.4.0",
     "job-logger": "^4.3.1",
     "lodash": "^4.16.6",
     "meshblu-core-job-manager": "^8.0.2",
@@ -59,5 +60,8 @@
     "extension": [
       ".coffee"
     ]
+  },
+  "optionalDependencies": {
+    "hiredis": "^0.5.0"
   }
 }
