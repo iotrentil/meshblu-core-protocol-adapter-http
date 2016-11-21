@@ -81,6 +81,9 @@ class Server
       maxConnections: 2
     }
 
+    @jobManager.once 'error', (error) =>
+      @panic 'fatal job manager error', 1, error
+
     @jobManager._do = @jobManager.do
     @jobManager.do = (request, callback) =>
       @jobManager._do request, (error, response) =>
