@@ -64,9 +64,6 @@ class Server
         next()
     app.use rateLimit
 
-    client = new RedisNS @namespace, new Redis @redisUri, dropBufferSupport: true
-    queueClient = new RedisNS @namespace, new Redis @redisUri, dropBufferSupport: true
-
     jobLogger = new JobLogger
       client: new Redis @jobLogRedisUri, dropBufferSupport: true
       indexPrefix: 'metric:meshblu-core-protocol-adapter-http'
@@ -74,13 +71,14 @@ class Server
       jobLogQueue: @jobLogQueue
 
     @jobManager = new JobManagerRequester {
-      client
-      queueClient
+      @namespace
+      @redisUri
       @jobTimeoutSeconds
       @jobLogSampleRate
       @requestQueueName
       @responseQueueName
       queueTimeoutSeconds: @jobTimeoutSeconds
+      maxConnections: 2
     }
 
     @jobManager._do = @jobManager.do
@@ -90,19 +88,17 @@ class Server
           return callback jobLoggerError if jobLoggerError?
           callback error, response
 
-    queueClient.on 'ready', =>
-      @jobManager.startProcessing()
+    @jobManager.start (error) =>
+      return callback error if error?
 
-    jobToHttp = new JobToHttp
+      jobToHttp = new JobToHttp
+      router = new Router { @jobManager, jobToHttp }
+      router.route app
 
-    router = new Router { @jobManager, jobToHttp }
-
-    router.route app
-
-    @server = app.listen @port, callback
+      @server = app.listen @port, callback
 
   stop: (callback) =>
-    @jobManager.stopProcessing()
-    @server.close callback
+    @jobManager.stop =>
+      @server.close callback
 
 module.exports = Server

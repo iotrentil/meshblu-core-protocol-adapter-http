@@ -14,6 +14,7 @@ describe 'POST /broadcasts', ->
     @responseQueueName = "response:queue:#{@responseQueueId}"
     @namespace = 'test:meshblu-http'
     @jobLogQueue = 'test:meshblu:job-log'
+    @redisUri = 'redis://localhost'
     @port = 0xd00d
     @sut = new Server {
       @port
@@ -21,10 +22,10 @@ describe 'POST /broadcasts', ->
       jobTimeoutSeconds: 1
       @namespace
       @jobLogQueue
-      jobLogRedisUri: 'redis://localhost:6379'
+      jobLogRedisUri: @redisUri
       jobLogSampleRate: 1
-      redisUri: 'redis://localhost'
-      cacheRedisUri: 'redis://localhost'
+      redisUri: @redisUri
+      cacheRedisUri: @redisUri
       @requestQueueName
       @responseQueueName
     }
@@ -35,7 +36,7 @@ describe 'POST /broadcasts', ->
     @sut.stop => done()
 
   beforeEach (done) ->
-    @redis = new RedisNS @namespace, new Redis 'localhost', dropBufferSupport: true
+    @redis = new RedisNS @namespace, new Redis @redisUri, dropBufferSupport: true
     @redis.on 'ready', done
 
   afterEach (done) ->
@@ -43,18 +44,20 @@ describe 'POST /broadcasts', ->
     return # avoid returning redis
 
   beforeEach (done) ->
-    @queueRedis = new RedisNS @namespace, new Redis 'localhost', dropBufferSupport: true
-    @queueRedis.on 'ready', done
-
-  beforeEach ->
     @jobManager = new JobManagerResponder {
-      client: @redis
-      queueClient: @queueRedis
+      @redisUri
+      @namespace
+      maxConnections: 1
       queueTimeoutSeconds: 1
       jobTimeoutSeconds: 1
       jobLogSampleRate: 1
       requestQueueName: @requestQueueName
+      responseQueueName: @responseQueueName
     }
+    @jobManager.start done
+
+  afterEach (done) ->
+    @jobManager.stop done
 
   beforeEach (done) ->
     @jobLogClient = new Redis 'localhost', dropBufferSupport: true
