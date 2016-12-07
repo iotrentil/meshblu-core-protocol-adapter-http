@@ -36,8 +36,8 @@ class Server
     @panic 'missing @cacheRedisUri', 2 unless @cacheRedisUri?
     @panic 'missing @jobLogSampleRate', 2 unless @jobLogSampleRate?
 
-    cacheClient = new Redis @cacheRedisUri, dropBufferSupport: true
-    rateLimitCheckerClient = new RedisNS 'meshblu-count', cacheClient
+    @cacheClient = new Redis @cacheRedisUri, dropBufferSupport: true
+    rateLimitCheckerClient = new RedisNS 'meshblu-count', @cacheClient
     @rateLimitChecker = new RateLimitChecker client: rateLimitCheckerClient
     @authParser = new MeshbluAuthParser
 
@@ -52,6 +52,14 @@ class Server
 
   run: (callback) =>
     app = octobluExpress({ @disableLogging })
+
+    app.use '/proofoflife', (req, res, next) =>
+      @jobManager.healthcheck (error, healthy) =>
+        return res.sendError error if error?
+        return res.sendError new Error("Job Manager Unhealthy") unless healthy
+        @cacheClient.set 'test:write', Date.now(), (error) =>
+          return res.sendError error if error?
+          res.send online: true
 
     rateLimit = (req, res, next) =>
       as = req.get 'x-meshblu-as'
@@ -82,7 +90,12 @@ class Server
     }
 
     @jobManager.once 'error', (error) =>
-      @panic 'fatal job manager error', 1, error
+      @stop =>
+        @panic 'fatal job manager error', 1, error
+
+    @jobManager.once 'factoryCreateError', (error) =>
+      @stop =>
+        @panic 'fatal job manager factoryCreateError', 1, error
 
     @jobManager._do = @jobManager.do
     @jobManager.do = (request, callback) =>
@@ -101,7 +114,7 @@ class Server
       @server = app.listen @port, callback
 
   stop: (callback) =>
-    @jobManager.stop =>
-      @server.close callback
+    @server.close =>
+      @jobManager.stop callback
 
 module.exports = Server
