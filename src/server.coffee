@@ -1,5 +1,3 @@
-_                       = require 'lodash'
-UUID                    = require 'uuid'
 colors                  = require 'colors'
 Redis                   = require 'ioredis'
 octobluExpress          = require 'express-octoblu'
@@ -7,7 +5,6 @@ RedisNS                 = require '@octoblu/redis-ns'
 RateLimitChecker        = require 'meshblu-core-rate-limit-checker'
 JobLogger               = require 'job-logger'
 { JobManagerRequester } = require 'meshblu-core-job-manager'
-debug                   = require('debug')('meshblu-core-protocol-adapter-http:server')
 
 Router                  = require './router'
 JobToHttp               = require './helpers/job-to-http'
@@ -51,9 +48,9 @@ class Server
     process.exit exitCode
 
   run: (callback) =>
-    app = octobluExpress({ @disableLogging })
+    app = octobluExpress({ @disableLogging, bodyLimit: '10mb' })
 
-    app.use '/proofoflife', (req, res, next) =>
+    app.use '/proofoflife', (req, res) =>
       @jobManager.healthcheck (error, healthy) =>
         return res.sendError error if error?
         return res.sendError new Error("Job Manager Unhealthy") unless healthy
