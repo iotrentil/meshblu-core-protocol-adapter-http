@@ -1,3 +1,4 @@
+_                       = require 'lodash'
 colors                  = require 'colors'
 Redis                   = require 'ioredis'
 octobluExpress          = require 'express-octoblu'
@@ -33,6 +34,8 @@ class Server
     @panic 'missing @redisUri', 2 unless @redisUri?
     @panic 'missing @cacheRedisUri', 2 unless @cacheRedisUri?
     @panic 'missing @jobLogSampleRate', 2 unless @jobLogSampleRate?
+    @panic 'missing @requestQueueName', 2 if _.isEmpty @requestQueueName
+    @panic 'missing @responseQueueName', 2 if _.isEmpty @responseQueueName
 
     @cacheClient = new Redis @cacheRedisUri, dropBufferSupport: true
     rateLimitCheckerClient = new RedisNS 'meshblu-count', @cacheClient
