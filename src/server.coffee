@@ -22,6 +22,7 @@ class Server
       @maxConnections
       @jobTimeoutSeconds
       @jobLogSampleRate
+      @jobLogSampleRateOverrideUuids
       @jobLogRedisUri
       @jobLogQueue
       @requestQueueName
@@ -80,6 +81,7 @@ class Server
       @redisUri
       @jobTimeoutSeconds
       @jobLogSampleRate
+      @jobLogSampleRateOverrideUuids
       @requestQueueName
       @responseQueueName
       queueTimeoutSeconds: @jobTimeoutSeconds

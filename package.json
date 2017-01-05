@@ -1,6 +1,6 @@
 {
   "name": "meshblu-core-protocol-adapter-http",
-  "version": "5.2.2",
+  "version": "5.3.0",
   "description": "",
   "engines": {
     "node": ">=5.0.0"
@@ -31,7 +31,7 @@
     "ioredis": "^2.4.0",
     "job-logger": "^4.3.1",
     "lodash": "^4.16.6",
-    "meshblu-core-job-manager": "^9.2.3",
+    "meshblu-core-job-manager": "^9.2.4",
     "meshblu-core-rate-limit-checker": "^1.0.1",
     "request": "^2.78.0",
     "simple-benchmark": "^1.0.7",

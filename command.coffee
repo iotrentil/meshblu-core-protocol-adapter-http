@@ -16,6 +16,7 @@ class Command
       jobLogRedisUri:    process.env.JOB_LOG_REDIS_URI
       jobLogQueue:       process.env.JOB_LOG_QUEUE
       jobLogSampleRate:  parseFloat process.env.JOB_LOG_SAMPLE_RATE
+      jobLogSampleRateOverrideUuids:  _.split process.env.JOB_LOG_SAMPLE_RATE_OVERRIDE_UUIDS, ','
       requestQueueName:  process.env.REQUEST_QUEUE_NAME
       responseQueueBaseName: process.env.RESPONSE_QUEUE_BASE_NAME
 
