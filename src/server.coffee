@@ -5,6 +5,7 @@ octobluExpress          = require 'express-octoblu'
 RedisNS                 = require '@octoblu/redis-ns'
 RateLimitChecker        = require 'meshblu-core-rate-limit-checker'
 JobLogger               = require 'job-logger'
+debug                   = require('debug')('meshblu-core-protocol-adapter-http:server')
 { JobManagerRequester } = require 'meshblu-core-job-manager'
 
 Router                  = require './router'
@@ -113,7 +114,10 @@ class Server
       router = new Router { @jobManager, jobToHttp }
       router.route app
 
-      @server = app.listen @port, callback
+      @server = app.listen @port, (error) =>
+        return callback error if error?
+        debug 'meshblu-http listening on port', @port
+        callback null
 
   stop: (callback) =>
     @server.close =>
