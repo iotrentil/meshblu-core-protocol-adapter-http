@@ -1,6 +1,6 @@
 {
   "name": "meshblu-core-protocol-adapter-http",
-  "version": "5.3.2",
+  "version": "5.4.0",
   "description": "",
   "engines": {
     "node": ">=5.5.0"
@@ -34,6 +34,7 @@
     "meshblu-core-job-manager": "^9.2.5",
     "meshblu-core-rate-limit-checker": "^1.0.1",
     "request": "^2.79.0",
+    "server-destroy": "^1.0.1",
     "simple-benchmark": "^1.0.11",
     "uuid": "^3.0.1"
   },

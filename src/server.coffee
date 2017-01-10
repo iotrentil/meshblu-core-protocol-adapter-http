@@ -7,6 +7,7 @@ RateLimitChecker        = require 'meshblu-core-rate-limit-checker'
 JobLogger               = require 'job-logger'
 debug                   = require('debug')('meshblu-core-protocol-adapter-http:server')
 { JobManagerRequester } = require 'meshblu-core-job-manager'
+enableDestroy           = require 'server-destroy'
 
 Router                  = require './router'
 JobToHttp               = require './helpers/job-to-http'
@@ -118,6 +119,11 @@ class Server
         return callback error if error?
         debug 'meshblu-http listening on port', @port
         callback null
+      enableDestroy @server
+
+  destroy: (callback) =>
+    @server.destroy =>
+      @jobManager.stop callback
 
   stop: (callback) =>
     @server.close =>
