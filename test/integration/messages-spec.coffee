@@ -32,8 +32,8 @@ describe 'POST /messages', ->
 
     @sut.run done
 
-  afterEach (done) ->
-    @sut.stop => done()
+  afterEach ->
+    @sut.stop()
 
   beforeEach (done) ->
     @redis = new RedisNS @namespace, new Redis @redisUri, dropBufferSupport: true
@@ -44,9 +44,13 @@ describe 'POST /messages', ->
     return # avoid returning redis
 
   beforeEach (done) ->
+    @workerFunc = (@request, callback=_.noop) =>
+      @jobManagerDo @request, callback
+
     @jobManager = new JobManagerResponder {
       @redisUri
       @namespace
+      @workerFunc
       maxConnections: 1
       queueTimeoutSeconds: 1
       jobTimeoutSeconds: 1
@@ -56,8 +60,11 @@ describe 'POST /messages', ->
     }
     @jobManager.start done
 
-  afterEach (done) ->
-    @jobManager.stop done
+  beforeEach ->
+    @jobManager.do = (@jobManagerDo) =>
+
+  afterEach ->
+    @jobManager.stop()
 
   beforeEach (done) ->
     @jobLogClient = new Redis 'localhost', dropBufferSupport: true

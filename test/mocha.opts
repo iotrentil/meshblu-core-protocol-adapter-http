@@ -3,5 +3,5 @@
 --compilers coffee:coffee-script
 --require coffee-script/register
 --require test/test_helper.coffee
---timeout 500
+--timeout 3000
 --full-trace
