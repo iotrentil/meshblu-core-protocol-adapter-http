@@ -1258,9 +1258,9 @@ merge-source-map@^1.0.2:
   dependencies:
     source-map "^0.5.3"
 
-meshblu-core-job-manager@^10.1.0:
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/meshblu-core-job-manager/-/meshblu-core-job-manager-10.1.0.tgz#7a9cf280f190abdc47e68f1f557f0bd342e4546a"
+meshblu-core-job-manager@^11.0.1:
+  version "11.0.1"
+  resolved "https://registry.yarnpkg.com/meshblu-core-job-manager/-/meshblu-core-job-manager-11.0.1.tgz#695f2a24bf1d3c855098a740f3d53c1715825e25"
   dependencies:
     async "^2.3.0"
     coffee-script "^1.12.5"
