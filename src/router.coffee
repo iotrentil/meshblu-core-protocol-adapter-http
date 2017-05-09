@@ -35,6 +35,7 @@ class Router
     @whoamiController           = new WhoamiController {jobManager, jobToHttp}
 
   route: (app) =>
+    app.get    '/ping', (req, res) => res.send(online: true)
     app.get    '/authenticate/:uuid', @authenticateController.checkDevice
     app.post   '/authenticate', @authenticateController.check
     app.post   '/broadcasts', @broadcastsController.create
