@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - '6'
+  - '7'
 services:
   - redis
 branches:
@@ -14,11 +14,3 @@ after_success:
 notifications:
   webhooks:
     - 'https://beekeeper.octoblu.com/webhooks/travis:ci'
-deploy:
-  provider: npm
-  email: serveradmin@octoblu.com
-  api_key:
-    secure: "RuybskENHYMo3ywYUmEyyC6wl7kb5RtFmGbNnrx51RCod++L8Xtxp4am5zIWMj3pVkM+Qljc0CgZSCiyFL3iz9Es9XUjUP0NGdvrLAPtLpfWml8rM0I8JCfYuo/eBOF+v5GBz01BT+/KR4snwYMdaWX25JxlNG8w4KOZKRnPnLHyOhafnZq230XApHRTl/0nokVPhFFpvkFxpVURHUQkzLo3BbwJc3lB4uow9EHsLDjmTlgvu0yheW9XAs5bZnpw6Aqp7V4useN/XLfQGXr7lA1W59vbp/2zMtWcOCJGW6m0OyW/i/yKj4zGFYLo41YH6pr0Q1xntbKPhOYV0ZSLJ/lYGNzP0+nbIb6KSfjld0dP8qdE6BTh6vbIIGxJC8I+yAVCiKsjHmYqRS12vlHjmedgwd2VyH5P1t+e1h1zKcNByon2kM5K8thn6Lz1G4NL0YUmYKFQeKlRYEetkn4IExeybF9T5173JdJajCT6MzL+KD/Y8OJ2BOfaiYHksoEHKUukJAO2eUPPysy0RMpEXNwKyb06A3t67oNvN6sOPovvVp3Bzm0CS8FLczJvTHpPtUEQWo1gLM+3B5FCHwRqm2eAC33gDdnF9H9SmfnidZybxgs7F92L93US4yrgYc5febQUYCEn0foenj+liGwZt5nm14fqvACSk1jT8m9iLuk="
-  on:
-    tags: true
-    branches: true
