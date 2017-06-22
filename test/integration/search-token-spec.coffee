@@ -113,5 +113,5 @@ describe 'POST /search/tokens', ->
         expect(data).to.containSubset type: 'dinosaur'
 
       it 'should have a tokens array in the response', ->
-        expect(@body).to.be.an.array
+        expect(@body).to.be.an 'array'
         expect(@body.length).to.equal 3

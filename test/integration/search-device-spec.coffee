@@ -113,7 +113,7 @@ describe 'POST /search/devices, GET /v2/devices, GET /devices', ->
         expect(data).to.containSubset type: 'dinosaur'
 
       it 'should have a devices array in the response', ->
-        expect(@body).to.be.an.array
+        expect(@body).to.be.an('array')
         expect(@body.length).to.equal 3
 
 
@@ -163,7 +163,7 @@ describe 'POST /search/devices, GET /v2/devices, GET /devices', ->
         expect(data).to.deep.equal type: 'dinosaur'
 
       it 'should have a devices array in the response', ->
-        expect(@body).to.be.an.array
+        expect(@body).to.be.an 'array'
         expect(@body.length).to.equal 3
 
   describe '->mydevices', ->
@@ -212,7 +212,7 @@ describe 'POST /search/devices, GET /v2/devices, GET /devices', ->
         expect(data).to.deep.equal type: 'dinosaur', owner: 'treasure-map'
 
       it 'should have a devices array in the response', ->
-        expect(@body.devices).to.be.an.array
+        expect(@body.devices).to.be.an 'array'
         expect(@body.devices.length).to.equal 3
 
   describe '->v1', ->
