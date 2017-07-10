@@ -1,16 +1,24 @@
 language: node_js
 node_js:
-  - '8'
+- '8'
 services:
-  - redis
+- redis
 branches:
   only:
-    - '/^v[0-9]/'
+  - "/^v[0-9]/"
 after_success:
-  - npm run coverage
-  - 'npm run mocha:json'
-  - 'bash <(curl -s https://codecov.io/bash)'
-  - 'bash <(curl -s https://codecov.octoblu.com/bash)'
+- npm run coverage
+- npm run mocha:json
+- bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.octoblu.com/bash)
 notifications:
   webhooks:
-    - 'https://beekeeper.octoblu.com/webhooks/travis:ci'
+  - https://beekeeper.octoblu.com/webhooks/travis:ci
+deploy:
+  provider: npm
+  email: serveradmin@octoblu.com
+  api_key:
+    secure: CAkY4gud/2tOKaLp8rNyKZPyfRG1wnAkwKWWVuAJSIYbZIIrKXK0lJFzlkdCJ0XbF38Cgj4iSnU7pOYS0BIDQGkYIPkXRO3fNRCA52DK5/3Iz3gysnJe/GMU5ncek44+Oh5DoR2JUZlwMBUKBo2v3vNoUNkCX45Ib1w/cbQ4MCZtKB3K+gcLYKibGqM1ouou3PDPCKR81d6x9j1emKQcaZ3hF4fYsS7vICfz2yUTOxlIses9MEbchkDAuJuIzIP9duWEUuerPbALFZAgvmMLYD34rCSgutEXNpP1IHDFOf/vXbnyREodKyt76x3mPjXsAt6vv7OZ9BllrVc8Q+I6QuXs8ALgzuPBvneCGizORPZZkpMRU4eS2l10xshYwNj2iFYrjEystqIuvVthYkhFws2Dzah20MBBK8Qxmd7WXTmtGbpZocpwBDoomt8kuw7g5btS4ug5dVeEajm3xtzM5yvJlwlNy/GEjP8hQFKV6rjBg9/SKWtTcp8Q6rsJsARPs3jOfT+5yRnCvjrqjXdwHFJ2lq0XT1i4pa2DoD8rGwfgQiyJyu7XGPO1mD6CNxLnmXpgy0qXcCIFxVugndNRed8McnHZkU3jKVo2ZmQQcSiNMbFx90YozlIFaahV6tL/z3TQ5fLCoAibf8Ct3MRXaLyPbwEffZM0FZzMSWJv/+Q=
+  on:
+    tags: true
+    repo: octoblu/meshblu-core-protocol-adapter-http
