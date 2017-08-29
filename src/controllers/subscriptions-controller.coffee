@@ -33,4 +33,13 @@ class SubscriptionsController
       return res.sendError new Error('Did not receive jobResponse') unless jobResponse?
       @jobToHttp.sendJobResponse {jobResponse, res}
 
+  removeMany: (req, res) =>
+    req.body = _.pick req.body, ['emitterUuid', 'type']
+    job = @jobToHttp.httpToJob jobType: 'RemoveSubscriptions', request: req, toUuid: req.params.subscriberUuid
+
+    @jobManager.do job, (error, jobResponse) =>
+      return res.sendError error if error?
+      return res.sendError new Error('Did not receive jobResponse') unless jobResponse?
+      @jobToHttp.sendJobResponse {jobResponse, res}
+
 module.exports = SubscriptionsController

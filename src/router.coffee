@@ -67,6 +67,7 @@ class Router
     app.put    '/v2/devices/:uuid', @deviceV2Controller.updateDangerously
     app.put    '/v2/devices/:uuid/find-and-update', @deviceV2Controller.findAndUpdate
     app.get    '/v2/devices/:uuid/subscriptions', @subscriptionsController.list
+    app.delete '/v2/devices/:subscriberUuid/subscriptions', @subscriptionsController.removeMany
     app.post   '/v2/devices/:subscriberUuid/subscriptions/:emitterUuid/:type', @subscriptionsController.create
     app.delete '/v2/devices/:subscriberUuid/subscriptions/:emitterUuid/:type', @subscriptionsController.remove
     app.get    '/v3/devices/:uuid', @deviceV3Controller.get
