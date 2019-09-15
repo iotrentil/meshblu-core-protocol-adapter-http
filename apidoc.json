@@ -1,0 +1,12 @@
+{
+  "name": "StayBinder IoT API",
+  "version": "1.0.0",
+  "description": "StayBinder IoT API",
+  "title": "StayBinder IoT API",
+  "url" : "{{APIURL}}",
+  "sampleUrl" : "{{APIURL}}",
+  "order": [
+    "Devices",
+    "Messages"
+  ]
+}

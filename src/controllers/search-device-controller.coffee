@@ -14,6 +14,16 @@ class SearchDeviceController
       return res.sendError error if error?
       res.status(jobResponse.metadata.code).send devices: JSON.parse jobResponse.rawData
 
+  mydevicesExport: (req, res) =>
+    job = @_oldFormatToJob req
+    job.data.owner = job.metadata.fromUuid
+
+    debug('dispatching request mydevices (export)', job)
+    @jobManager.do job, (error, jobResponse) =>
+      return res.sendError error if error?
+      devices = JSON.parse jobResponse.rawData
+      res.status(jobResponse.metadata.code).send devices: _.map devices, (d) -> _.omit d, ['meshblu']
+
   searchV1: (req, res) =>
     job = @_oldFormatToJob req
 

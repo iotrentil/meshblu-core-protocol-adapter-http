@@ -73,4 +73,29 @@ class Router
     app.get    '/v3/devices/:uuid', @deviceV3Controller.get
     app.get    '/v2/whoami', @whoamiController.show
 
+    # Export APIs
+    # open APIs
+    ###
+    @apiDefine Auth
+      @apiHeader {String} Authorization Basic auth uuid:token
+    ###
+
+    ###
+    @apiName MyDevices
+    @apiGroup Devices
+    @api {get} /export/mydevices Get my devices
+    @apiVersion 1.0.0
+    @apiDescription Returns all information (including tokens) of all devices or nodes belonging to a user's UUID \
+        (identified with an "owner" property and user's UUID i.e. "owner":"0d1234a0-1234-11e3-b09c-1234e847b2cc")
+    @apiUse Auth
+    @apiContentType application/json
+    ###
+    app.get    '/export/mydevices', @searchDeviceController.mydevicesExport
+    #app.post   '/export/devices', @registerDeviceController.register
+    #app.delete '/export/devices/:uuid', @unregisterDeviceController.unregister
+    #app.get    '/export/devices/:uuid', @deviceV2Controller.get
+    #app.patch  '/export/devices/:uuid', @deviceV2Controller.update
+    #app.put    '/export/devices/:uuid', @deviceV2Controller.updateDangerously
+    #app.post   '/export/messages', @messagesController.create
+
 module.exports = Router
