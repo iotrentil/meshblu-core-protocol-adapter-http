@@ -22,7 +22,8 @@ class SearchDeviceController
     @jobManager.do job, (error, jobResponse) =>
       return res.sendError error if error?
       devices = JSON.parse jobResponse.rawData
-      res.status(jobResponse.metadata.code).send devices: _.map devices, (d) -> _.omit d, ['meshblu']
+      result = { devices: _.map devices, (d) -> _.omit d, ['meshblu', 'schemas', 'token'] }
+      res.status(jobResponse.metadata.code).send result
 
   searchV1: (req, res) =>
     job = @_oldFormatToJob req

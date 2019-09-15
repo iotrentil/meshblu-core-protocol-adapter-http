@@ -77,7 +77,7 @@ class Router
     # open APIs
     ###
     @apiDefine Auth
-      @apiHeader {String} Authorization Basic auth uuid:token
+      @apiHeader {String} Authorization Basic auth UUID:TOKEN
     ###
 
     ###
@@ -85,7 +85,7 @@ class Router
     @apiGroup Devices
     @api {get} /export/mydevices Get my devices
     @apiVersion 1.0.0
-    @apiDescription Returns all information (including tokens) of all devices or nodes belonging to a user's UUID \
+    @apiDescription Returns all information of all devices or nodes belonging to a user's UUID \
         (identified with an "owner" property and user's UUID i.e. "owner":"0d1234a0-1234-11e3-b09c-1234e847b2cc")
     @apiUse Auth
     @apiContentType application/json

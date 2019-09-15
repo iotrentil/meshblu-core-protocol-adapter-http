@@ -1,6 +1,7 @@
 _                       = require 'lodash'
 colors                  = require 'colors'
 Redis                   = require 'ioredis'
+Express                 = require 'express'
 octobluExpress          = require 'express-octoblu'
 RedisNS                 = require '@octoblu/redis-ns'
 RateLimitChecker        = require 'meshblu-core-rate-limit-checker'
@@ -55,6 +56,7 @@ class Server
 
   run: (callback) =>
     app = octobluExpress({ @disableLogging, bodyLimit: '10mb' })
+    app.use(Express.static('public'))
 
     app.use '/proofoflife', (req, res) =>
       @jobManager.healthcheck (error, healthy) =>
