@@ -32,6 +32,35 @@ class DeviceV2Controller
 
       return @jobToHttp.sendJobResponse {res, jobResponse}
 
+  getExport: (req, res) =>
+    job = @jobToHttp.httpToJob jobType: 'GetDevice', request: req, toUuid: req.params.uuid
+
+    debug('dispatching request', job)
+    @jobManager.do job, (error, jobResponse) =>
+      if !error? && jobResponse.metadata?.code == 403
+        error = code: 404, message: 'Devices not found'
+
+      if error?
+        if error.code == 403 # backwards compatibility with meshblu
+          error.code = 404
+          error.message = 'Devices not found'
+
+        jsonError =
+          code: error.code
+          message: error.message
+        return res.status(error.code ? 500).send jsonError
+
+      data = JSON.parse jobResponse.rawData
+      unless data?
+        jsonError =
+          code: 404
+          message: 'Devices not found'
+        return res.status(404).send jsonError
+      device = JSON.parse jobResponse.rawData
+      result = _.omit device, ['meshblu', 'schemas']
+      jobResponse.rawData = JSON.stringify result
+      return @jobToHttp.sendJobResponse {res, jobResponse}
+
   update: (req, res) =>
     # insert $set first
     unless _.isPlainObject req.body

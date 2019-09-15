@@ -74,7 +74,6 @@ class Router
     app.get    '/v2/whoami', @whoamiController.show
 
     # Export APIs
-    # open APIs
     ###
     @apiDefine Auth
       @apiHeader {String} Authorization Basic auth UUID:TOKEN
@@ -91,11 +90,44 @@ class Router
     @apiContentType application/json
     ###
     app.get    '/export/mydevices', @searchDeviceController.mydevicesExport
-    #app.post   '/export/devices', @registerDeviceController.register
-    #app.delete '/export/devices/:uuid', @unregisterDeviceController.unregister
-    #app.get    '/export/devices/:uuid', @deviceV2Controller.get
+
+    ###
+    @apiName RegisterDevice
+    @apiGroup Devices
+    @api {post} /export/devices Register a device
+    @apiVersion 1.0.0
+    @apiDescription Registers a node or device. \
+        It returns a UUID device id and security token. You can pass any key/value pairs.
+    @apiUse Auth
+    @apiContentType application/json
+    ###
+    app.post   '/export/devices', @registerDeviceController.registerExport
+
+    ###
+    @apiName DeleteDevice
+    @apiGroup Devices
+    @api {delete} /export/devices/:uuid Delete a device
+    @apiVersion 1.0.0
+    @apiDescription Deletes or unregisters a node or device currently registered that you have access to update.
+    @apiUse Auth
+    @apiParam {String} uuid device's uuid
+    @apiContentType application/json
+    ###
+    app.delete '/export/devices/:uuid', @unregisterDeviceController.unregister
+
+    ###
+    @apiName GetDevice
+    @apiGroup Devices
+    @api {get} /export/devices/:uuid Get a device
+    @apiVersion 1.0.0
+    @apiDescription Returns all information (except the token) of a specific device or node
+    @apiUse Auth
+    @apiParam {String} uuid device's uuid
+    @apiContentType application/json
+    ###
+    app.get    '/export/devices/:uuid', @deviceV2Controller.getExport
+
     #app.patch  '/export/devices/:uuid', @deviceV2Controller.update
     #app.put    '/export/devices/:uuid', @deviceV2Controller.updateDangerously
-    #app.post   '/export/messages', @messagesController.create
 
 module.exports = Router
