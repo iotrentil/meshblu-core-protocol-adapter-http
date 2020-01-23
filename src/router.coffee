@@ -76,7 +76,8 @@ class Router
     # Export APIs
     ###
     @apiDefine Auth
-      @apiHeader {String} Authorization Basic auth UUID:TOKEN
+      @apiHeader {String} Authorization Basic UUID:TOKEN \
+        See http://www.ietf.org/rfc/rfc2617.txt
     ###
 
     ###
@@ -101,7 +102,7 @@ class Router
     @apiUse Auth
     @apiContentType application/json
     ###
-    app.post   '/export/devices', @registerDeviceController.registerExport
+    app.post   '/export/devices/:uuid', @registerDeviceController.registerExport
 
     ###
     @apiName DeleteDevice
@@ -124,10 +125,21 @@ class Router
     @apiUse Auth
     @apiParam {String} uuid device's uuid
     @apiContentType application/json
+    @apiSuccess {Object} device     all information of specific device
     ###
     app.get    '/export/devices/:uuid', @deviceV2Controller.getExport
 
-    #app.patch  '/export/devices/:uuid', @deviceV2Controller.update
-    #app.put    '/export/devices/:uuid', @deviceV2Controller.updateDangerously
+    ###
+    @apiName UpdateDevice
+    @apiGroup Devices
+    @api {patch} /export/devices/:uuid Update a device
+    @apiVersion 1.0.0
+    @apiDescription Updates a node or device that you have access to update. \
+        You can pass any key/value pairs to update object.
+    @apiUse Auth
+    @apiParam {String} uuid device's uuid
+    @apiContentType application/json
+    ###
+    app.patch  '/export/devices/:uuid', @deviceV2Controller.update
 
 module.exports = Router
