@@ -102,7 +102,7 @@ class Router
     @apiUse Auth
     @apiContentType application/json
     ###
-    app.post   '/export/devices/:uuid', @registerDeviceController.registerExport
+    app.post   '/export/devices', @registerDeviceController.registerExport
 
     ###
     @apiName DeleteDevice
