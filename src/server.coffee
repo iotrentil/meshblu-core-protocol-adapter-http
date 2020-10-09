@@ -42,7 +42,10 @@ class Server
 
     @cacheClient = new Redis @cacheRedisUri, dropBufferSupport: true
     rateLimitCheckerClient = new RedisNS 'meshblu-count', @cacheClient
-    @rateLimitChecker = new RateLimitChecker client: rateLimitCheckerClient
+    @rateLimitChecker = new RateLimitChecker {
+      client: rateLimitCheckerClient
+      msgRateLimit: 100 * 60
+    }
     @authParser = new MeshbluAuthParser
 
   address: =>
